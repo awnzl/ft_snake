@@ -54,7 +54,8 @@ int GUIDisplay::run(uint8_t *rawImage) {
             return 4;
         }
     }
-    win->clear(sf::Color::Yellow);
+    //TODO: this color affect pixels colors - how?
+    win->clear(sf::Color::White);
     // texture->update(rawImage);//do I need it ? 
     win->draw(*sprite);
     win->display();

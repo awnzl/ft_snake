@@ -14,7 +14,7 @@ GameCore::~GameCore() {
 
 }
 
-void    GameCore::setPixel(int x, int y, uint8_t *pixels, int color = 0x30D5C8) {
+void    GameCore::setPixel(int x, int y, uint8_t *pixels, int color = 0) {
     int idx = (y * WIDTH_HEIGTH + x) * 4;
     // pixels[idx + 3] = color >> 24; //a
     // pixels[idx + 2] = color >> 16; //r
@@ -38,7 +38,7 @@ void    GameCore::fillImage(uint8_t *pixels) {
 void    GameCore::insertSnake(uint8_t *pixels) {
     for (int y = snake.y - BLOCK_SIZE / 2; y < snake.y + BLOCK_SIZE / 2; y++)
         for (int x = snake.x - BLOCK_SIZE / 2; x < snake.x + BLOCK_SIZE / 2; x++)
-            setPixel(x, y, pixels, 0x4169E1);
+            setPixel(x, y, pixels, 0x30D5C8);
 }
 
 //		1
