@@ -28,6 +28,9 @@ void    GameCore::setPixel(int x, int y, uint8_t *pixels, int color = 0) {
 }
 
 void    GameCore::fillImage(uint8_t *pixels) {
+    //replece with block oriented logic
+    //
+
     for (int y = 0; y < WIDTH_HEIGTH; y++) {
         for (int x = 0; x < WIDTH_HEIGTH; x++) {
             setPixel(x, y, pixels);
@@ -66,6 +69,10 @@ uint8_t    *GameCore::getImage(int event, uint8_t *pixels) {
     return pixels;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// Debug functions																			    //
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 int GameCore::pixToInt(int x, int y, uint8_t *pixels) {
     int idx = (y * WIDTH_HEIGTH + x) * 4;
     // return ((pixels[idx + 3] << 24) +
@@ -84,9 +91,9 @@ void	GameCore::run() {
     int isRun = 1;
     uint8_t pixels[ARRAY_SIZE];
     
-    do { 
+    while (isRun > -1) {
         isRun = disp.run(getImage(isRun, pixels));
         std::cout << "debug: libreturn: " << isRun << std::endl;
-    } while (isRun > -1);
+    }
     exit(1);
 }

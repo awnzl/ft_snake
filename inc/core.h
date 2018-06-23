@@ -4,14 +4,34 @@
 //#include "minilibxwrapper.h"
 #include "defines.h"
 #include "sfmlwrapper.h"
+#include <vector>
 
 class GameCore {
+	struct Block {
+		int		x;
+		int		y;
+		bool	isVisible;
+		uint8_t	*pxls;
+
+		Block(int x, int y, bool isVisible, uint8_t *px)
+			: x(x),
+			  y(y),
+			  isVisible(isVisible),
+			  pxls(px)
+		{
+		}
+	};
+
 	struct Snake {
 		int x;
 		int y;
 		int len;
 	}		snake;
+
+	std::vector<Block> blocks;
 	
+	void	initBlocks();
+	void	setBlocks();
 	void	setPixel(int x, int y, uint8_t *pixels, int color);
 	void	fillImage(uint8_t *image);
 	void	insertSnake(uint8_t *pixels);
