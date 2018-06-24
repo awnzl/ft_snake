@@ -4,14 +4,20 @@
 //#include "minilibxwrapper.h"
 #include "defines.h"
 #include "sfmlwrapper.h"
-#include <vector>
+#include <array>
+#include <string>//TODO: delete this include
+#include <sstream>//TODO: delete this include
 
 class GameCore {
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	// x, y of left top corner																	//
+	//////////////////////////////////////////////////////////////////////////////////////////////
 	struct Block {
 		int		x;
 		int		y;
 		bool	isVisible;
 		uint8_t	*pxls;
+		//int direction; //for snake ?
 
 		Block(int x, int y, bool isVisible, uint8_t *px)
 			: x(x),
@@ -20,16 +26,33 @@ class GameCore {
 			  pxls(px)
 		{
 		}
+		//TODO: delete this func
+		std::string toString() {
+			std::stringstream ss;
+			ss << x << " | " << y << " | " << isVisible << std::endl;
+			return ss.str();
+		}
 	};
 
 	struct Snake {
+		int len;//nubmer of blocks
 		int x;
 		int y;
-		int len;
+
+		//need to implement snake direction logic
+		// Snake() : len(3), x((len + BLOCKS_QUANTITY) / 2), y(BLOCKS_QUANTITY / 2)
+		// {
+		// }
+
+		//TODO: temporary constructor, till snake direction logic isn't implemented
+		Snake() : len(1), x(BLOCKS_QUANTITY - 1 / 2), y(BLOCKS_QUANTITY - 1) { }
 	}		snake;
 
-	std::vector<Block> blocks;
+	uint8_t background_pxls[BLOCK_SIZE * BLOCK_SIZE * 4];
+
+	std::array<Block*, BLOCKS_QUANTITY> blocks;
 	
+	void    fillPixelBlock(uint8_t *px, int color);
 	void	initBlocks();
 	void	setBlocks();
 	void	setPixel(int x, int y, uint8_t *pixels, int color);

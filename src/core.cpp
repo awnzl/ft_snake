@@ -5,12 +5,35 @@
 #include "minilibxwrapper.h"
 
 GameCore::GameCore() {
-    snake.x = WIDTH_HEIGTH / 2;
-    snake.y = WIDTH_HEIGTH / 2;
-    snake.len = 1;
+    fillPixelBlock(background_pxls, 0);
+    //add here new blocks
+    initBlocks();
 }
 
 GameCore::~GameCore() {
+}
+
+void    GameCore::fillPixelBlock(uint8_t *px, int color) {
+    for (int y = 0; y < BLOCK_SIZE; y++) {
+        for (int x = 0; x < BLOCK_SIZE; x++) {
+            setPixel(x, y, px, color);
+        }
+    }
+}
+
+void    GameCore::initBlocks() {
+    for (int i = 0, x = 0, y = 0; i < BLOCKS_QUANTITY; i++) {
+        blocks[i] = new Block(x, y, true, background_pxls);
+        x++;
+        if (!(x % BLOCKS_QUANTITY / 2)) {
+            x = 0;
+            y++;
+            std::cout << "initBlocks Debug: y = " << y << std::endl;//TODO: remove
+        }
+    }
+}
+
+void    GameCore::setBlocks() {
 
 }
 
@@ -28,14 +51,18 @@ void    GameCore::setPixel(int x, int y, uint8_t *pixels, int color = 0) {
 }
 
 void    GameCore::fillImage(uint8_t *pixels) {
+    if (pixels)
+        ;
     //replece with block oriented logic
     //
+    // for (int i = 0; i < BLOCKS_QUANTITY; i++)
+    //     blocks[i].toString();
 
-    for (int y = 0; y < WIDTH_HEIGTH; y++) {
-        for (int x = 0; x < WIDTH_HEIGTH; x++) {
-            setPixel(x, y, pixels);
-        }
-    }
+    // for (int y = 0; y < WIDTH_HEIGTH; y++) {
+    //     for (int x = 0; x < WIDTH_HEIGTH; x++) {
+    //         setPixel(x, y, pixels);
+    //     }
+    // }
 }
 
 void    GameCore::insertSnake(uint8_t *pixels) {
@@ -88,7 +115,7 @@ int GameCore::pixToInt(int x, int y, uint8_t *pixels) {
 void	GameCore::run() { 
     GUIDisplay disp;
 
-    int isRun = 1;
+    int isRun = 0;
     uint8_t pixels[ARRAY_SIZE];
     
     while (isRun > -1) {
