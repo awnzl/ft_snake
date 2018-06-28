@@ -33,7 +33,7 @@ GUIDisplay &GUIDisplay::operator=(GUIDisplay &gd) {
 int GUIDisplay::run(uint8_t *rawImage) {
     im->create(WIDTH_HEIGTH, WIDTH_HEIGTH, rawImage);
 
-    std::cout << "SFML DEBUG: pixel.toInteger: " << im->getPixel(5,5).toInteger() << std::endl;
+    // std::cout << "SFML DEBUG: pixel.toInteger: " << im->getPixel(5,5).toInteger() << std::endl;
 
     texture->loadFromImage(*im);
     sprite->setTexture(*texture);

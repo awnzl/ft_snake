@@ -2,7 +2,7 @@ NAME	= nibbler
 
 SHELL	= /bin/bash
 CC		= clang++
-FLG		= -Wall -Werror -Wextra
+FLG		= #-Wall -Werror -Wextra
 
 SRCDIR	= ./src
 INCDIR	= ./inc

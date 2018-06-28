@@ -1,15 +1,10 @@
 #include "core.h"
 
-/*
-** создаем объект игры
-** создаетм объект объертки
-** объертка инициализирует окно при создании.
-** при вызове функции вставки изображения окно подымается и висит до отключения
-*/
-
-int main() {
-	GameCore *game = new GameCore();
-	game->run();
+int main()
+{
+	GameCore *gc = new GameCore;
+	gc->run();
+	delete gc;
 
 	return (0);
 }
