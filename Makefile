@@ -21,7 +21,7 @@ OBJ		= $(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
 
 $(NAME) : exp obj $(OBJ)
 	$(CC) $(FLG) $(OBJ) $(ATTR) $(LBS) -o $(NAME)
-	
+
 
 all		: $(NAME)
 

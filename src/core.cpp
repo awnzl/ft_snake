@@ -4,21 +4,24 @@
 #include "core.h"
 #include "minilibxwrapper.h"
 
-GameCore::GameCore()
+GameCore::GameCore() : direction(3)
 {
     //TODO: temporary block start:
     fillPixelsToPixelsMap(target_pixels_map, 0x00ff00);
     fillPixelsToPixelsMap(obstacle_pixels_map, 0x0000ff);
+    fillPixelsToPixelsMap(snake_pixels_map, 0xff0000);
     // temporary block end
 }
 
 GameCore::~GameCore()
 {
-    //TODO: free blocks arrays content 
-    for (int i = 0; i < obstacles.size(); i++)
-        delete obstacles[i];
-    for (int i = 0; i < targets.size(); i++)
-        delete targets[i];
+    //TODO: free blocks arrays content
+    for (auto e: obstacles)
+        delete e;
+    for (auto e: targets)
+        delete e;
+    for (auto e: snake)
+        delete e;
 }
 
 //uses for fill pixel arrays for blocks
@@ -26,7 +29,7 @@ void    GameCore::fillPixelsToPixelsMap(uint8_t *px, int color)
 {
     for (int y = 0; y < BLOCK_SIZE; y++)
         for (int x = 0; x < BLOCK_SIZE; x++)
-            setPixel(x, y, px, BLOCK_SIZE, color);
+            setPixelToPixelArray(x, y, px, BLOCK_SIZE, color);
 }
 
 //first init and need function for replace on each cycle!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -40,14 +43,14 @@ void    GameCore::fillPixelsToPixelsMap(uint8_t *px, int color)
 //             std::cout << "fillBlocks Debug: x = " << x;
 //             x = 0;
 //             y++;
-//             // std::cout << "; y = " << y << std::endl;//TODO: remove
+//             // std::cout << "; y = " << y << std::endl;
 //         }
 //         // std::cout << "debug: x = " << x << "; y = " << y << "; i = " << i << std::endl;
 //     }
 //     // exit(1);
 // }
 
-void    GameCore::setPixel(int x, int y, uint8_t *pixels, int rowLength, int color)
+void    GameCore::setPixelToPixelArray(int x, int y, uint8_t *pixels, int rowLength, int color)
 {
     int idx = (y * rowLength + x) * 4;
     // pixels[idx + 3] = color >> 24; //a
@@ -65,106 +68,119 @@ void    GameCore::fillBackground(uint8_t *pixels)
 {
     for (int y = 0; y < WIDTH_HEIGTH; y++)
         for (int x = 0; x < WIDTH_HEIGTH; x++)
-            setPixel(x, y, pixels, WIDTH_HEIGTH);
+            setPixelToPixelArray(x, y, pixels, WIDTH_HEIGTH);
 }
 
-void    GameCore::insertSnake(uint8_t *pixels)
+void    GameCore::insertBlockToScene(int bx, int by, uint8_t *block, uint8_t *scene)
 {
-    for (int y = snake.y - BLOCK_SIZE / 2; y < snake.y + BLOCK_SIZE / 2; y++)
-        for (int x = snake.x - BLOCK_SIZE / 2; x < snake.x + BLOCK_SIZE / 2; x++)
-            setPixel(x, y, pixels, WIDTH_HEIGTH, 0xff0000);
-}
-
-//		1
-//	2	0	3
-//		4
-//a w s d
-uint8_t    *GameCore::getImage(int event, uint8_t *pixels)
-{
-    switch (event)
+    for (int y = 0; y < BLOCK_SIZE; y++)
     {
-        case (1):
-            snake.y -= (snake.y - 10 - BLOCK_SIZE / 2  <= 0) ? 0 : 10;
-            break;
-        case (2):
-            snake.x -= (snake.x - 10 - BLOCK_SIZE / 2 <= 0) ? 0 : 10;
-            break;
-        case (3):
-            snake.x += (snake.x + 10 + BLOCK_SIZE / 2 >= WIDTH_HEIGTH) ? 0 : 10;
-            break;
-        case (4):
-            snake.y += (snake.y + 10 + BLOCK_SIZE / 2 >= WIDTH_HEIGTH) ? 0 : 10;
-            break;
+        int idx = ((by + y) * WIDTH_HEIGTH + bx) * 4;
+        for (int i = 0; i < BLOCK_SIZE * 4; i++)
+            scene[idx++] = block[i];
     }
-    //TODO: add frame to window
-    fillBackground(pixels);
-    insertElements(pixels);
-    insertSnake(pixels);
-    // insertObstacles(pixels);
-    // insertTargets(pixels);
-    return pixels;
+}
+
+void    GameCore::insertElements(uint8_t *pixels)
+{
+    //insert obstacles, targets, snake
+    for (auto e: obstacles)
+        if (e->isVisible)
+            insertBlockToScene(e->x, e->y, e->pxls, pixels);
+
+    for (auto e: targets)
+        if (e->isVisible)
+            insertBlockToScene(e->x, e->y, e->pxls, pixels);
+
+    for (auto e: snake)
+        insertBlockToScene(e->x, e->y, e->pxls, pixels);
 }
 
 void    GameCore::initElements()
 {
     //init obstacles
     //init targets
-    obstacles[0] = new Block(2*32, 3*32, true, obstacle_pixels_map);
-    obstacles[1] = new Block(12*32, 5*32, true, obstacle_pixels_map);
-    obstacles[2] = new Block(6*32, 13*32, true, obstacle_pixels_map);
-    obstacles[3] = new Block(16*32, 3*32, true, obstacle_pixels_map);
+    obstacles[0] = new Block(3*32, 3*32, true, Type::Obstacle, obstacle_pixels_map);
+    obstacles[1] = new Block(1*32, 1*32, true, Type::Obstacle, obstacle_pixels_map);
+    obstacles[2] = new Block(6*32, 13*32, true, Type::Obstacle, obstacle_pixels_map);
+    obstacles[3] = new Block(16*32, 3*32, true, Type::Obstacle, obstacle_pixels_map);
 
-    targets[0] = new Block(3*32, 4*32, true, target_pixels_map);
-    targets[1] = new Block(7*32, 8*32, true, target_pixels_map);
-    targets[2] = new Block(11*32, 12*32, true, target_pixels_map);
-    targets[3] = new Block(23*32, 18*32, true, target_pixels_map);
+    targets[0] = new Block(3*32, 4*32, true, Type::Target, target_pixels_map);
+    targets[1] = new Block(7*32, 8*32, true, Type::Target, target_pixels_map);
+    targets[2] = new Block(11*32, 12*32, true, Type::Target, target_pixels_map);
+    targets[3] = new Block(23*32, 18*32, true, Type::Target, target_pixels_map);
+
+    snake.push_back(new Block(448, 928, true, Type::Snake, snake_pixels_map));
 }
 
-//think about this implementation... first color gather into integer, than disperse
-void    GameCore::insertBlockToScene(int bx, int by, uint8_t *block, uint8_t *scene)
+bool    GameCore::checkIsObstacles(int x, int y)
 {
-    int idx = 0;
-    for (int y = 0; y < BLOCK_SIZE; y++)
-        for (int x = 0; x < BLOCK_SIZE; x++)
+    int blockX = x / BLOCK_SIZE * BLOCK_SIZE;
+    int blockY = y / BLOCK_SIZE * BLOCK_SIZE;
+    blockY *= BLOCK_SIZE;
+
+    std::cout << "x "<<x<<"; y "<<y << "; bX " << blockX << "; bY " << blockY << std::endl;
+
+    for (auto each: obstacles)
+        if (each->x == blockX && each->y == blockY)
         {
-            setPixel(x + bx, y + by, scene, WIDTH_HEIGTH, ((block[idx] << 24) +
-                                   (block[idx + 1] << 16) +
-                                   (block[idx + 2] << 8) +
-                                   (block[idx + 3])));
-            idx += 4;
+            std::cout << "Obstacle " << blockX << " " << blockY
+                      << "; x " << x << " y " << y
+                      << "; BPS " << BLOCKS_PER_SIDE << "; BS " << BLOCK_SIZE
+                      << std::endl;
+            return true;
         }
+    return false;
 }
 
-void    GameCore::insertElements(uint8_t *pixels)
+//		1
+//	2	0	3
+//		4
+//a w s d
+uint8_t    *GameCore::getImage(uint8_t *pixels)
 {
-    //insert obstacles, targets, snake
-    for (int i = 0; i < obstacles.size(); i++)
-        if (obstacles[i]->isVisible)
-            insertBlockToScene(obstacles[i]->x,
-                               obstacles[i]->y,
-                               obstacles[i]->pxls,
-                               pixels);
-    for (int i = 0; i < targets.size(); i++)
-        if (targets[i]->isVisible)
-            insertBlockToScene(targets[i]->x,
-                               targets[i]->y,
-                               targets[i]->pxls,
-                               pixels);
-    int idx = 4;
+    int nextX = snake[0]->x;
+    int nextY = snake[0]->y;
+
+    switch (direction)
+    {
+        case (1):
+            nextY -= (snake[0]->y - 10 <= 0) ? 0 : 10;
+            break;
+        case (2):
+            nextX -= (snake[0]->x - 10 <= 0) ? 0 : 10;
+            break;
+        case (3):
+            nextX += (snake[0]->x + 10 + BLOCK_SIZE >= WIDTH_HEIGTH) ? 0 : 10;
+            break;
+        case (4):
+            nextY += (snake[0]->y + 10 + BLOCK_SIZE >= WIDTH_HEIGTH) ? 0 : 10;
+            break;
+    }
+
+    if (!checkIsObstacles(nextX, nextY))
+    {
+        snake[0]->x = nextX / BLOCK_SIZE * BLOCK_SIZE;
+        snake[0]->y = nextY / BLOCK_SIZE * BLOCK_SIZE;
+    }
+    std::cout << "snX " << snake[0]->x << " snY " << snake[0]->y << " ";
+    //TODO: add frame to window
+    fillBackground(pixels);
+    insertElements(pixels);
+    return pixels;
 }
 
-// template<std::size_t ALLSIZE, std::size_t OBJSIZE, std::size_t TARGETSSIZE>
+// template<std::size_t OBJSIZE, std::size_t TARGETSSIZE>
 // void    GameCore::gameLoop(GUIDisplay &disp,
-//                            std::array<Block*, ALLSIZE> &allElements,
 //                            std::array<Block*, OBJSIZE> &obstacles
 //                            std::array<Block*, TARGETSSIZE> &targets)
 // {
-//     int isRun = 0;
+//     int event = 0;
 //     uint8_t pixels[ARRAY_SIZE];
 
-//     while (isRun > -1) {
-//         isRun = disp.run(getImage(isRun, pixels));
-//         std::cout << "debug: libreturn: " << isRun << std::endl;
+//     while (event > -1) {
+//         event = disp.run(getImage(event, pixels));
+//         std::cout << "debug: libreturn: " << event << std::endl;
 //     }
 // }
 
@@ -172,18 +188,19 @@ void	GameCore::run()
 {
     GUIDisplay disp;
 
-    // std::array<Block*, BLOCKS_QUANTITY> allElenents;
 	// std::array<Block*, OBSTACLES_QUANTITY> obstacles;
 	// std::array<Block*, TARGETS_QUANTITY> targets;
 
     initElements();
 
-    int isRun = 0;
+    int event = 3;
     uint8_t pixels[ARRAY_SIZE];
 
-    while (isRun > -1) {
-        isRun = disp.run(getImage(isRun, pixels));
-        // std::cout << "debug: libreturn: " << isRun << std::endl;
+    while (event > -1) {
+        event = disp.run(getImage(pixels));
+        if (event > 0)
+            direction = event;
+        // std::cout << "debug: libreturn: " << event << std::endl;
     }
 
     // gameLoop(disp, allElenents, obstacles, targets);
