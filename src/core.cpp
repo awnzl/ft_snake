@@ -117,7 +117,6 @@ bool    GameCore::checkIsObstacles(int x, int y)
 {
     int blockX = x / BLOCK_SIZE * BLOCK_SIZE;
     int blockY = y / BLOCK_SIZE * BLOCK_SIZE;
-    blockY *= BLOCK_SIZE;
 
     std::cout << "x "<<x<<"; y "<<y << "; bX " << blockX << "; bY " << blockY << std::endl;
 
