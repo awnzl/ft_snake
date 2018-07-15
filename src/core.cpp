@@ -115,20 +115,9 @@ void    GameCore::initElements()
 
 bool    GameCore::checkIsObstacles(int x, int y)
 {
-    int blockX = x / BLOCK_SIZE * BLOCK_SIZE;
-    int blockY = y / BLOCK_SIZE * BLOCK_SIZE;
-
-    std::cout << "x "<<x<<"; y "<<y << "; bX " << blockX << "; bY " << blockY << std::endl;
-
     for (auto each: obstacles)
-        if (each->x == blockX && each->y == blockY)
-        {
-            std::cout << "Obstacle " << blockX << " " << blockY
-                      << "; x " << x << " y " << y
-                      << "; BPS " << BLOCKS_PER_SIDE << "; BS " << BLOCK_SIZE
-                      << std::endl;
+        if (each->x == x && each->y == y)
             return true;
-        }
     return false;
 }
 
@@ -144,23 +133,23 @@ uint8_t    *GameCore::getImage(uint8_t *pixels)
     switch (direction)
     {
         case (1):
-            nextY -= (snake[0]->y - 10 <= 0) ? 0 : 10;
+            nextY -= (snake[0]->y - BLOCK_SIZE < 0) ? 0 : BLOCK_SIZE;
             break;
         case (2):
-            nextX -= (snake[0]->x - 10 <= 0) ? 0 : 10;
+            nextX -= (snake[0]->x - BLOCK_SIZE < 0) ? 0 : BLOCK_SIZE;
             break;
         case (3):
-            nextX += (snake[0]->x + 10 + BLOCK_SIZE >= WIDTH_HEIGTH) ? 0 : 10;
+            nextX += (snake[0]->x + BLOCK_SIZE >= WIDTH_HEIGTH) ? 0 : BLOCK_SIZE;
             break;
         case (4):
-            nextY += (snake[0]->y + 10 + BLOCK_SIZE >= WIDTH_HEIGTH) ? 0 : 10;
+            nextY += (snake[0]->y + BLOCK_SIZE >= WIDTH_HEIGTH) ? 0 : BLOCK_SIZE;
             break;
     }
 
     if (!checkIsObstacles(nextX, nextY))
     {
-        snake[0]->x = nextX / BLOCK_SIZE * BLOCK_SIZE;
-        snake[0]->y = nextY / BLOCK_SIZE * BLOCK_SIZE;
+        snake[0]->x = nextX;
+        snake[0]->y = nextY;
     }
     std::cout << "snX " << snake[0]->x << " snY " << snake[0]->y << " ";
     //TODO: add frame to window
@@ -192,14 +181,11 @@ void	GameCore::run()
 
     initElements();
 
-    int event = 3;
     uint8_t pixels[ARRAY_SIZE];
 
-    while (event > -1) {
-        event = disp.run(getImage(pixels));
-        if (event > 0)
-            direction = event;
-        // std::cout << "debug: libreturn: " << event << std::endl;
+    while (direction) {
+        direction = disp.run(getImage(pixels));
+        // std::cout << "debug: libreturn: " << direction << std::endl;
     }
 
     // gameLoop(disp, allElenents, obstacles, targets);

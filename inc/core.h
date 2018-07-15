@@ -37,6 +37,8 @@ class GameCore
         {
         }
 
+        //TODO: canonical form?
+
         //TODO: delete this func
         std::string toString()
         {
@@ -82,6 +84,7 @@ class GameCore
     int pixToInt(int x, int y, uint8_t *pixels);
 
 public:
+    //TODO: canonical form!!!!!!!!!
     GameCore();
     ~GameCore();
     void run();

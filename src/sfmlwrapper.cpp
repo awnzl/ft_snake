@@ -35,23 +35,25 @@ int GUIDisplay::run(uint8_t *rawImage) {
 
     // std::cout << "SFML DEBUG: pixel.toInteger: " << im->getPixel(5,5).toInteger() << std::endl;
 
+    static int lastDirection = 3;
+
     texture->loadFromImage(*im);
     sprite->setTexture(*texture);
     while (win->pollEvent(*event)) {
         if (event->type == sf::Event::Closed) {
             win->close();
-            return -1;
+            return 0;
         } else if (event->key.code == sf::Keyboard::Escape) {
             win->close();
-            return -1;
+            return 0;
         } else if (event->key.code ==  sf::Keyboard::Left) {
-            return 2;
+            lastDirection = 2;
         } else if (event->key.code ==  sf::Keyboard::Right) {
-            return 3;
+            lastDirection = 3;
         } else if (event->key.code ==  sf::Keyboard::Up) {
-            return 1;
+            lastDirection = 1;
         } else if (event->key.code ==  sf::Keyboard::Down) {
-            return 4;
+            lastDirection = 4;
         }
     }
     //TODO: this color affect pixels colors - how?
@@ -60,5 +62,5 @@ int GUIDisplay::run(uint8_t *rawImage) {
     win->draw(*sprite);
     win->display();
 
-	return 0;
+	return lastDirection;
 }
