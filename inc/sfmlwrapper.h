@@ -19,7 +19,8 @@ public:
     virtual ~GUIDisplay();
     GUIDisplay &operator=(GUIDisplay &);
 
-    int run(uint8_t *rawImage);
+    void render(uint8_t *rawImage);
+    int getEvent();
 };
 
 #endif

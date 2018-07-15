@@ -27,18 +27,26 @@ GUIDisplay &GUIDisplay::operator=(GUIDisplay &gd) {
     return (*this);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-// returns an integer wich represent an event                                                   //
-//////////////////////////////////////////////////////////////////////////////////////////////////
-int GUIDisplay::run(uint8_t *rawImage) {
+void GUIDisplay::render(uint8_t *rawImage) {
     im->create(WIDTH_HEIGTH, WIDTH_HEIGTH, rawImage);
 
     // std::cout << "SFML DEBUG: pixel.toInteger: " << im->getPixel(5,5).toInteger() << std::endl;
 
-    static int lastDirection = 3;
-
     texture->loadFromImage(*im);
     sprite->setTexture(*texture);
+
+    //TODO: this color affect pixels colors - how?
+    win->clear(sf::Color::White);
+    // texture->update(rawImage);//do I need it ?
+    win->draw(*sprite);
+    win->display();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// returns an integer wich represent an event                                                   //
+//////////////////////////////////////////////////////////////////////////////////////////////////
+int GUIDisplay::getEvent() {
+    static int lastDirection = 3;
     while (win->pollEvent(*event)) {
         if (event->type == sf::Event::Closed) {
             win->close();
@@ -56,11 +64,5 @@ int GUIDisplay::run(uint8_t *rawImage) {
             lastDirection = 4;
         }
     }
-    //TODO: this color affect pixels colors - how?
-    win->clear(sf::Color::White);
-    // texture->update(rawImage);//do I need it ?
-    win->draw(*sprite);
-    win->display();
-
 	return lastDirection;
 }

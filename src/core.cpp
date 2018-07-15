@@ -151,7 +151,7 @@ uint8_t    *GameCore::getImage(uint8_t *pixels)
         snake[0]->x = nextX;
         snake[0]->y = nextY;
     }
-    std::cout << "snX " << snake[0]->x << " snY " << snake[0]->y << " ";
+    // std::cout << "snX " << snake[0]->x << " snY " << snake[0]->y << " ";
     //TODO: add frame to window
     fillBackground(pixels);
     insertElements(pixels);
@@ -184,7 +184,9 @@ void	GameCore::run()
     uint8_t pixels[ARRAY_SIZE];
 
     while (direction) {
-        direction = disp.run(getImage(pixels));
+        // if (Approved)
+            disp.render(getImage(pixels));
+        direction = disp.getEvent();
         // std::cout << "debug: libreturn: " << direction << std::endl;
     }
 
