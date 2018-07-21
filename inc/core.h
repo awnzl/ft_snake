@@ -70,9 +70,15 @@ class GameCore
     void	fillBackground(uint8_t *image);
     void	insertElements(uint8_t *pixels);
     void	initElements();
-    bool    checkObstacles(int x, int y);
     void    updateSnake(int nx, int ny);
+    void    increaseSnake(int nx, int ny);
     uint8_t	*getImage(uint8_t *pixels);
+
+    template <std::size_t ARRSIZE>
+    bool    checkTargets(int x, int y, std::array<Block*, ARRSIZE> &targets);
+
+    template <std::size_t ARRSIZE>
+    bool  checkObstacles(int x, int y, std::array<Block*, ARRSIZE> &);
 
     template<std::size_t ALLSIZE, std::size_t OBJSIZE, std::size_t TARGETSSIZE>
     void	gameLoop(GUIDisplay &disp,
