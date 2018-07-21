@@ -4,6 +4,7 @@
 //#include "minilibxwrapper.h"
 #include "defines.h"
 #include "sfmlwrapper.h"
+#include "timer.h"
 #include <array>
 #include <string>//TODO: delete this include
 #include <sstream>//TODO: delete this include
@@ -69,7 +70,7 @@ class GameCore
     void	fillBackground(uint8_t *image);
     void	insertElements(uint8_t *pixels);
     void	initElements();
-    bool    checkIsObstacles(int x, int y);
+    bool    checkObstacles(int x, int y);
     uint8_t	*getImage(uint8_t *pixels);
 
     template<std::size_t ALLSIZE, std::size_t OBJSIZE, std::size_t TARGETSSIZE>

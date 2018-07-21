@@ -113,7 +113,7 @@ void    GameCore::initElements()
     snake.push_back(new Block(448, 928, true, Type::Snake, snake_pixels_map));
 }
 
-bool    GameCore::checkIsObstacles(int x, int y)
+bool    GameCore::checkObstacles(int x, int y)
 {
     for (auto each: obstacles)
         if (each->x == x && each->y == y)
@@ -146,7 +146,7 @@ uint8_t    *GameCore::getImage(uint8_t *pixels)
             break;
     }
 
-    if (!checkIsObstacles(nextX, nextY))
+    if (!checkObstacles(nextX, nextY))
     {
         snake[0]->x = nextX;
         snake[0]->y = nextY;
@@ -176,6 +176,8 @@ void	GameCore::run()
 {
     GUIDisplay disp;
 
+    Timer timer;
+
 	// std::array<Block*, OBSTACLES_QUANTITY> obstacles;
 	// std::array<Block*, TARGETS_QUANTITY> targets;
 
@@ -183,9 +185,14 @@ void	GameCore::run()
 
     uint8_t pixels[ARRAY_SIZE];
 
-    while (direction) {
-        // if (Approved)
+    while (direction)
+    {
+        timer.tick();
+        if (timer.deltaTime() >= timer.getTimeScale())
+        {
+            timer.reset();
             disp.render(getImage(pixels));
+        }
         direction = disp.getEvent();
         // std::cout << "debug: libreturn: " << direction << std::endl;
     }

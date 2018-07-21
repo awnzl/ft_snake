@@ -12,8 +12,6 @@ public:
 
 bool GraphLib::createWindow(int w, int h) {
 	MlxLibWrapper *mlx = new MlxLibWrapper();
-
-	
 }
 
 #endif

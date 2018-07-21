@@ -2,7 +2,12 @@
 #include <unistd.h>
 
 //TODO: implement
-GUIDisplay::~GUIDisplay() {
+GUIDisplay::~GUIDisplay()
+{
+    delete (im);
+    delete (texture);
+    delete (sprite);
+    delete (event);
     delete (win);
 }
 
@@ -16,18 +21,8 @@ GUIDisplay::GUIDisplay() :
     texture->create(WIDTH_HEIGTH, WIDTH_HEIGTH);
 }
 
-//TODO: implement
-GUIDisplay::GUIDisplay(const GUIDisplay &gd) {
-    this->win = gd.win;
-}
-
-//TODO: implement
-GUIDisplay &GUIDisplay::operator=(GUIDisplay &gd) {
-    this->win = gd.win;
-    return (*this);
-}
-
-void GUIDisplay::render(uint8_t *rawImage) {
+void GUIDisplay::render(uint8_t *rawImage)
+{
     im->create(WIDTH_HEIGTH, WIDTH_HEIGTH, rawImage);
 
     // std::cout << "SFML DEBUG: pixel.toInteger: " << im->getPixel(5,5).toInteger() << std::endl;
@@ -45,7 +40,8 @@ void GUIDisplay::render(uint8_t *rawImage) {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // returns an integer wich represent an event                                                   //
 //////////////////////////////////////////////////////////////////////////////////////////////////
-int GUIDisplay::getEvent() {
+int GUIDisplay::getEvent()
+{
     static int lastDirection = 3;
     while (win->pollEvent(*event)) {
         if (event->type == sf::Event::Closed) {

@@ -1,4 +1,3 @@
-
 #ifndef __SFMLWRAPPER_H
 # define __SFMLWRAPPER_H
 
@@ -13,11 +12,15 @@ class GUIDisplay {
     sf::Texture *texture;
     sf::Sprite *sprite;
     sf::Event *event;
+
+    GUIDisplay(GUIDisplay const &) = delete;
+    GUIDisplay(GUIDisplay &&) = delete;
+    GUIDisplay &operator=(GUIDisplay &) = delete;
+    GUIDisplay &operator=(GUIDisplay &&) = delete;
+
 public:
     GUIDisplay();
-    GUIDisplay(const GUIDisplay &);
-    virtual ~GUIDisplay();
-    GUIDisplay &operator=(GUIDisplay &);
+    ~GUIDisplay();
 
     void render(uint8_t *rawImage);
     int getEvent();
