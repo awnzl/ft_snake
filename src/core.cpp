@@ -110,7 +110,10 @@ void    GameCore::initElements()
     targets[2] = new Block(11*32, 12*32, true, Type::Target, target_pixels_map);
     targets[3] = new Block(23*32, 18*32, true, Type::Target, target_pixels_map);
 
-    snake.push_back(new Block(448, 928, true, Type::Snake, snake_pixels_map));
+    snake.push_back(new Block(512, 448, true, Type::Snake, snake_pixels_map));
+    snake.push_back(new Block(480, 448, true, Type::Snake, snake_pixels_map));
+    snake.push_back(new Block(448, 448, true, Type::Snake, snake_pixels_map));
+    snake.push_back(new Block(416, 448, true, Type::Snake, snake_pixels_map));
 }
 
 bool    GameCore::checkObstacles(int x, int y)
@@ -119,6 +122,26 @@ bool    GameCore::checkObstacles(int x, int y)
         if (each->x == x && each->y == y)
             return true;
     return false;
+}
+
+void    GameCore::updateSnake(int nx, int ny)
+{
+    int previousElementX = snake[0]->x;
+    int previousElementY = snake[0]->y;
+    int tmpX, tmpY;
+
+    snake[0]->x = nx;
+    snake[0]->y = ny;
+
+    for (int idx = 1; idx < snake.size(); idx++)
+    {
+        tmpX = snake[idx]->x;
+        tmpY = snake[idx]->y;
+        snake[idx]->x = previousElementX;
+        snake[idx]->y = previousElementY;
+        previousElementX = tmpX;
+        previousElementY = tmpY;
+    }
 }
 
 //		1
@@ -148,8 +171,9 @@ uint8_t    *GameCore::getImage(uint8_t *pixels)
 
     if (!checkObstacles(nextX, nextY))
     {
-        snake[0]->x = nextX;
-        snake[0]->y = nextY;
+        updateSnake(nextX, nextY);
+        // snake[0]->x = nextX;
+        // snake[0]->y = nextY;
     }
     // std::cout << "snX " << snake[0]->x << " snY " << snake[0]->y << " ";
     //TODO: add frame to window

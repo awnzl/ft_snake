@@ -71,6 +71,7 @@ class GameCore
     void	insertElements(uint8_t *pixels);
     void	initElements();
     bool    checkObstacles(int x, int y);
+    void    updateSnake(int nx, int ny);
     uint8_t	*getImage(uint8_t *pixels);
 
     template<std::size_t ALLSIZE, std::size_t OBJSIZE, std::size_t TARGETSSIZE>
