@@ -8,7 +8,7 @@ SRCDIR	= ./src
 INCDIR	= ./inc
 OBJDIR	= ./obj
 
-SRC		= main.cpp core.cpp sfmlwrapper.cpp timer.cpp #minilibxwrapper.cpp
+SRC		= main.cpp core.cpp sfmlwrapper.cpp timer.cpp pngreader.cpp #minilibxwrapper.cpp
 
 $LEXP1	= export CPLUS_INCLUDE_PATH=/Users/avenzel/.brew/include
 $LEXP2	= export LD_LIBRARY_PATH=/User/avenzel/.brew/Cellar/sfml/2.4.2_1/lib1

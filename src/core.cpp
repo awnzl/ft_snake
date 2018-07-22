@@ -2,6 +2,7 @@
 #include <functional>
 #include <unistd.h>
 #include "core.h"
+#include "timer.h"
 #include "minilibxwrapper.h"
 
 GameCore::GameCore() : direction(3)
@@ -10,7 +11,6 @@ GameCore::GameCore() : direction(3)
     fillPixelsToPixelsMap(target_pixels_map, 0x00ff00);
     fillPixelsToPixelsMap(obstacle_pixels_map, 0x0000ff);
     fillPixelsToPixelsMap(snake_pixels_map, 0xff0000);
-    // temporary block end
 }
 
 GameCore::~GameCore()
@@ -32,7 +32,8 @@ void    GameCore::fillPixelsToPixelsMap(uint8_t *px, int color)
             setPixelToPixelArray(x, y, px, BLOCK_SIZE, color);
 }
 
-void    GameCore::setPixelToPixelArray(int x, int y, uint8_t *pixels, int rowLength, int color)
+void    GameCore::setPixelToPixelArray(int x, int y, uint8_t *pixels,
+                                       int rowLength, int color /* = 0x30D5C8 */)
 {
     int idx = (y * rowLength + x) * 4;
     // pixels[idx + 3] = color >> 24; //a
@@ -82,20 +83,21 @@ void    GameCore::initElements()
 {
     //init obstacles
     //init targets
-    obstacles[0] = new Block(3*32, 3*32, true, Type::Obstacle, obstacle_pixels_map);
-    obstacles[1] = new Block(1*32, 1*32, true, Type::Obstacle, obstacle_pixels_map);
-    obstacles[2] = new Block(6*32, 13*32, true, Type::Obstacle, obstacle_pixels_map);
-    obstacles[3] = new Block(16*32, 3*32, true, Type::Obstacle, obstacle_pixels_map);
+    obstacles[0] = new Block(3*BLOCK_SIZE, 3*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map);
+    obstacles[1] = new Block(1*BLOCK_SIZE, 1*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map);
+    obstacles[2] = new Block(6*BLOCK_SIZE, 13*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map);
+    obstacles[3] = new Block(16*BLOCK_SIZE, 3*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map);
 
-    targets[0] = new Block(3*32, 4*32, true, Type::Target, target_pixels_map);
-    targets[1] = new Block(7*32, 8*32, true, Type::Target, target_pixels_map);
-    targets[2] = new Block(11*32, 12*32, true, Type::Target, target_pixels_map);
-    targets[3] = new Block(23*32, 18*32, true, Type::Target, target_pixels_map);
+    targets[0] = new Block(3*BLOCK_SIZE, 4*BLOCK_SIZE, true, Type::Target, target_pixels_map);
+    targets[1] = new Block(7*BLOCK_SIZE, 8*BLOCK_SIZE, true, Type::Target, target_pixels_map);
+    targets[2] = new Block(11*BLOCK_SIZE, 12*BLOCK_SIZE, true, Type::Target, target_pixels_map);
+    targets[3] = new Block(23*BLOCK_SIZE, 18*BLOCK_SIZE, true, Type::Target, target_pixels_map);
 
-    snake.push_back(new Block(512, 448, true, Type::Snake, snake_pixels_map));
-    snake.push_back(new Block(480, 448, true, Type::Snake, snake_pixels_map));
-    snake.push_back(new Block(448, 448, true, Type::Snake, snake_pixels_map));
-    snake.push_back(new Block(416, 448, true, Type::Snake, snake_pixels_map));
+    int halfSize = BLOCK_SIZE * (BLOCKS_PER_SIDE / 2 - 1);
+    snake.push_back(new Block(halfSize + BLOCK_SIZE, halfSize, true, Type::Snake, snake_pixels_map));
+    snake.push_back(new Block(halfSize, halfSize, true, Type::Snake, snake_pixels_map));
+    snake.push_back(new Block(halfSize - BLOCK_SIZE, halfSize, true, Type::Snake, snake_pixels_map));
+    snake.push_back(new Block(halfSize - 2*BLOCK_SIZE, halfSize, true, Type::Snake, snake_pixels_map));
 }
 
 void    GameCore::updateSnake(int nx, int ny)
