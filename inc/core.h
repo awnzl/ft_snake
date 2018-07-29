@@ -25,9 +25,9 @@ class GameCore
         int		y;
         bool	isVisible;
         Type    type;
-        uint8_t	*pxls;
+        std::uint8_t	*pxls;
 
-        Block(int x, int y, bool visible, Type type, uint8_t *px)
+        Block(int x, int y, bool visible, Type type, std::uint8_t *px)
             :
             x(x),
             y(y),
@@ -53,25 +53,27 @@ class GameCore
     //////////////////////////////////////////////////////////////////////////////////////////////
     int		direction;
 
-    uint8_t target_pixels_map[BLOCK_PIXELS_SIZE];
-    uint8_t obstacle_pixels_map[BLOCK_PIXELS_SIZE];
-    uint8_t snake_pixels_map[BLOCK_PIXELS_SIZE];
+    std::uint8_t target_pixels_map[BLOCK_PIXELS_SIZE];
+    std::uint8_t obstacle_pixels_map[BLOCK_PIXELS_SIZE];
+    // std::uint8_t snake_pixels_map[BLOCK_PIXELS_SIZE];
+    std::uint8_t *snake_pixels_map;
 
     std::array<Block*, OBSTACLES_QUANTITY> obstacles;//TODO: tmp
     std::array<Block*, TARGETS_QUANTITY> targets;//TODO: tmp
     std::vector <Block*> snake;//TODO: tmp
 
-    void    fillPixelsToPixelsMap(uint8_t *px, int color);
+    void    fillPixelsToPixelsMap(std::uint8_t *px, std::uint32_t color);
     // void	fillBlocks();
-    void	insertBlockToScene(int bx, int by, uint8_t *block, uint8_t *scene);
+    void	insertBlockToScene(int bx, int by, std::uint8_t *block, std::uint8_t *scene);
     //by default backgraund color
-    void	setPixelToPixelArray(int x, int y, uint8_t *pixels, int rowLength, int color = 0x30D5C8);
-    void	fillBackground(uint8_t *image);
-    void	insertElements(uint8_t *pixels);
+    void	setPixelToPixelArray(int x, int y, std::uint8_t *pixels,
+                                 int rowLength, std::uint32_t color = 0x186a64ff);
+    void	fillBackground(std::uint8_t *image);
+    void	insertElements(std::uint8_t *pixels);
     void	initElements();
     void    updateSnake(int nx, int ny);
     void    increaseSnake(int nx, int ny);
-    uint8_t	*getImage(uint8_t *pixels);
+    std::uint8_t	*getImage(std::uint8_t *pixels);
 
     template <std::size_t ARRSIZE>
     bool    checkTargets(int x, int y, std::array<Block*, ARRSIZE> &targets);
@@ -88,7 +90,7 @@ class GameCore
     //////////////////////////////////////////////////////////////////////////////////////////////
     // Debug functions																			//
     //////////////////////////////////////////////////////////////////////////////////////////////
-    int pixToInt(int x, int y, uint8_t *pixels);
+    int pixToInt(int x, int y, std::uint8_t *pixels);
 
 public:
     //TODO: canonical form!!!!!!!!!

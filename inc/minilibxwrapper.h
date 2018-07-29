@@ -3,9 +3,7 @@
 
 #include <functional>
 
-class GameCore;
-
-class MlxLibWrapper {
+class GUIDisplay_ {
     struct		s_win
     {   void	*mlx;
         void	*win;
@@ -22,24 +20,18 @@ class MlxLibWrapper {
     static int  exit_buttons();
     void        *thfun(void *v);
     void        insertImage(int*);
-    std::function<void(int)> function;
-    MlxLibWrapper();
-    ~MlxLibWrapper();
 
-    MlxLibWrapper(MlxLibWrapper const &) = delete;
-    MlxLibWrapper(MlxLibWrapper &&) = delete;
-    MlxLibWrapper &operator=(MlxLibWrapper const &) = delete;
-    MlxLibWrapper &operator=(MlxLibWrapper &&) = delete;
+    GUIDisplay_(GUIDisplay_ const &) = delete;
+    GUIDisplay_(GUIDisplay_ &&) = delete;
+    GUIDisplay_ &operator=(GUIDisplay_ const &) = delete;
+    GUIDisplay_ &operator=(GUIDisplay_ &&) = delete;
 
 public:
-    static MlxLibWrapper *wrapperimpl;
-    static MlxLibWrapper &instance();
-    //take a callback function
-    void setEventsListener(std::function<void(int)>);
-    //take an image and put it into window
-    void putImage(int* img);
-    //take default image for start
-    void go(int* img);
+    GUIDisplay_();
+    ~GUIDisplay_();
+
+    void render(uint8_t *rawImage);
+    int getEvent();
 
 };
 

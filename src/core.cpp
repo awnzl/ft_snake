@@ -4,13 +4,47 @@
 #include "core.h"
 #include "timer.h"
 #include "minilibxwrapper.h"
+#include "pngreader.h"
 
 GameCore::GameCore() : direction(3)
 {
     //TODO: temporary block start:
-    fillPixelsToPixelsMap(target_pixels_map, 0x00ff00);
-    fillPixelsToPixelsMap(obstacle_pixels_map, 0x0000ff);
-    fillPixelsToPixelsMap(snake_pixels_map, 0xff0000);
+    fillPixelsToPixelsMap(target_pixels_map, 0xf0ff0fFF);
+    fillPixelsToPixelsMap(obstacle_pixels_map, 0x000000FF);
+    // fillPixelsToPixelsMap(snake_pixels_map, 0x00ff00FF);
+    // PngReader pr;
+    // snake_pixels_map = pr.readPixels((char*)"snake_body_simple.png");
+    // snake_pixels_map = [this]() {
+    //     uint32_t value = 0x2c8e40FF;
+    //     std::uint8_t *px = new std::uint8_t[16*16*4];
+    //     fillPixelsToPixelsMap(px, value);
+    //     for (int y = 2; y < 14; y++)
+    //     {
+    //         for (int x = 2; x < 14; x++)
+    //         {
+    //             std::cout << "color & 0xff: " << (value & 0xFF) << std::endl;
+    //             std::cout << "debug: snake: "<<value << "\n";
+    //             std::cout << "debug: r: " << (value >> 24 & 0xFF)
+    //                             << " g: " << (value >> 16 & 0xFF)
+    //                             << " b: " << (value >> 8 & 0xFF) << "\n";
+    //         }
+    //     }
+    //     return px;
+    // }();
+    snake_pixels_map = [this]() {
+        std::uint8_t tmp[] = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
+                            0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x10, 0x02, 0x03, 0x00, 0x00, 0x00, 0x62, 0x9D, 0x17,
+                            0xF2, 0x00, 0x00, 0x00, 0x09, 0x50, 0x4C, 0x54, 0x45, 0x00, 0x00, 0x00, 0x99, 0xBB, 0x22, 0x00,
+                            0x00, 0x00, 0xD4, 0x26, 0xF0, 0xFB, 0x00, 0x00, 0x00, 0x02, 0x74, 0x52, 0x4E, 0x53, 0x00, 0xFE,
+                            0x2C, 0x96, 0x12, 0x23, 0x00, 0x00, 0x00, 0x20, 0x49, 0x44, 0x41, 0x54, 0x08, 0xD7, 0x63, 0x60,
+                            0x40, 0x80, 0x55, 0xAB, 0x18, 0x18, 0x98, 0x42, 0x43, 0x1B, 0x18, 0x38, 0x43, 0x43, 0x13, 0x88,
+                            0x21, 0xC0, 0x8A, 0xC1, 0xDA, 0xE0, 0x00, 0x00, 0x1A, 0xA0, 0x0D, 0x99, 0xE4, 0x75, 0x87, 0x9F,
+                            0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82};
+        std::uint8_t *px = new uint8_t[16*16*4];
+        for (int i = 0; i < 16*16*4; i++)
+            px[i] = tmp[i];
+        return px;
+    }();
 }
 
 GameCore::~GameCore()
@@ -24,16 +58,16 @@ GameCore::~GameCore()
         delete e;
 }
 
-//uses for fill pixel arrays for blocks
-void    GameCore::fillPixelsToPixelsMap(uint8_t *px, int color)
+//uses to fill pixel arrays for blocks
+void    GameCore::fillPixelsToPixelsMap(std::uint8_t *px, uint32_t color)
 {
     for (int y = 0; y < BLOCK_SIZE; y++)
         for (int x = 0; x < BLOCK_SIZE; x++)
             setPixelToPixelArray(x, y, px, BLOCK_SIZE, color);
 }
 
-void    GameCore::setPixelToPixelArray(int x, int y, uint8_t *pixels,
-                                       int rowLength, int color /* = 0x30D5C8 */)
+void    GameCore::setPixelToPixelArray(int x, int y, std::uint8_t *pixels,
+                                       int rowLength, uint32_t color /* = 0xbbc59eff */)
 {
     int idx = (y * rowLength + x) * 4;
     // pixels[idx + 3] = color >> 24; //a
@@ -47,14 +81,14 @@ void    GameCore::setPixelToPixelArray(int x, int y, uint8_t *pixels,
     pixels[idx + 3] = color;       //a
 }
 
-void    GameCore::fillBackground(uint8_t *pixels)
+void    GameCore::fillBackground(std::uint8_t *pixels)
 {
     for (int y = 0; y < WIDTH_HEIGTH; y++)
         for (int x = 0; x < WIDTH_HEIGTH; x++)
             setPixelToPixelArray(x, y, pixels, WIDTH_HEIGTH);
 }
 
-void    GameCore::insertBlockToScene(int bx, int by, uint8_t *block, uint8_t *scene)
+void    GameCore::insertBlockToScene(int bx, int by, std::uint8_t *block, std::uint8_t *scene)
 {
     for (int y = 0; y < BLOCK_SIZE; y++)
     {
@@ -64,7 +98,7 @@ void    GameCore::insertBlockToScene(int bx, int by, uint8_t *block, uint8_t *sc
     }
 }
 
-void    GameCore::insertElements(uint8_t *pixels)
+void    GameCore::insertElements(std::uint8_t *pixels)
 {
     //insert obstacles, targets, snake
     for (auto e: obstacles)
@@ -129,7 +163,7 @@ void    GameCore::increaseSnake(int nx, int ny)
 //	2	0	3
 //		4
 //a w s d
-uint8_t    *GameCore::getImage(uint8_t *pixels)
+std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
 {
     int nextX = snake[0]->x;
     int nextY = snake[0]->y;
@@ -192,7 +226,7 @@ bool    GameCore::checkObstacles(int x, int y, std::array<Block*, ARRSIZE> &obst
 //                            std::array<Block*, TARGETSSIZE> &targets)
 // {
 //     int event = 0;
-//     uint8_t pixels[ARRAY_SIZE];
+//     std::uint8_t pixels[ARRAY_SIZE];
 
 //     while (event > -1) {
 //         event = disp.run(getImage(event, pixels));
@@ -213,7 +247,7 @@ void	GameCore::run()
 
     initElements();
 
-    uint8_t pixels[ARRAY_SIZE];
+    std::uint8_t pixels[ARRAY_SIZE];
 
     while (direction)
     {
@@ -234,7 +268,7 @@ void	GameCore::run()
 // Debug functions																			    //
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-int GameCore::pixToInt(int x, int y, uint8_t *pixels)
+int GameCore::pixToInt(int x, int y, std::uint8_t *pixels)
 {
     int idx = (y * WIDTH_HEIGTH + x) * 4;
     // return ((pixels[idx + 3] << 24) +
