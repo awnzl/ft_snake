@@ -4,8 +4,9 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "defines.h"
+#include "guidisplay.h"
 
-class GUIDisplay {
+class SfmlWrapper : public GUIDisplay {
     sf::RenderWindow *win;
 
     sf::Image *im;
@@ -13,17 +14,17 @@ class GUIDisplay {
     sf::Sprite *sprite;
     sf::Event *event;
 
-    GUIDisplay(GUIDisplay const &) = delete;
-    GUIDisplay(GUIDisplay &&) = delete;
-    GUIDisplay &operator=(GUIDisplay &) = delete;
-    GUIDisplay &operator=(GUIDisplay &&) = delete;
+    SfmlWrapper(SfmlWrapper const &) = delete;
+    SfmlWrapper(SfmlWrapper &&) = delete;
+    SfmlWrapper &operator=(SfmlWrapper &) = delete;
+    SfmlWrapper &operator=(SfmlWrapper &&) = delete;
 
 public:
-    GUIDisplay();
-    ~GUIDisplay();
+    SfmlWrapper();
+    ~SfmlWrapper();
 
-    void render(uint8_t *rawImage);
-    int getEvent();
+    void render(uint8_t *rawImage) override;
+    int getEvent() override;
 };
 
 #endif

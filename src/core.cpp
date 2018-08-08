@@ -12,12 +12,20 @@ GameCore::GameCore() : direction(3)
     fillPixelsToPixelsMap(target_pixels_map, 0xf0ff0fFF);
     fillPixelsToPixelsMap(obstacle_pixels_map, 0x000000FF);
     // fillPixelsToPixelsMap(snake_pixels_map, 0x00ff00FF);
+
+    // std::cout << "before pr\n";
     // PngReader pr;
+    // std::cout << "after pr\n";
     // snake_pixels_map = pr.readPixels((char*)"snake_body_simple.png");
+    // std::cout << "after read pr\n";
+
+    // for (int i = 0; i < 16*16*4; i++)
+    //     std::cout << (int)snake_pixels_map[i] << ", ";
+    // std::cout << std::endl;
     // snake_pixels_map = [this]() {
     //     uint32_t value = 0x2c8e40FF;
     //     std::uint8_t *px = new std::uint8_t[16*16*4];
-    //     fillPixelsToPixelsMap(px, value);
+    //     fillPixelsToPixelsMap(uint32_t)*(px, value);
     //     for (int y = 2; y < 14; y++)
     //     {
     //         for (int x = 2; x < 14; x++)
@@ -32,17 +40,40 @@ GameCore::GameCore() : direction(3)
     //     return px;
     // }();
     snake_pixels_map = [this]() {
-        std::uint8_t tmp[] = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
-                            0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x10, 0x02, 0x03, 0x00, 0x00, 0x00, 0x62, 0x9D, 0x17,
-                            0xF2, 0x00, 0x00, 0x00, 0x09, 0x50, 0x4C, 0x54, 0x45, 0x00, 0x00, 0x00, 0x99, 0xBB, 0x22, 0x00,
-                            0x00, 0x00, 0xD4, 0x26, 0xF0, 0xFB, 0x00, 0x00, 0x00, 0x02, 0x74, 0x52, 0x4E, 0x53, 0x00, 0xFE,
-                            0x2C, 0x96, 0x12, 0x23, 0x00, 0x00, 0x00, 0x20, 0x49, 0x44, 0x41, 0x54, 0x08, 0xD7, 0x63, 0x60,
-                            0x40, 0x80, 0x55, 0xAB, 0x18, 0x18, 0x98, 0x42, 0x43, 0x1B, 0x18, 0x38, 0x43, 0x43, 0x13, 0x88,
-                            0x21, 0xC0, 0x8A, 0xC1, 0xDA, 0xE0, 0x00, 0x00, 0x1A, 0xA0, 0x0D, 0x99, 0xE4, 0x75, 0x87, 0x9F,
-                            0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82};
         std::uint8_t *px = new uint8_t[16*16*4];
-        for (int i = 0; i < 16*16*4; i++)
-            px[i] = tmp[i];
+        for (int i = 0, idx = 0; i < 16*16*4; i+=4, idx++)
+        {
+            uint32_t tmp[] = {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+0,  0,  0,  3973279743U,  3973279743U,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+0,  0,  0,  3973279743U,  3973279743U,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+0,  0,  0,  0,  0,  0,  0,  0,  1936946175,  1936946175,  0,  0,  0,  0,  0,  0,
+0,  0,  0,  0,  0,  0,  0,  0,  1936946175,  1936946175,  0,  0,  0,  0,  0,  0,
+0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0};
+
+            union {
+                uint32_t val;
+                uint8_t pix[4];
+            };
+            val = tmp[idx];
+            std::cout << val << " " << (int)pix[0]<< " " << (int)pix[1]<< " " << (int)pix[2]<< " " << (int)pix[3] << " "
+            ;
+            px[i+0] = pix[2];//b
+            px[i+1] = pix[1];//g
+            px[i+2] = pix[0];//r
+            px[i+3] = pix[3];
+            std::cout << " |" << (int)px[i+0]<< " " << (int)px[i+1]<< " " << (int)px[i+2]<< " " << (int)px[i+3] << "| ";
+        }
+
         return px;
     }();
 }
@@ -236,7 +267,7 @@ bool    GameCore::checkObstacles(int x, int y, std::array<Block*, ARRSIZE> &obst
 
 void	GameCore::run()
 {
-    GUIDisplay disp;
+    GUIDisplay *disp = new SfmlWrapper();
 
     Timer timer;
 
@@ -255,13 +286,14 @@ void	GameCore::run()
         if (timer.deltaTime() >= timer.getTimeScale())
         {
             timer.reset();
-            disp.render(getImage(pixels));
+            disp->render(getImage(pixels));
         }
-        direction = disp.getEvent();
+        direction = disp->getEvent();
         // std::cout << "debug: libreturn: " << direction << std::endl;
     }
 
     // gameLoop(disp, allElenents, obstacles, targets);
+    delete disp;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

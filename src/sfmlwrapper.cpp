@@ -2,7 +2,7 @@
 #include <unistd.h>
 
 //TODO: implement
-GUIDisplay::~GUIDisplay()
+SfmlWrapper::~SfmlWrapper()
 {
     delete (im);
     delete (texture);
@@ -11,7 +11,7 @@ GUIDisplay::~GUIDisplay()
     delete (win);
 }
 
-GUIDisplay::GUIDisplay() :
+SfmlWrapper::SfmlWrapper() :
     win(new sf::RenderWindow(sf::VideoMode(WIDTH_HEIGTH, WIDTH_HEIGTH), "nibbler")),
     im(new sf::Image()),
     texture(new sf::Texture),
@@ -21,7 +21,7 @@ GUIDisplay::GUIDisplay() :
     texture->create(WIDTH_HEIGTH, WIDTH_HEIGTH);
 }
 
-void GUIDisplay::render(uint8_t *rawImage)
+void SfmlWrapper::render(uint8_t *rawImage)
 {
     im->create(WIDTH_HEIGTH, WIDTH_HEIGTH, rawImage);
 
@@ -40,7 +40,7 @@ void GUIDisplay::render(uint8_t *rawImage)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // returns an integer wich represent an event                                                   //
 //////////////////////////////////////////////////////////////////////////////////////////////////
-int GUIDisplay::getEvent()
+int SfmlWrapper::getEvent()
 {
     static int lastDirection = 3;
     while (win->pollEvent(*event)) {
