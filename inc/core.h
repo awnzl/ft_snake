@@ -4,6 +4,7 @@
 //#include "minilibxwrapper.h"
 #include "defines.h"
 #include "sfmlwrapper.h"
+#include "sdl2wrapper.h"
 #include <array>
 #include <string>//TODO: delete this include
 #include <sstream>//TODO: delete this include

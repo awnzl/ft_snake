@@ -1,5 +1,4 @@
 #include "sfmlwrapper.h"
-#include <unistd.h>
 
 //TODO: implement
 SfmlWrapper::~SfmlWrapper()
@@ -44,20 +43,22 @@ int SfmlWrapper::getEvent()
 {
     static int lastDirection = 3;
     while (win->pollEvent(*event)) {
-        if (event->type == sf::Event::Closed) {
-            win->close();
-            return 0;
-        } else if (event->key.code == sf::Keyboard::Escape) {
+        if (event->type == sf::Event::Closed ||
+            event->key.code == sf::Keyboard::Escape) {
             win->close();
             return 0;
         } else if (event->key.code ==  sf::Keyboard::Left) {
             lastDirection = 2;
+            break;
         } else if (event->key.code ==  sf::Keyboard::Right) {
             lastDirection = 3;
+            break;
         } else if (event->key.code ==  sf::Keyboard::Up) {
             lastDirection = 1;
+            break;
         } else if (event->key.code ==  sf::Keyboard::Down) {
             lastDirection = 4;
+            break;
         }
     }
 	return lastDirection;

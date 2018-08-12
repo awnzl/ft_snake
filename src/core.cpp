@@ -65,13 +65,12 @@ GameCore::GameCore() : direction(3)
                 uint8_t pix[4];
             };
             val = tmp[idx];
-            std::cout << val << " " << (int)pix[0]<< " " << (int)pix[1]<< " " << (int)pix[2]<< " " << (int)pix[3] << " "
-            ;
+            // std::cout << val << " " << (int)pix[0]<< " " << (int)pix[1]<< " " << (int)pix[2]<< " " << (int)pix[3] << " ";
             px[i+0] = pix[2];//b
             px[i+1] = pix[1];//g
             px[i+2] = pix[0];//r
             px[i+3] = pix[3];
-            std::cout << " |" << (int)px[i+0]<< " " << (int)px[i+1]<< " " << (int)px[i+2]<< " " << (int)px[i+3] << "| ";
+            // std::cout << " |" << (int)px[i+0]<< " " << (int)px[i+1]<< " " << (int)px[i+2]<< " " << (int)px[i+3] << "| ";
         }
 
         return px;
@@ -267,11 +266,12 @@ bool    GameCore::checkObstacles(int x, int y, std::array<Block*, ARRSIZE> &obst
 
 void	GameCore::run()
 {
-    GUIDisplay *disp = new SfmlWrapper();
+    // GUIDisplay *disp = new SfmlWrapper();
+    GUIDisplay *disp = new SDL2Wrapper();
 
     Timer timer;
 
-    timer.setTimeScale(0.2f);
+    timer.setTimeScale(0.2f);//TODO: replace by value of mandatory's requiroment
 
 	// std::array<Block*, OBSTACLES_QUANTITY> obstacles;
 	// std::array<Block*, TARGETS_QUANTITY> targets;
