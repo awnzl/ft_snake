@@ -2,9 +2,7 @@
 # define __CORE_H
 
 //#include "minilibxwrapper.h"
-#include "defines.h"
-#include "sfmlwrapper.h"
-#include "sdl2wrapper.h"
+#include "includes.h"
 #include <array>
 #include <string>//TODO: delete this include
 #include <sstream>//TODO: delete this include

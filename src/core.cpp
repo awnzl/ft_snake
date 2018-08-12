@@ -3,8 +3,7 @@
 #include <unistd.h>
 #include "core.h"
 #include "timer.h"
-#include "minilibxwrapper.h"
-#include "pngreader.h"
+//#include "pngreader.h"
 
 GameCore::GameCore() : direction(3)
 {
@@ -267,8 +266,9 @@ bool    GameCore::checkObstacles(int x, int y, std::array<Block*, ARRSIZE> &obst
 void	GameCore::run()
 {
     // GUIDisplay *disp = new SfmlWrapper();
-    GUIDisplay *disp = new SDL2Wrapper();
-
+    // GUIDisplay *disp = new SDL2Wrapper();
+    GUIDisplay *disp = new GlfwWrapper();
+    
     Timer timer;
 
     timer.setTimeScale(0.2f);//TODO: replace by value of mandatory's requiroment
@@ -289,7 +289,7 @@ void	GameCore::run()
             disp->render(getImage(pixels));
         }
         direction = disp->getEvent();
-        // std::cout << "debug: libreturn: " << direction << std::endl;
+        // // std::cout << "debug: libreturn: " << direction << std::endl;
     }
 
     // gameLoop(disp, allElenents, obstacles, targets);
