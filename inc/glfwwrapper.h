@@ -16,6 +16,7 @@ class GlfwWrapper : public GUIDisplay {
     GlfwWrapper &operator=(GlfwWrapper &) = delete;
     GlfwWrapper &operator=(GlfwWrapper &&) = delete;
 
+    void printPolygon(GLfloat pointVertex[]);
 public:
     GlfwWrapper();
     ~GlfwWrapper();
