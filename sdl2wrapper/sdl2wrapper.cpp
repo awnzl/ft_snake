@@ -76,7 +76,7 @@ int SDL2Wrapper::getEvent()
             return 0;// TODO: replayce by relese function?
         case SDL_KEYDOWN:
             switch (event->key.keysym.sym) {
-                case SDLK_ESCAPE:
+                case SDLK_ESCAPE://TODO: don't work
                     return 0;
                 case SDLK_LEFT:
                     lastDirection = 2;
@@ -96,4 +96,14 @@ int SDL2Wrapper::getEvent()
     }
 
 	return lastDirection;
+}
+
+extern "C" GUIDisplay *create_wrapper(int w, int h)
+{
+    return new SDL2Wrapper();
+}
+
+extern "C" void release_wrapper(GUIDisplay *wrapper)
+{
+    delete wrapper;
 }

@@ -1,3 +1,4 @@
+#include <dlfcn.h>
 #include <iostream>
 #include <functional>
 #include <unistd.h>
@@ -267,8 +268,14 @@ void	GameCore::run()
 {
     // GUIDisplay *disp = new SfmlWrapper();
     // GUIDisplay *disp = new SDL2Wrapper();
-    GUIDisplay *disp = new GlfwWrapper();
-    
+
+    void *lib_discr = load_lib("sdl2wrapper/sdl2wrapper.so");
+    std::function<GUIDisplay*(int, int)> create_wrapper((GUIDisplay*(*)(int, int))dlsym(lib_discr, "create_wrapper"));
+    std::function<void(GUIDisplay*)> release_wrapper((void(*)(GUIDisplay*))dlsym(lib_discr, "release_wrapper"));
+
+    // GUIDisplay *disp = new GlfwWrapper();
+     GUIDisplay *disp = create_wrapper(5, 5);
+
     Timer timer;
 
     timer.setTimeScale(0.2f);//TODO: replace by value of mandatory's requiroment
@@ -295,6 +302,25 @@ void	GameCore::run()
     // gameLoop(disp, allElenents, obstacles, targets);
     delete disp;
 }
+
+//TODO:create separeted object for loader or functor or smth else
+
+void *GameCore::load_lib(std::string libname)
+{
+    void *lib_discriptor;
+
+	lib_discriptor = dlopen(libname.data(), RTLD_LAZY);
+
+    if (!lib_discriptor)
+	{
+		printf("***ERROR***\ndescriptor is not present: %s\n***********\n", dlerror());
+		exit(1);
+	}
+
+    return lib_discriptor;
+}
+
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // Debug functions																			    //

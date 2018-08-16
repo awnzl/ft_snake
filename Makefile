@@ -9,14 +9,14 @@ SRCDIR	= ./src
 INCDIR	= ./inc
 OBJDIR	= ./obj
 
-SRC		= main.cpp core.cpp timer.cpp sfmlwrapper.cpp sdl2wrapper.cpp glfwwrapper.cpp #pngreader.cpp #minilibxwrapper.cpp
+SRC		= main.cpp core.cpp timer.cpp sfmlwrapper.cpp glfwwrapper.cpp #pngreader.cpp #minilibxwrapper.cpp
 
 $LEXP1	= export CPLUS_INCLUDE_PATH=/Users/itsuman/.brew/include
 $LEXP2	= export LD_LIBRARY_PATH=/User/itsuman/.brew/Cellar/sfml/2.4.2_1/lib1
 
 ATTR	= -std=c++11
 LBS		= -I ~/.brew/include -L ~/.brew/lib -lsfml-system -lsfml-window -lsfml-graphics -lsfml-network -lsfml-audio \
-			-Wl,-rpath, ~/.brew/lib -lSDL2-2.0.0 -lGLFW -lpng -lmlx -framework OpenGL -framework AppKit
+			-Wl,-rpath, ~/.brew/lib -lSDL2-2.0.0 -lGLFW -lpng -framework OpenGL -framework AppKit
 
 
 OBJ		= $(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))

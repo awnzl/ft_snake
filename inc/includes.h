@@ -4,6 +4,5 @@
 # include "defines.h"
 # include "sfmlwrapper.h"
 # include "glfwwrapper.h"
-# include "sdl2wrapper.h"
 
 #endif
