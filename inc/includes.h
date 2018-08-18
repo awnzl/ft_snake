@@ -4,5 +4,6 @@
 # include "defines.h"
 # include "sfmlwrapper.h"
 # include "glfwwrapper.h"
+# include "audiowrapper.h"
 
 #endif

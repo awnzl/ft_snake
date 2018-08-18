@@ -93,6 +93,8 @@ class GameCore
     //////////////////////////////////////////////////////////////////////////////////////////////
     int pixToInt(int x, int y, std::uint8_t *pixels);
 
+    AudioWrapper sound;
+
 public:
     //TODO: canonical form!!!!!!!!!
     GameCore();

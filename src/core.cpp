@@ -287,6 +287,7 @@ void	GameCore::run()
 
     std::uint8_t pixels[ARRAY_SIZE];
 
+    sound.soundStartGame();
     while (direction)
     {
         timer.tick();
