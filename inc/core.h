@@ -2,8 +2,10 @@
 # define __CORE_H
 
 //#include "minilibxwrapper.h"
-#include "includes.h"
+#include "defines.h"
+#include "guidisplay.h"
 #include <array>
+#include <vector>
 #include <string>//TODO: delete this include
 #include <sstream>//TODO: delete this include
 
@@ -59,7 +61,7 @@ class GameCore
 
     std::array<Block*, OBSTACLES_QUANTITY> obstacles;//TODO: tmp
     std::array<Block*, TARGETS_QUANTITY> targets;//TODO: tmp
-    std::vector <Block*> snake;//TODO: tmp
+    std::vector<Block*> snake;//TODO: tmp
 
     void    fillPixelsToPixelsMap(std::uint8_t *px, std::uint32_t color);
     // void	fillBlocks();
@@ -80,11 +82,11 @@ class GameCore
     template <std::size_t ARRSIZE>
     bool  checkObstacles(int x, int y, std::array<Block*, ARRSIZE> &);
 
-    template<std::size_t ALLSIZE, std::size_t OBJSIZE, std::size_t TARGETSSIZE>
-    void	gameLoop(GUIDisplay &disp,
-                     std::array<Block*, ALLSIZE> &allElements,
-                     std::array<Block*, OBJSIZE> &obstacles,
-                     std::array<Block*, TARGETSSIZE> &targets);
+    // template<std::size_t ALLSIZE, std::size_t OBJSIZE, std::size_t TARGETSSIZE>
+    // void	gameLoop(GUIDisplay &disp,
+    //                  std::array<Block*, ALLSIZE> &allElements,
+    //                  std::array<Block*, OBJSIZE> &obstacles,
+    //                  std::array<Block*, TARGETSSIZE> &targets);
 
     void *load_lib(std::string libname);
 

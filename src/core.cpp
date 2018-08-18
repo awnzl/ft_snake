@@ -269,12 +269,15 @@ void	GameCore::run()
     // GUIDisplay *disp = new SfmlWrapper();
     // GUIDisplay *disp = new SDL2Wrapper();
 
-    void *lib_discr = load_lib("SDL2dl/sdl2wrapper.so");
+    //TODO: replace by functor?
+    void *lib_discr = load_lib("GLFWdl/glfwwrapper.so");
+    // void *lib_discr = load_lib("SFMLdl/sfmlwrapper.so");
+    // void *lib_discr = load_lib("SDL2dl/sdl2wrapper.so");
     std::function<GUIDisplay*(int, int)> create_wrapper((GUIDisplay*(*)(int, int))dlsym(lib_discr, "create_wrapper"));
     std::function<void(GUIDisplay*)> release_wrapper((void(*)(GUIDisplay*))dlsym(lib_discr, "release_wrapper"));
 
     // GUIDisplay *disp = new GlfwWrapper();
-     GUIDisplay *disp = create_wrapper(5, 5);
+    GUIDisplay *disp = create_wrapper(5, 5);
 
     Timer timer;
 
