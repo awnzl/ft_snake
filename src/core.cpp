@@ -304,11 +304,11 @@ void	GameCore::run()
     }
 
     // gameLoop(disp, allElenents, obstacles, targets);
-    delete disp;
+    release_wrapper(disp);
 }
 
 //TODO:create separeted object for loader or functor or smth else
-
+//TODO: adjust realese resourses
 void *GameCore::load_lib(std::string libname)
 {
     void *lib_discriptor;
