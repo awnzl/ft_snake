@@ -24,6 +24,7 @@ void printUsage()
 
 int main(int ac, char *av[])
 {
+    srand(time(NULL));
     int width, height;
     std::cmatch result;
     std::regex regular("[0-9]+");

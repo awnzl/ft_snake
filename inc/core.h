@@ -54,6 +54,9 @@ class GameCore
     //keeps the last moving direction                                                           //
     //////////////////////////////////////////////////////////////////////////////////////////////
     int		direction;
+    int     lastDirection;
+
+    AudioWrapper sound;
 
     std::uint8_t target_pixels_map[BLOCK_PIXELS_SIZE];
     std::uint8_t obstacle_pixels_map[BLOCK_PIXELS_SIZE];
@@ -63,6 +66,7 @@ class GameCore
     std::array<Block*, OBSTACLES_QUANTITY> obstacles;//TODO: tmp
     std::array<Block*, TARGETS_QUANTITY> targets;//TODO: tmp
     std::vector<Block*> snake;//TODO: tmp
+    Block* target;
 
     void    fillPixelsToPixelsMap(std::uint8_t *px, std::uint32_t color);
     // void	fillBlocks();
@@ -74,11 +78,13 @@ class GameCore
     void	insertElements(std::uint8_t *pixels);
     void	initElements();
     void    updateSnake(int nx, int ny);
+    void    updateTarget();
     void    increaseSnake(int nx, int ny);
     std::uint8_t	*getImage(std::uint8_t *pixels);
 
     template <std::size_t ARRSIZE>
     bool    checkTargets(int x, int y, std::array<Block*, ARRSIZE> &targets);
+    bool    checkTarget(int x, int y, Block* target);
 
     template <std::size_t ARRSIZE>
     bool  checkObstacles(int x, int y, std::array<Block*, ARRSIZE> &);
@@ -95,8 +101,6 @@ class GameCore
     // Debug functions																			//
     //////////////////////////////////////////////////////////////////////////////////////////////
     int pixToInt(int x, int y, std::uint8_t *pixels);
-
-    AudioWrapper sound;
 
 public:
     //TODO: canonical form!!!!!!!!!

@@ -6,7 +6,7 @@
 #include "timer.h"
 //#include "pngreader.h"
 
-GameCore::GameCore() : direction(3)
+GameCore::GameCore() : direction(3), lastDirection(3)
 {
     //TODO: temporary block start:
     fillPixelsToPixelsMap(target_pixels_map, 0xf0ff0fFF);
@@ -135,9 +135,11 @@ void    GameCore::insertElements(std::uint8_t *pixels)
         if (e->isVisible)
             insertBlockToScene(e->x, e->y, e->pxls, pixels);
 
-    for (auto e: targets)
-        if (e->isVisible)
-            insertBlockToScene(e->x, e->y, e->pxls, pixels);
+    // if (target->isVisible)
+    insertBlockToScene(target->x, target->y, target->pxls, pixels);
+    // for (auto e: targets)
+    //     if (e->isVisible)
+    //         insertBlockToScene(e->x, e->y, e->pxls, pixels);
 
     for (auto e: snake)
         insertBlockToScene(e->x, e->y, e->pxls, pixels);
@@ -152,10 +154,11 @@ void    GameCore::initElements()
     obstacles[2] = new Block(6*BLOCK_SIZE, 13*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map);
     obstacles[3] = new Block(16*BLOCK_SIZE, 3*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map);
 
-    targets[0] = new Block(3*BLOCK_SIZE, 4*BLOCK_SIZE, true, Type::Target, target_pixels_map);
-    targets[1] = new Block(7*BLOCK_SIZE, 8*BLOCK_SIZE, true, Type::Target, target_pixels_map);
-    targets[2] = new Block(11*BLOCK_SIZE, 12*BLOCK_SIZE, true, Type::Target, target_pixels_map);
-    targets[3] = new Block(23*BLOCK_SIZE, 18*BLOCK_SIZE, true, Type::Target, target_pixels_map);
+    target = new Block(3*BLOCK_SIZE, 4*BLOCK_SIZE, true, Type::Target, target_pixels_map);
+    // targets[0] = new Block(3*BLOCK_SIZE, 4*BLOCK_SIZE, true, Type::Target, target_pixels_map);
+    // targets[1] = new Block(7*BLOCK_SIZE, 8*BLOCK_SIZE, true, Type::Target, target_pixels_map);
+    // targets[2] = new Block(11*BLOCK_SIZE, 12*BLOCK_SIZE, true, Type::Target, target_pixels_map);
+    // targets[3] = new Block(23*BLOCK_SIZE, 18*BLOCK_SIZE, true, Type::Target, target_pixels_map);
 
     int halfSize = BLOCK_SIZE * (BLOCKS_PER_SIDE / 2 - 1);
     snake.push_back(new Block(halfSize + BLOCK_SIZE, halfSize, true, Type::Snake, snake_pixels_map));
@@ -182,6 +185,12 @@ void    GameCore::updateSnake(int nx, int ny)
         previousElementX = tmpX;
         previousElementY = tmpY;
     }
+}
+// TODO: Надо доделать эту функцию :(
+void    GameCore::updateTarget()
+{
+    target->x = rand() % WIDTH_HEIGTH;
+    target->y = rand() % WIDTH_HEIGTH;
 }
 
 void    GameCore::increaseSnake(int nx, int ny)
@@ -214,8 +223,14 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
             break;
     }
 
-    if (checkTargets(nextX, nextY, targets))
+    // if (checkTargets(nextX, nextY, targets))
+    //     increaseSnake(nextX, nextY);
+
+    if (checkTarget(nextX, nextY, target))
+    {
         increaseSnake(nextX, nextY);
+        updateTarget();
+    }
 
     if (!checkObstacles(nextX, nextY, obstacles))
         updateSnake(nextX, nextY);
@@ -238,6 +253,14 @@ bool    GameCore::checkTargets(int x, int y, std::array<Block*, ARRSIZE> &target
         }
 
     return false;
+}
+
+bool    GameCore::checkTarget(int x, int y, Block* target)
+{
+    if (target->isVisible && target->x == x && target->y == y)
+        return true;
+    else    
+        return false;
 }
 
 template <std::size_t ARRSIZE>
@@ -300,6 +323,12 @@ void	GameCore::run()
             disp->render(getImage(pixels));
         }
         direction = disp->getEvent();
+        if((lastDirection == 3 && direction == 2) || (lastDirection == 2 && direction == 3) ||
+           (lastDirection == 1 && direction == 4) || (lastDirection == 4 && direction == 1))
+            direction = lastDirection;
+        else
+            lastDirection = direction;
+
         // // std::cout << "debug: libreturn: " << direction << std::endl;
     }
 
