@@ -7,17 +7,17 @@
 #include "defines.h"
 #include "guidisplay.h"
 
-class GlfwWrapper : public GUIDisplay {
+class GLFWWrapper : public GUIDisplay {
     GLFWwindow *win;
-  
-    GlfwWrapper(GlfwWrapper const &) = delete;
-    GlfwWrapper(GlfwWrapper &&) = delete;
-    GlfwWrapper &operator=(GlfwWrapper &) = delete;
-    GlfwWrapper &operator=(GlfwWrapper &&) = delete;
+
+    GLFWWrapper(GLFWWrapper const &) = delete;
+    GLFWWrapper(GLFWWrapper &&) = delete;
+    GLFWWrapper &operator=(GLFWWrapper &) = delete;
+    GLFWWrapper &operator=(GLFWWrapper &&) = delete;
 
 public:
-    GlfwWrapper();
-    ~GlfwWrapper();
+    GLFWWrapper();
+    ~GLFWWrapper();
 
     void render(uint8_t *rawImage) override;
     int getEvent() override;

@@ -6,7 +6,7 @@
 #include "defines.h"
 #include "guidisplay.h"
 
-class SfmlWrapper : public GUIDisplay {
+class SFMLWrapper : public GUIDisplay {
     sf::RenderWindow *win;
 
     sf::Image *im;
@@ -14,14 +14,14 @@ class SfmlWrapper : public GUIDisplay {
     sf::Sprite *sprite;
     sf::Event *event;
 
-    SfmlWrapper(SfmlWrapper const &) = delete;
-    SfmlWrapper(SfmlWrapper &&) = delete;
-    SfmlWrapper &operator=(SfmlWrapper &) = delete;
-    SfmlWrapper &operator=(SfmlWrapper &&) = delete;
+    SFMLWrapper(SFMLWrapper const &) = delete;
+    SFMLWrapper(SFMLWrapper &&) = delete;
+    SFMLWrapper &operator=(SFMLWrapper &) = delete;
+    SFMLWrapper &operator=(SFMLWrapper &&) = delete;
 
 public:
-    SfmlWrapper();
-    ~SfmlWrapper();
+    SFMLWrapper();
+    ~SFMLWrapper();
 
     void render(uint8_t *rawImage) override;
     int getEvent() override;

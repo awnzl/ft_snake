@@ -1,4 +1,4 @@
-NAME	= GLFWwrapper.so
+NAME	= glfwwrapper.so
 
 SHELL	= /bin/bash
 CC		= clang++
@@ -9,7 +9,7 @@ LBS		= -I ../inc -I ~/.brew/include -L ~/.brew/lib \
 			-Wl,-rpath, ~/.brew/lib -lGLFW -framework OpenGL -framework AppKit
 
 $(NAME) :
-	$(CC) $(FLG) $(LBS) $(ATTR) sdl2wrapper.cpp -o $(NAME)
+	$(CC) $(FLG) $(LBS) $(ATTR) glfwwrapper.cpp -o $(NAME)
 
 all		: $(NAME)
 

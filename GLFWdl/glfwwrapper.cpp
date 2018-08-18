@@ -4,12 +4,12 @@
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 static int lastDirection = 3;
 
-GlfwWrapper::~GlfwWrapper()
+GLFWWrapper::~GLFWWrapper()
 {
     glfwTerminate();
 }
 
-GlfwWrapper::GlfwWrapper()
+GLFWWrapper::GLFWWrapper()
 {
     glfwInit();
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
@@ -18,7 +18,7 @@ GlfwWrapper::GlfwWrapper()
     glfwSetKeyCallback(win, key_callback);
 }
 
-void GlfwWrapper::render(uint8_t *rawImage)
+void GLFWWrapper::render(uint8_t *rawImage)
 {
     // Clear the colorbuffer
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -31,7 +31,7 @@ void GlfwWrapper::render(uint8_t *rawImage)
     glfwSwapBuffers(win);
 }
 
-int GlfwWrapper::getEvent()
+int GLFWWrapper::getEvent()
 {
     // Check if any events have been activiated (key pressed, mouse moved etc.)
     // and call corresponding response functions
@@ -56,4 +56,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         lastDirection = 1;
     else if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
         lastDirection = 4;
+}
+
+extern "C" GUIDisplay *create_wrapper(int w, int h)
+{
+    return new GLFWWrapper();
+}
+
+extern "C" void release_wrapper(GUIDisplay *wrapper)
+{
+    delete wrapper;
 }

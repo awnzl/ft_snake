@@ -1,7 +1,7 @@
 #include "sfmlwrapper.h"
 
 //TODO: implement
-SfmlWrapper::~SfmlWrapper()
+SFMLWrapper::~SFMLWrapper()
 {
     delete (im);
     delete (texture);
@@ -10,7 +10,7 @@ SfmlWrapper::~SfmlWrapper()
     delete (win);
 }
 
-SfmlWrapper::SfmlWrapper() :
+SFMLWrapper::SFMLWrapper() :
     win(new sf::RenderWindow(sf::VideoMode(WIDTH_HEIGTH, WIDTH_HEIGTH), "nibbler")),
     im(new sf::Image()),
     texture(new sf::Texture),
@@ -20,7 +20,7 @@ SfmlWrapper::SfmlWrapper() :
     texture->create(WIDTH_HEIGTH, WIDTH_HEIGTH);
 }
 
-void SfmlWrapper::render(uint8_t *rawImage)
+void SFMLWrapper::render(uint8_t *rawImage)
 {
     im->create(WIDTH_HEIGTH, WIDTH_HEIGTH, rawImage);
 
@@ -39,7 +39,7 @@ void SfmlWrapper::render(uint8_t *rawImage)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // returns an integer wich represent an event                                                   //
 //////////////////////////////////////////////////////////////////////////////////////////////////
-int SfmlWrapper::getEvent()
+int SFMLWrapper::getEvent()
 {
     static int lastDirection = 3;
     while (win->pollEvent(*event)) {
@@ -62,4 +62,14 @@ int SfmlWrapper::getEvent()
         }
     }
 	return lastDirection;
+}
+
+extern "C" GUIDisplay *create_wrapper(int w, int h)
+{
+    return new SFMLWrapper();
+}
+
+extern "C" void release_wrapper(GUIDisplay *wrapper)
+{
+    delete wrapper;
 }
