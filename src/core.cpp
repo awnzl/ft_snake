@@ -186,11 +186,18 @@ void    GameCore::updateSnake(int nx, int ny)
         previousElementY = tmpY;
     }
 }
-// TODO: Надо доделать эту функцию :(
+
 void    GameCore::updateTarget()
 {
-    target->x = rand() % WIDTH_HEIGTH;
-    target->y = rand() % WIDTH_HEIGTH;
+    int nextX = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
+    int nextY = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
+    while(checkObstacles(nextX, nextY, obstacles))
+    {
+        nextX = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
+        nextY = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
+    }
+    target->x = nextX;
+    target->y = nextY;
 }
 
 void    GameCore::increaseSnake(int nx, int ny)
