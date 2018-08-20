@@ -137,6 +137,8 @@ void    GameCore::insertElements(std::uint8_t *pixels)
 
     // if (target->isVisible)
     insertBlockToScene(target->x, target->y, target->pxls, pixels);
+    if (bonusTarget->isVisible)
+        insertBlockToScene(bonusTarget->x, bonusTarget->y, bonusTarget->pxls, pixels);
     // for (auto e: targets)
     //     if (e->isVisible)
     //         insertBlockToScene(e->x, e->y, e->pxls, pixels);
@@ -154,7 +156,8 @@ void    GameCore::initElements()
     obstacles[2] = new Block(6*BLOCK_SIZE, 13*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map);
     obstacles[3] = new Block(16*BLOCK_SIZE, 3*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map);
 
-    target = new Block(3*BLOCK_SIZE, 4*BLOCK_SIZE, true, Type::Target, target_pixels_map);
+    target = new Block(20*BLOCK_SIZE, 12*BLOCK_SIZE, true, Type::Target, target_pixels_map);
+    bonusTarget = new Block(8*BLOCK_SIZE, 4*BLOCK_SIZE, false, Type::Target, target_pixels_map);
     // targets[0] = new Block(3*BLOCK_SIZE, 4*BLOCK_SIZE, true, Type::Target, target_pixels_map);
     // targets[1] = new Block(7*BLOCK_SIZE, 8*BLOCK_SIZE, true, Type::Target, target_pixels_map);
     // targets[2] = new Block(11*BLOCK_SIZE, 12*BLOCK_SIZE, true, Type::Target, target_pixels_map);
@@ -187,7 +190,7 @@ void    GameCore::updateSnake(int nx, int ny)
     }
 }
 
-void    GameCore::updateTarget()
+void    GameCore::updateTarget(Block **m_target)
 {
     int nextX = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
     int nextY = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
@@ -196,8 +199,8 @@ void    GameCore::updateTarget()
         nextX = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
         nextY = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
     }
-    target->x = nextX;
-    target->y = nextY;
+    (*m_target)->x = nextX;
+    (*m_target)->y = nextY;
 }
 
 void    GameCore::increaseSnake(int nx, int ny)
@@ -230,13 +233,17 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
             break;
     }
 
-    // if (checkTargets(nextX, nextY, targets))
-    //     increaseSnake(nextX, nextY);
-
     if (checkTarget(nextX, nextY, target))
     {
         increaseSnake(nextX, nextY);
-        updateTarget();
+        updateTarget(&target);
+    }
+
+    if (checkTarget(nextX, nextY, bonusTarget))
+    {
+        increaseSnake(nextX, nextY);
+        updateTarget(&bonusTarget);
+        bonusTarget->isVisible = false;
     }
 
     if (!checkObstacles(nextX, nextY, obstacles))
@@ -310,6 +317,7 @@ void	GameCore::run()
     GUIDisplay *disp = create_wrapper(5, 5);
 
     Timer timer;
+    int   periodForBonus = 0;
 
     timer.setTimeScale(0.2f);//TODO: replace by value of mandatory's requiroment
 
@@ -328,6 +336,15 @@ void	GameCore::run()
         {
             timer.reset();
             disp->render(getImage(pixels));
+            periodForBonus++;
+        }
+        if(periodForBonus == 30)
+            bonusTarget->isVisible = true;
+        else if (periodForBonus == 60)
+        {
+            periodForBonus = 0;
+            bonusTarget->isVisible = false;
+            updateTarget(&bonusTarget);
         }
         direction = disp->getEvent();
         if((lastDirection == 3 && direction == 2) || (lastDirection == 2 && direction == 3) ||

@@ -67,6 +67,7 @@ class GameCore
     std::array<Block*, TARGETS_QUANTITY> targets;//TODO: tmp
     std::vector<Block*> snake;//TODO: tmp
     Block* target;
+    Block* bonusTarget;
 
     void    fillPixelsToPixelsMap(std::uint8_t *px, std::uint32_t color);
     // void	fillBlocks();
@@ -78,7 +79,7 @@ class GameCore
     void	insertElements(std::uint8_t *pixels);
     void	initElements();
     void    updateSnake(int nx, int ny);
-    void    updateTarget();
+    void    updateTarget(Block **target);
     void    increaseSnake(int nx, int ny);
     std::uint8_t	*getImage(std::uint8_t *pixels);
 
