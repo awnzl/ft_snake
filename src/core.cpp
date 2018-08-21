@@ -82,10 +82,10 @@ GameCore::~GameCore()
     //TODO: free blocks arrays content
     for (auto e: obstacles)
         delete e;
-    for (auto e: targets)
-        delete e;
     for (auto e: snake)
         delete e;
+    delete target;
+    delete bonusTarget;
 }
 
 //uses to fill pixel arrays for blocks
@@ -151,10 +151,10 @@ void    GameCore::initElements()
 {
     //init obstacles
     //init targets
-    obstacles[0] = new Block(3*BLOCK_SIZE, 3*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map);
-    obstacles[1] = new Block(1*BLOCK_SIZE, 1*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map);
-    obstacles[2] = new Block(6*BLOCK_SIZE, 13*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map);
-    obstacles[3] = new Block(16*BLOCK_SIZE, 3*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map);
+    obstacles.push_back(new Block(3*BLOCK_SIZE, 3*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
+    obstacles.push_back(new Block(1*BLOCK_SIZE, 1*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
+    obstacles.push_back(new Block(6*BLOCK_SIZE, 13*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
+    obstacles.push_back(new Block(16*BLOCK_SIZE, 3*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
 
     target = new Block(20*BLOCK_SIZE, 12*BLOCK_SIZE, true, Type::Target, target_pixels_map);
     bonusTarget = new Block(8*BLOCK_SIZE, 4*BLOCK_SIZE, false, Type::Target, target_pixels_map);
@@ -194,7 +194,7 @@ void    GameCore::updateTarget(Block *m_target)
 {
     int nextX = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
     int nextY = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
-    while(checkObstacles(nextX, nextY, obstacles))
+    while(checkObstacles(nextX, nextY))
     {
         nextX = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
         nextY = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
@@ -246,7 +246,9 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
         bonusTarget->isVisible = false;
     }
 
-    if (!checkObstacles(nextX, nextY, obstacles))
+    if (checkObstacles(nextX, nextY))
+        exit(0);
+    else
         updateSnake(nextX, nextY);
 
     // std::cout << "snX " << snake[0]->x << " snY " << snake[0]->y << " ";
@@ -254,19 +256,6 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
     fillBackground(pixels);
     insertElements(pixels);
     return pixels;
-}
-
-template <std::size_t ARRSIZE>
-bool    GameCore::checkTargets(int x, int y, std::array<Block*, ARRSIZE> &targets)
-{
-    for (auto each: targets)
-        if (each->isVisible && each->x == x && each->y == y)
-        {
-            each->isVisible = false;
-            return true;
-        }
-
-    return false;
 }
 
 bool    GameCore::checkTarget(int x, int y, Block* target)
@@ -277,12 +266,19 @@ bool    GameCore::checkTarget(int x, int y, Block* target)
         return false;
 }
 
-template <std::size_t ARRSIZE>
-bool    GameCore::checkObstacles(int x, int y, std::array<Block*, ARRSIZE> &obstacles)
+bool    GameCore::checkObstacles(int x, int y)
 {
+    // Check for a collision of a snake with obstacles
     for (auto each: obstacles)
         if (each->x == x && each->y == y)
             return true;
+    // Check for a collision of a snake with its own tail
+    for(int i = 1; i < snake.size(); i++)
+        if(snake[0]->x == snake[i]->x && snake[0]->y == snake[i]->y)
+            return true;
+    // Check for a collision of a snake with wall
+    if (x == -1 || x == WIDTH_HEIGTH || y == -1 || y == WIDTH_HEIGTH)
+        return true;
 
     return false;
 }

@@ -63,9 +63,8 @@ class GameCore
     // std::uint8_t snake_pixels_map[BLOCK_PIXELS_SIZE];
     std::uint8_t *snake_pixels_map;
 
-    std::array<Block*, OBSTACLES_QUANTITY> obstacles;//TODO: tmp
-    std::array<Block*, TARGETS_QUANTITY> targets;//TODO: tmp
-    std::vector<Block*> snake;//TODO: tmp
+    std::vector<Block*> obstacles;
+    std::vector<Block*> snake;
     Block* target;
     Block* bonusTarget;
 
@@ -81,14 +80,11 @@ class GameCore
     void    updateSnake(int nx, int ny);
     void    updateTarget(Block *target);
     void    increaseSnake(int nx, int ny);
+    
     std::uint8_t	*getImage(std::uint8_t *pixels);
 
-    template <std::size_t ARRSIZE>
-    bool    checkTargets(int x, int y, std::array<Block*, ARRSIZE> &targets);
     bool    checkTarget(int x, int y, Block* target);
-
-    template <std::size_t ARRSIZE>
-    bool  checkObstacles(int x, int y, std::array<Block*, ARRSIZE> &);
+    bool    checkObstacles(int x, int y);
 
     // template<std::size_t ALLSIZE, std::size_t OBJSIZE, std::size_t TARGETSSIZE>
     // void	gameLoop(GUIDisplay &disp,
