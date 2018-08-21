@@ -205,7 +205,7 @@ void    GameCore::updateTarget(Block **m_target)
 
 void    GameCore::increaseSnake(int nx, int ny)
 {
-    snake.insert(snake.begin(), new Block(nx, ny, true, Type::Snake, snake_pixels_map));
+    snake.insert(snake.end(), new Block(nx, ny, true, Type::Snake, snake_pixels_map));
 }
 
 //		1
