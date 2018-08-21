@@ -79,7 +79,7 @@ class GameCore
     void	insertElements(std::uint8_t *pixels);
     void	initElements();
     void    updateSnake(int nx, int ny);
-    void    updateTarget(Block **target);
+    void    updateTarget(Block *target);
     void    increaseSnake(int nx, int ny);
     std::uint8_t	*getImage(std::uint8_t *pixels);
 

@@ -190,7 +190,7 @@ void    GameCore::updateSnake(int nx, int ny)
     }
 }
 
-void    GameCore::updateTarget(Block **m_target)
+void    GameCore::updateTarget(Block *m_target)
 {
     int nextX = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
     int nextY = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
@@ -199,13 +199,13 @@ void    GameCore::updateTarget(Block **m_target)
         nextX = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
         nextY = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
     }
-    (*m_target)->x = nextX;
-    (*m_target)->y = nextY;
+    m_target->x = nextX;
+    m_target->y = nextY;
 }
 
 void    GameCore::increaseSnake(int nx, int ny)
 {
-    snake.insert(snake.end(), new Block(nx, ny, true, Type::Snake, snake_pixels_map));
+    snake.push_back(new Block(nx, ny, true, Type::Snake, snake_pixels_map));
 }
 
 //		1
@@ -236,13 +236,13 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
     if (checkTarget(nextX, nextY, target))
     {
         increaseSnake(nextX, nextY);
-        updateTarget(&target);
+        updateTarget(target);
     }
 
     if (checkTarget(nextX, nextY, bonusTarget))
     {
         increaseSnake(nextX, nextY);
-        updateTarget(&bonusTarget);
+        updateTarget(bonusTarget);
         bonusTarget->isVisible = false;
     }
 
@@ -344,7 +344,7 @@ void	GameCore::run()
         {
             periodForBonus = 0;
             bonusTarget->isVisible = false;
-            updateTarget(&bonusTarget);
+            updateTarget(bonusTarget);
         }
         direction = disp->getEvent();
         if((lastDirection == 3 && direction == 2) || (lastDirection == 2 && direction == 3) ||
