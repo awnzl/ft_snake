@@ -16,7 +16,7 @@ $LEXP2	= export LD_LIBRARY_PATH=/User/itsuman/.brew/Cellar/sfml/2.4.2_1/lib1
 
 ATTR	= -std=c++11
 LBS		= -I ~/.brew/include -L ~/.brew/lib -lsfml-system -lsfml-window -lsfml-graphics -lsfml-network -lsfml-audio \
-			-Wl,-rpath, ~/.brew/lib -lGLFW -lpng -framework OpenGL -framework AppKit
+			-Wl,-rpath, ~/.brew/lib -lSDL2-2.0.0 -lSDL2_mixer -framework OpenGL -framework AppKit
 
 
 OBJ		= $(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))

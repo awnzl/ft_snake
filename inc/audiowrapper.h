@@ -2,8 +2,8 @@
 # define __AUDIOWRAPPER_H
 
 #include <iostream>
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
+#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL.h>
 
 class AudioWrapper {
 
@@ -12,14 +12,19 @@ class AudioWrapper {
     AudioWrapper &operator=(AudioWrapper &) = delete;
     AudioWrapper &operator=(AudioWrapper &&) = delete;
 
-    sf::SoundBuffer buffer;
-    sf::Sound sound;
+    Mix_Chunk *startSound = NULL;
+    Mix_Chunk *eat = NULL;
+    Mix_Chunk *step = NULL;
+    Mix_Music *endSound = NULL;
 
 public:
     AudioWrapper();
     ~AudioWrapper();
 
-    void    soundStartGame();
+    void    startGame();
+    void    soundEat();
+    void    soundStep();
+    void    endGame();
 };
 
 #endif

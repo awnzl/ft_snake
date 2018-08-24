@@ -235,19 +235,24 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
 
     if (checkTarget(nextX, nextY, target))
     {
+        sound.soundEat();
         increaseSnake(nextX, nextY);
         updateTarget(target);
     }
 
     if (checkTarget(nextX, nextY, bonusTarget))
     {
+        sound.soundEat();
         increaseSnake(nextX, nextY);
         updateTarget(bonusTarget);
         bonusTarget->isVisible = false;
     }
 
     if (checkObstacles(nextX, nextY))
+    {
+        sound.endGame();
         exit(0);
+    }
     else
         updateSnake(nextX, nextY);
 
@@ -323,8 +328,7 @@ void	GameCore::run()
     initElements();
 
     std::uint8_t pixels[ARRAY_SIZE];
-
-    sound.soundStartGame();
+    sound.startGame();
     while (direction)
     {
         timer.tick();
@@ -332,6 +336,7 @@ void	GameCore::run()
         {
             timer.reset();
             disp->render(getImage(pixels));
+            sound.soundStep();
             periodForBonus++;
         }
         if(periodForBonus == 30)
