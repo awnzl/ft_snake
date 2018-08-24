@@ -334,6 +334,11 @@ void	GameCore::run()
         timer.tick();
         if (timer.deltaTime() >= timer.getTimeScale())
         {
+            if ((lastDirection == 3 && direction == 2) || (lastDirection == 2 && direction == 3) ||
+                (lastDirection == 1 && direction == 4) || (lastDirection == 4 && direction == 1))
+                direction = lastDirection;
+            else
+                lastDirection = direction;
             timer.reset();
             disp->render(getImage(pixels));
             sound.soundStep();
@@ -348,12 +353,6 @@ void	GameCore::run()
             updateTarget(bonusTarget);
         }
         direction = disp->getEvent();
-        if((lastDirection == 3 && direction == 2) || (lastDirection == 2 && direction == 3) ||
-           (lastDirection == 1 && direction == 4) || (lastDirection == 4 && direction == 1))
-            direction = lastDirection;
-        else
-            lastDirection = direction;
-
         // // std::cout << "debug: libreturn: " << direction << std::endl;
     }
 
