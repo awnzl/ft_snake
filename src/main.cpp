@@ -46,6 +46,7 @@ int main(int ac, char *av[])
             if(width < 30 || height < 30 || width > 99 || height > 99)
                 throw std::invalid_argument(exceptionMessage);
             GameCore *gc = new GameCore;
+            gc->setWidthHeight(width, height);
             gc->run();
             delete gc;
         }

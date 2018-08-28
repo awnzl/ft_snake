@@ -17,14 +17,17 @@ class SDL2Wrapper : public GUIDisplay {
     SDL2Wrapper &operator=(SDL2Wrapper &) = delete;
     SDL2Wrapper &operator=(SDL2Wrapper &&) = delete;
 
-    void checkError(bool, std::string);
+    int     m_width;
+    int     m_height;
+
+    void    checkError(bool, std::string);
 
 public:
-    SDL2Wrapper();
+    SDL2Wrapper(int w, int h);
     ~SDL2Wrapper();
 
-    void render(uint8_t *rawImage) override;
-    int getEvent() override;
+    void    render(uint8_t *rawImage) override;
+    int     getEvent() override;
 };
 
 #endif

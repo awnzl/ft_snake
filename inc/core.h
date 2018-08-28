@@ -55,6 +55,8 @@ class GameCore
     //////////////////////////////////////////////////////////////////////////////////////////////
     int		direction;
     int     lastDirection;
+    int     m_width;
+    int     m_height;
 
     AudioWrapper sound;
 
@@ -104,6 +106,8 @@ public:
     GameCore();
     ~GameCore();
     void run();
+
+    void setWidthHeight(int w, int h);
 };
 
 #endif

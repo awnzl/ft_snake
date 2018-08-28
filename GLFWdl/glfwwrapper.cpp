@@ -9,11 +9,13 @@ GLFWWrapper::~GLFWWrapper()
     glfwTerminate();
 }
 
-GLFWWrapper::GLFWWrapper()
+GLFWWrapper::GLFWWrapper(int width, int height)
 {
+    m_width = width;
+    m_height = height;
     glfwInit();
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-    win = glfwCreateWindow(WIDTH_HEIGTH / 2, WIDTH_HEIGTH / 2, "Nibbler", NULL, NULL);
+    win = glfwCreateWindow(m_width / 2, m_height / 2, "Nibbler", NULL, NULL);
     glfwMakeContextCurrent(win);
     glfwSetKeyCallback(win, key_callback);
 }
@@ -25,7 +27,7 @@ void GLFWWrapper::render(uint8_t *rawImage)
     glClear(GL_COLOR_BUFFER_BIT);
     glRasterPos2f(-1,1);
     glPixelZoom( 1, -1 );
-    glDrawPixels(WIDTH_HEIGTH, WIDTH_HEIGTH, GL_RGBA,
+    glDrawPixels(m_width, m_height, GL_RGBA,
         GL_UNSIGNED_INT_8_8_8_8_REV, rawImage);
     // Swap the screen buffers
     glfwSwapBuffers(win);
@@ -60,7 +62,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 extern "C" GUIDisplay *create_wrapper(int w, int h)
 {
-    return new GLFWWrapper();
+    return new GLFWWrapper(w, h);
 }
 
 extern "C" void release_wrapper(GUIDisplay *wrapper)

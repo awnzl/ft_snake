@@ -10,19 +10,21 @@ SFMLWrapper::~SFMLWrapper()
     delete (win);
 }
 
-SFMLWrapper::SFMLWrapper() :
-    win(new sf::RenderWindow(sf::VideoMode(WIDTH_HEIGTH, WIDTH_HEIGTH), "nibbler")),
+SFMLWrapper::SFMLWrapper(int w, int h) :
+    win(new sf::RenderWindow(sf::VideoMode(w, h), "nibbler")),
     im(new sf::Image()),
     texture(new sf::Texture),
     sprite(new sf::Sprite()),
     event(new sf::Event())
 {
-    texture->create(WIDTH_HEIGTH, WIDTH_HEIGTH);
+    m_width = w;
+    m_height = h;
+    texture->create(m_width, m_height);
 }
 
 void SFMLWrapper::render(uint8_t *rawImage)
 {
-    im->create(WIDTH_HEIGTH, WIDTH_HEIGTH, rawImage);
+    im->create(m_width, m_height, rawImage);
 
     // std::cout << "SFML DEBUG: pixel.toInteger: " << im->getPixel(5,5).toInteger() << std::endl;
 
@@ -66,7 +68,7 @@ int SFMLWrapper::getEvent()
 
 extern "C" GUIDisplay *create_wrapper(int w, int h)
 {
-    return new SFMLWrapper();
+    return new SFMLWrapper(w, h);
 }
 
 extern "C" void release_wrapper(GUIDisplay *wrapper)

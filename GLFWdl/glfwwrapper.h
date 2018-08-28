@@ -15,12 +15,16 @@ class GLFWWrapper : public GUIDisplay {
     GLFWWrapper &operator=(GLFWWrapper &) = delete;
     GLFWWrapper &operator=(GLFWWrapper &&) = delete;
 
+    int     m_width;
+    int     m_height;
+
 public:
-    GLFWWrapper();
+    // GLFWWrapper();
+    GLFWWrapper(int width, int height);
     ~GLFWWrapper();
 
-    void render(uint8_t *rawImage) override;
-    int getEvent() override;
+    void    render(uint8_t *rawImage) override;
+    int     getEvent() override;
 };
 
 #endif

@@ -19,12 +19,15 @@ class SFMLWrapper : public GUIDisplay {
     SFMLWrapper &operator=(SFMLWrapper &) = delete;
     SFMLWrapper &operator=(SFMLWrapper &&) = delete;
 
+    int     m_width;
+    int     m_height;
+
 public:
-    SFMLWrapper();
+    SFMLWrapper(int w, int h);
     ~SFMLWrapper();
 
-    void render(uint8_t *rawImage) override;
-    int getEvent() override;
+    void    render(uint8_t *rawImage) override;
+    int     getEvent() override;
 };
 
 #endif

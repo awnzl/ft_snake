@@ -1,15 +1,18 @@
 #include "sdl2wrapper.h"
 
-SDL2Wrapper::SDL2Wrapper()
+SDL2Wrapper::SDL2Wrapper(int w, int h)
 {
+    m_width = w;
+    m_height = h;
+
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
         std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
         exit(1);
     }
 
-    if (SDL_CreateWindowAndRenderer(WIDTH_HEIGTH / 2,
-                                    WIDTH_HEIGTH / 2, SDL_WINDOW_SHOWN, &win, &ren))
+    if (SDL_CreateWindowAndRenderer(m_width / 2,
+                                    m_height / 2, SDL_WINDOW_SHOWN, &win, &ren))
     {
         std::cerr << "SDL_CreateWindowAndRenderer Error: " << SDL_GetError() << std::endl;
         exit(1);
@@ -24,7 +27,7 @@ SDL2Wrapper::SDL2Wrapper()
 
     //https://wiki.libsdl.org/SDL_PixelFormatEnum
     tex = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ABGR8888,
-                            SDL_TEXTUREACCESS_TARGET, WIDTH_HEIGTH, WIDTH_HEIGTH);
+                            SDL_TEXTUREACCESS_TARGET, m_width, m_height);
 
     if (!tex)
     {
@@ -56,7 +59,7 @@ void SDL2Wrapper::checkError(bool condition, std::string s)
 
 void SDL2Wrapper::render(uint8_t *rawImage)
 {
-    SDL_UpdateTexture(tex, NULL, rawImage, WIDTH_HEIGTH * sizeof(uint32_t));
+    SDL_UpdateTexture(tex, NULL, rawImage, m_width * sizeof(uint32_t));
 
     std::cerr << "debug:/n";
 
@@ -100,7 +103,7 @@ int SDL2Wrapper::getEvent()
 
 extern "C" GUIDisplay *create_wrapper(int w, int h)
 {
-    return new SDL2Wrapper();
+    return new SDL2Wrapper(w, h);
 }
 
 extern "C" void release_wrapper(GUIDisplay *wrapper)
