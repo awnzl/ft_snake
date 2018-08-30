@@ -103,11 +103,9 @@ class GameCore
 
 public:
     //TODO: canonical form!!!!!!!!!
-    GameCore();
+    GameCore(int w, int h);
     ~GameCore();
     void run();
-
-    void setWidthHeight(int w, int h);
 };
 
 #endif

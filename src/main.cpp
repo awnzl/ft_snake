@@ -15,7 +15,7 @@ void printUsage()
               << "         For example: ./nibbler 40 40\n"
               << "\n"
               << "         Minimum field sizes: 30x30 \n"
-              << "         Maximum field sizes: 99х99\n"
+              << "         Maximum field sizes: 89х89\n"
               << "         Snake control, keys: UP, DOWN, RIGHT, LEFT\n"
               << "         To exit the game:    ESC\n"
               << "\n";
@@ -36,17 +36,16 @@ int main(int ac, char *av[])
     {
         std::string exceptionMessage("\nEXEPTION: Incorrect value of field sizes.\n"
                                       "Minimum field sizes: 30x30 \n"
-                                      "Maximum field sizes: 99х99\n");
+                                      "Maximum field sizes: 89х89\n");
 
         if (std::regex_match(s1.c_str(), result, regular) &&
             std::regex_match(s2.c_str(), result, regular))
         {
             width = std::stoi(av[1]);
             height = std::stoi(av[2]);
-            if(width < 30 || height < 30 || width > 99 || height > 99)
+            if(width < 30 || height < 30 || width > 89 || height > 89)
                 throw std::invalid_argument(exceptionMessage);
-            GameCore *gc = new GameCore;
-            gc->setWidthHeight(width, height);
+            GameCore *gc = new GameCore(width, height);
             gc->run();
             delete gc;
         }

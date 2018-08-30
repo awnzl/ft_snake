@@ -6,7 +6,11 @@
 #include "timer.h"
 //#include "pngreader.h"
 
-GameCore::GameCore() : direction(3), lastDirection(3)
+GameCore::GameCore(int w, int h) : 
+                                direction(3),
+                                lastDirection(3),
+                                m_width(w * BLOCK_SIZE),
+                                m_height(h * BLOCK_SIZE)
 {
     //TODO: temporary block start:
     fillPixelsToPixelsMap(target_pixels_map, 0xf0ff0fFF);
@@ -99,6 +103,7 @@ void    GameCore::fillPixelsToPixelsMap(std::uint8_t *px, uint32_t color)
 void    GameCore::setPixelToPixelArray(int x, int y, std::uint8_t *pixels,
                                        int rowLength, uint32_t color /* = 0xbbc59eff */)
 {
+    // std::cout << "setPixelToPixelArray_1" << std::endl;
     int idx = (y * rowLength + x) * 4;
     // pixels[idx + 3] = color >> 24; //a
     // pixels[idx + 2] = color >> 16; //r
@@ -109,20 +114,21 @@ void    GameCore::setPixelToPixelArray(int x, int y, std::uint8_t *pixels,
     pixels[idx + 1] = color >> 16; //g
     pixels[idx + 2] = color >> 8;  //r
     pixels[idx + 3] = color;       //a
+    // std::cout << "setPixelToPixelArray_2" << std::endl;
 }
 
 void    GameCore::fillBackground(std::uint8_t *pixels)
 {
-    for (int y = 0; y < WIDTH_HEIGTH; y++)
-        for (int x = 0; x < WIDTH_HEIGTH; x++)
-            setPixelToPixelArray(x, y, pixels, WIDTH_HEIGTH);
+    for (int y = 0; y < m_height; y++)
+        for (int x = 0; x < m_width; x++)
+            setPixelToPixelArray(x, y, pixels, m_width);
 }
 
 void    GameCore::insertBlockToScene(int bx, int by, std::uint8_t *block, std::uint8_t *scene)
 {
     for (int y = 0; y < BLOCK_SIZE; y++)
     {
-        int idx = ((by + y) * WIDTH_HEIGTH + bx) * 4;
+        int idx = ((by + y) * m_width + bx) * 4;
         for (int i = 0; i < BLOCK_SIZE * 4; i++)
             scene[idx++] = block[i];
     }
@@ -226,11 +232,12 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
             nextX -= (snake[0]->x - BLOCK_SIZE < 0) ? 0 : BLOCK_SIZE;
             break;
         case (3):
-            nextX += (snake[0]->x + BLOCK_SIZE >= WIDTH_HEIGTH) ? 0 : BLOCK_SIZE;
+            nextX += (snake[0]->x + BLOCK_SIZE >= m_width) ? 0 : BLOCK_SIZE;
             break;
         case (4):
-            nextY += (snake[0]->y + BLOCK_SIZE >= WIDTH_HEIGTH) ? 0 : BLOCK_SIZE;
+            nextY += (snake[0]->y + BLOCK_SIZE >= m_height) ? 0 : BLOCK_SIZE;
             break;
+        
     }
 
     if (checkTarget(nextX, nextY, target))
@@ -282,7 +289,7 @@ bool    GameCore::checkObstacles(int x, int y)
         if(snake[0]->x == snake[i]->x && snake[0]->y == snake[i]->y)
             return true;
     // Check for a collision of a snake with wall
-    if (x == -1 || x == WIDTH_HEIGTH || y == -1 || y == WIDTH_HEIGTH)
+    if (x == -1 || x == m_width || y == -1 || y == m_height)
         return true;
 
     return false;
@@ -327,7 +334,7 @@ void	GameCore::run()
 
     initElements();
 
-    std::uint8_t pixels[ARRAY_SIZE];
+    std::uint8_t pixels[m_width * m_height * 4];
     sound.startGame();
     while (direction)
     {
@@ -375,12 +382,6 @@ void *GameCore::load_lib(std::string libname)
 	}
 
     return lib_discriptor;
-}
-
-void GameCore::setWidthHeight(int w, int h)
-{
-    m_width = w * BLOCK_SIZE;
-    m_height = h * BLOCK_SIZE;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
