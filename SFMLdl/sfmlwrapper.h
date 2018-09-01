@@ -6,21 +6,21 @@
 #include "defines.h"
 #include "guidisplay.h"
 
-class SFMLWrapper : public GUIDisplay {
-    sf::RenderWindow *win;
+class SFMLWrapper : public GUIDisplay
+{
+    int                 m_width;
+    int                 m_height;
+    sf::RenderWindow    *win;
+    sf::Image           *im;
+    sf::Texture         *texture;
+    sf::Sprite          *sprite;
+    sf::Event           *event;
 
-    sf::Image *im;
-    sf::Texture *texture;
-    sf::Sprite *sprite;
-    sf::Event *event;
-
+    SFMLWrapper() = delete;
     SFMLWrapper(SFMLWrapper const &) = delete;
     SFMLWrapper(SFMLWrapper &&) = delete;
     SFMLWrapper &operator=(SFMLWrapper &) = delete;
     SFMLWrapper &operator=(SFMLWrapper &&) = delete;
-
-    int     m_width;
-    int     m_height;
 
 public:
     SFMLWrapper(int w, int h);

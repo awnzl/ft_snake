@@ -7,19 +7,19 @@
 #include "defines.h"
 #include "guidisplay.h"
 
-class GLFWWrapper : public GUIDisplay {
-    GLFWwindow *win;
+class GLFWWrapper : public GUIDisplay
+{
+    int         m_width;
+    int         m_height;
+    GLFWwindow  *win;
 
+    GLFWWrapper() = delete;
     GLFWWrapper(GLFWWrapper const &) = delete;
     GLFWWrapper(GLFWWrapper &&) = delete;
     GLFWWrapper &operator=(GLFWWrapper &) = delete;
     GLFWWrapper &operator=(GLFWWrapper &&) = delete;
 
-    int     m_width;
-    int     m_height;
-
 public:
-    // GLFWWrapper();
     GLFWWrapper(int width, int height);
     ~GLFWWrapper();
 

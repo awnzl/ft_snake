@@ -15,7 +15,8 @@ $LEXP1	= export CPLUS_INCLUDE_PATH=/Users/itsuman/.brew/include
 $LEXP2	= export LD_LIBRARY_PATH=/User/itsuman/.brew/Cellar/sfml/2.4.2_1/lib1
 
 ATTR	= -std=c++11
-LBS		= -I ~/.brew/include -L ~/.brew/lib -lsfml-system -lsfml-window -lsfml-graphics -lsfml-network -lsfml-audio \
+#TODO: move audio to dynamic lib and rm sdl2_mixer from LBS
+LBS		= -I IMGLoader -I ~/.brew/include -L ~/.brew/lib \
 			-Wl,-rpath, ~/.brew/lib -lSDL2-2.0.0 -lSDL2_mixer -framework OpenGL -framework AppKit
 
 

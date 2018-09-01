@@ -5,36 +5,16 @@ SDL2Wrapper::SDL2Wrapper(int w, int h)
     m_width = w;
     m_height = h;
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
-    {
-        std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
-        exit(1);
-    }
+    checkError(SDL_Init(SDL_INIT_VIDEO) != 0, "SDL_Init Error: ");
 
-    if (SDL_CreateWindowAndRenderer(m_width / 2,
-                                    m_height / 2, SDL_WINDOW_SHOWN, &win, &ren))
-    {
-        std::cerr << "SDL_CreateWindowAndRenderer Error: " << SDL_GetError() << std::endl;
-        exit(1);
-    }
+    checkError((-1 == SDL_CreateWindowAndRenderer(m_width / 2,
+                m_height / 2, SDL_WINDOW_SHOWN, &win, &ren)),
+        "SDL_CreateWindowAndRenderer Error: ");
 
-    if (!win || !ren)
-    {
-        std::cerr << "SDL_CreateWindowAndRenderer Error: " << SDL_GetError() << std::endl;
-        exit(1);
-    }
-    // checkError((!win || !ren), "SDL_CreateWindowAndRenderer Error: ");
-
-    //https://wiki.libsdl.org/SDL_PixelFormatEnum
     tex = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ABGR8888,
                             SDL_TEXTUREACCESS_TARGET, m_width, m_height);
 
-    if (!tex)
-    {
-        std::cerr << "SDL_CreateTexture Error: " << SDL_GetError() << std::endl;
-        exit(1);
-    }
-    // checkError(!tex, "SDL_CreateTexture Error: ");
+    checkError(!tex, "SDL_CreateTexture Error: ");
 
     event = new SDL_Event();
 }
