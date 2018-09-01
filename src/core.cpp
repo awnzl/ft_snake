@@ -162,6 +162,9 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
     int nextX = snake[0]->x;
     int nextY = snake[0]->y;
 
+    std::cout << "lastDirection 4: "  << std::to_string(lastDirection) << std::endl;
+    std::cout << "Direction     4: " << std::to_string(direction) << std::endl;
+
     switch (direction)
     {
         case (1):
@@ -247,32 +250,34 @@ bool    GameCore::checkObstacles(int x, int y)
 //     }
 // }
 
-void	GameCore::run()
+void    GameCore::startGame(int libNumber)
 {
-    // GUIDisplay *disp = new SfmlWrapper();
-    // GUIDisplay *disp = new SDL2Wrapper();
+    void    *lib_discr;
 
-    //TODO: replace by functor?
-    // void *lib_discr = load_lib("GLFWdl/glfwwrapper.so");
-    void *lib_discr = load_lib("SFMLdl/sfmlwrapper.so");
-    // void *lib_discr = load_lib("SDL2dl/sdl2wrapper.so");
+    currentLib = libNumber;
+    if (libNumber == 10)
+        lib_discr = load_lib("GLFWdl/glfwwrapper.so");
+    else if (libNumber == 20)
+        lib_discr = load_lib("SFMLdl/sfmlwrapper.so");
+    else if (libNumber == 30)
+        lib_discr = load_lib("SDL2dl/sdl2wrapper.so");
+
     std::function<GUIDisplay*(int, int)> create_wrapper((GUIDisplay*(*)(int, int))dlsym(lib_discr, "create_wrapper"));
-    std::function<void(GUIDisplay*)> release_wrapper((void(*)(GUIDisplay*))dlsym(lib_discr, "release_wrapper"));
 
-    // GUIDisplay *disp = new GlfwWrapper();
-    GUIDisplay *disp = create_wrapper(m_width, m_height);
+    disp = create_wrapper(m_width, m_height);
 
-    Timer timer;
+    run(lib_discr);
+}
+
+void	GameCore::run(void    *lib_discr)
+{
     int   periodForBonus = 0;
-
+    Timer           timer;
     timer.setTimeScale(0.2f);//TODO: replace by value of mandatory's requiroment
+    std::uint8_t m_pixels[m_width * m_height * 4 + 1];
 
-	// std::array<Block*, OBSTACLES_QUANTITY> obstacles;
-	// std::array<Block*, TARGETS_QUANTITY> targets;
-
-    initElements();
-
-    std::uint8_t pixels[m_width * m_height * 4];
+    std::function<void(GUIDisplay*)> release_wrapper((void(*)(GUIDisplay*))dlsym(lib_discr, "release_wrapper"));
+    
     sound.startGame();
     while (direction)
     {
@@ -285,11 +290,11 @@ void	GameCore::run()
             else
                 lastDirection = direction;
             timer.reset();
-            disp->render(getImage(pixels));
+            disp->render(getImage(m_pixels));
             sound.soundStep();
             periodForBonus++;
         }
-        if(periodForBonus == 30)
+        if (periodForBonus == 30)
             bonusTarget->isVisible = true;
         else if (periodForBonus == 60)
         {
@@ -297,12 +302,20 @@ void	GameCore::run()
             bonusTarget->isVisible = false;
             updateTarget(bonusTarget);
         }
-        direction = disp->getEvent();
-        // // std::cout << "debug: libreturn: " << direction << std::endl;
+        int tmp = disp->getEvent();
+        if (tmp >= 1 && tmp <= 4)
+            direction = tmp;
+        else if (tmp >= 10 && tmp <= 30 && tmp != currentLib)
+        {
+            release_wrapper(disp);
+            startGame(tmp);
+        }
+        else if (tmp == 0)
+        {
+            release_wrapper(disp);
+            exit(0);
+        }
     }
-
-    // gameLoop(disp, allElenents, obstacles, targets);
-    release_wrapper(disp);
 }
 
 //TODO:create separeted object for loader or functor or smth else

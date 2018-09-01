@@ -2,7 +2,7 @@
 
 // Function prototypes
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
-static int lastDirection = 3;
+static int lastDirection = -1;
 
 GLFWWrapper::~GLFWWrapper()
 {
@@ -16,6 +16,11 @@ GLFWWrapper::GLFWWrapper(int width, int height)
     glfwInit();
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     win = glfwCreateWindow(m_width / 2, m_height / 2, "Nibbler", NULL, NULL);
+    if(!win)
+    {
+        std::cout << "HER\n";
+        exit(10);
+    }
     glfwMakeContextCurrent(win);
     glfwSetKeyCallback(win, key_callback);
 }
@@ -37,7 +42,10 @@ int GLFWWrapper::getEvent()
 {
     // Check if any events have been activiated (key pressed, mouse moved etc.)
     // and call corresponding response functions
+    if (!win)
+        std::cout << "win not good" << std::endl;
     glfwPollEvents();
+    
     if(glfwWindowShouldClose(win))
         return 0;
 	return lastDirection;
@@ -58,6 +66,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         lastDirection = 1;
     else if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
         lastDirection = 4;
+    else if (key == GLFW_KEY_1)
+        lastDirection = 10;
+    else if (key == GLFW_KEY_2)
+        lastDirection = 20;
+    else if (key == GLFW_KEY_3)
+        lastDirection = 30;
 }
 
 extern "C" GUIDisplay *create_wrapper(int w, int h)

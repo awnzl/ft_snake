@@ -73,6 +73,15 @@ int SDL2Wrapper::getEvent()
                 case SDLK_DOWN:
                     lastDirection = 4;
                     break;
+                case SDLK_1:
+                    lastDirection = 10;
+                    break;
+                case SDLK_2:
+                    lastDirection = 20;
+                    break;
+                case SDLK_3:
+                    lastDirection = 30;
+                    break;
                 default:
                     break;
             }

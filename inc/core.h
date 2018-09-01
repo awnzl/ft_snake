@@ -57,8 +57,12 @@ class GameCore
     int     lastDirection;
     int     m_width;
     int     m_height;
+    int     currentLib;
 
-    AudioWrapper sound;
+    Block           *target;
+    Block           *bonusTarget;
+    GUIDisplay      *disp;
+    AudioWrapper    sound;
 
     std::uint8_t target_pixels_map[BLOCK_PIXELS_SIZE];
     std::uint8_t obstacle_pixels_map[BLOCK_PIXELS_SIZE];
@@ -67,8 +71,6 @@ class GameCore
 
     std::vector<Block*> obstacles;
     std::vector<Block*> snake;
-    Block* target;
-    Block* bonusTarget;
 
     void    fillPixelsToPixelsMap(std::uint8_t *px, std::uint32_t color);
     // void	fillBlocks();
@@ -78,7 +80,6 @@ class GameCore
                                  int rowLength, std::uint32_t color = 0x186a64ff);
     void	fillBackground(std::uint8_t *image);
     void	insertElements(std::uint8_t *pixels);
-    void	initElements();
     void    updateSnake(int nx, int ny);
     void    updateTarget(Block *target);
     void    increaseSnake(int nx, int ny);
@@ -94,18 +95,21 @@ class GameCore
     //                  std::array<Block*, OBJSIZE> &obstacles,
     //                  std::array<Block*, TARGETSSIZE> &targets);
 
-    void *load_lib(std::string libname);
+    void    *load_lib(std::string libname);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     // Debug functions																			//
     //////////////////////////////////////////////////////////////////////////////////////////////
-    int pixToInt(int x, int y, std::uint8_t *pixels);
+    int     pixToInt(int x, int y, std::uint8_t *pixels);
+    void    run(void    *lib_discr);
 
 public:
     //TODO: canonical form!!!!!!!!!
     GameCore(int w, int h);
     ~GameCore();
-    void run();
+    
+    void	initElements();
+    void    startGame(int libNumber);
 };
 
 #endif
