@@ -4,81 +4,25 @@
 #include <unistd.h>
 #include "core.h"
 #include "timer.h"
-//#include "pngreader.h"
+#include "../IMGLoader/imgloader.h"
 
-GameCore::GameCore(int w, int h) : 
-                                direction(3),
-                                lastDirection(3),
-                                m_width(w * BLOCK_SIZE),
-                                m_height(h * BLOCK_SIZE)
+GameCore::GameCore(int w, int h) :
+    direction(3),
+    lastDirection(3),
+    m_width(w * BLOCK_SIZE),
+    m_height(h * BLOCK_SIZE)
 {
     //TODO: temporary block start:
     fillPixelsToPixelsMap(target_pixels_map, 0xf0ff0fFF);
-    fillPixelsToPixelsMap(obstacle_pixels_map, 0x000000FF);
-    // fillPixelsToPixelsMap(snake_pixels_map, 0x00ff00FF);
+    fillPixelsToPixelsMap(obstacle_pixels_map, 0xFF0000FF);
 
-    // std::cout << "before pr\n";
-    // PngReader pr;
-    // std::cout << "after pr\n";
-    // snake_pixels_map = pr.readPixels((char*)"snake_body_simple.png");
-    // std::cout << "after read pr\n";
+    void *lib_discr = load_lib("IMGLoader/imgloader.so");
+    std::function<IMGLoader*()> create_loader((IMGLoader*(*)())dlsym(lib_discr, "createImgLoader"));
+    std::function<void(IMGLoader*)> release_loader((void(*)(IMGLoader*))dlsym(lib_discr, "releaseImgLoader"));
+    IMGLoader *imloader = create_loader();
+    snake_pixels_map = imloader->getPixelMap("snake_body_simple.png");
 
-    // for (int i = 0; i < 16*16*4; i++)
-    //     std::cout << (int)snake_pixels_map[i] << ", ";
-    // std::cout << std::endl;
-    // snake_pixels_map = [this]() {
-    //     uint32_t value = 0x2c8e40FF;
-    //     std::uint8_t *px = new std::uint8_t[16*16*4];
-    //     fillPixelsToPixelsMap(uint32_t)*(px, value);
-    //     for (int y = 2; y < 14; y++)
-    //     {
-    //         for (int x = 2; x < 14; x++)
-    //         {
-    //             std::cout << "color & 0xff: " << (value & 0xFF) << std::endl;
-    //             std::cout << "debug: snake: "<<value << "\n";
-    //             std::cout << "debug: r: " << (value >> 24 & 0xFF)
-    //                             << " g: " << (value >> 16 & 0xFF)
-    //                             << " b: " << (value >> 8 & 0xFF) << "\n";
-    //         }
-    //     }
-    //     return px;
-    // }();
-    snake_pixels_map = [this]() {
-        std::uint8_t *px = new uint8_t[16*16*4];
-        for (int i = 0, idx = 0; i < 16*16*4; i+=4, idx++)
-        {
-            uint32_t tmp[] = {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  3973279743U,  3973279743U,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  3973279743U,  3973279743U,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  0,  0,  0,  0,  0,  1936946175,  1936946175,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  0,  0,  0,  0,  0,  1936946175,  1936946175,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0};
-
-            union {
-                uint32_t val;
-                uint8_t pix[4];
-            };
-            val = tmp[idx];
-            // std::cout << val << " " << (int)pix[0]<< " " << (int)pix[1]<< " " << (int)pix[2]<< " " << (int)pix[3] << " ";
-            px[i+0] = pix[2];//b
-            px[i+1] = pix[1];//g
-            px[i+2] = pix[0];//r
-            px[i+3] = pix[3];
-            // std::cout << " |" << (int)px[i+0]<< " " << (int)px[i+1]<< " " << (int)px[i+2]<< " " << (int)px[i+3] << "| ";
-        }
-
-        return px;
-    }();
+    release_loader(imloader);
 }
 
 GameCore::~GameCore()
@@ -101,20 +45,13 @@ void    GameCore::fillPixelsToPixelsMap(std::uint8_t *px, uint32_t color)
 }
 
 void    GameCore::setPixelToPixelArray(int x, int y, std::uint8_t *pixels,
-                                       int rowLength, uint32_t color /* = 0xbbc59eff */)
+                                       int rowLength, uint32_t color /* = 0x186a64ff */)
 {
-    // std::cout << "setPixelToPixelArray_1" << std::endl;
     int idx = (y * rowLength + x) * 4;
-    // pixels[idx + 3] = color >> 24; //a
-    // pixels[idx + 2] = color >> 16; //r
-    // pixels[idx + 1] = color >> 8;  //g
-    // pixels[idx + 0] = color;       //b
-    //next works for sfml (becouse alpha [3] and red [2])
     pixels[idx + 0] = color >> 24; //b
     pixels[idx + 1] = color >> 16; //g
     pixels[idx + 2] = color >> 8;  //r
     pixels[idx + 3] = color;       //a
-    // std::cout << "setPixelToPixelArray_2" << std::endl;
 }
 
 void    GameCore::fillBackground(std::uint8_t *pixels)
@@ -126,11 +63,13 @@ void    GameCore::fillBackground(std::uint8_t *pixels)
 
 void    GameCore::insertBlockToScene(int bx, int by, std::uint8_t *block, std::uint8_t *scene)
 {
-    for (int y = 0; y < BLOCK_SIZE; y++)
+    for (int y = 0, nextRow = 0; y < BLOCK_SIZE; y++)
     {
         int idx = ((by + y) * m_width + bx) * 4;
-        for (int i = 0; i < BLOCK_SIZE * 4; i++)
+        for (int i = nextRow; i < nextRow + BLOCK_SIZE * 4; i++)
             scene[idx++] = block[i];
+
+        nextRow += BLOCK_SIZE * 4;
     }
 }
 
@@ -237,7 +176,6 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
         case (4):
             nextY += (snake[0]->y + BLOCK_SIZE >= m_height) ? 0 : BLOCK_SIZE;
             break;
-        
     }
 
     if (checkTarget(nextX, nextY, target))
@@ -274,7 +212,7 @@ bool    GameCore::checkTarget(int x, int y, Block* target)
 {
     if (target->isVisible && target->x == x && target->y == y)
         return true;
-    else    
+    else
         return false;
 }
 
