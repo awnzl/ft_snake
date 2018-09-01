@@ -37,7 +37,7 @@ void SFMLWrapper::render(uint8_t *rawImage)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 int SFMLWrapper::getEvent()
 {
-    static int lastDirection = 3;
+    static int lastDirection = -1;
     while (win->pollEvent(*event)) {
         if (event->type == sf::Event::Closed ||
             event->key.code == sf::Keyboard::Escape) {
@@ -54,6 +54,15 @@ int SFMLWrapper::getEvent()
             break;
         } else if (event->key.code ==  sf::Keyboard::Down) {
             lastDirection = 4;
+            break;
+        } else if (event->key.code ==  sf::Keyboard::Num1) {
+            lastDirection = 10;
+            break;
+        } else if (event->key.code ==  sf::Keyboard::Num2) {
+            lastDirection = 20;
+            break;
+        } else if (event->key.code ==  sf::Keyboard::Num3) {
+            lastDirection = 30;
             break;
         }
     }
