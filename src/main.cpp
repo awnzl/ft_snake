@@ -47,8 +47,7 @@ int main(int ac, char *av[])
                 throw std::invalid_argument(exceptionMessage);
             GameCore *gc = new GameCore(width, height);
             // timer.setTimeScale(0.2f);//TODO: replace by value of mandatory's requiroment
-            gc->initElements();
-            gc->startGame(10);
+            gc->run();
             delete gc;
         }
         else

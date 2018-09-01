@@ -20,7 +20,7 @@ GameCore::GameCore(int w, int h) :
     std::function<IMGLoader*()> create_loader((IMGLoader*(*)())dlsym(lib_discr, "createImgLoader"));
     std::function<void(IMGLoader*)> release_loader((void(*)(IMGLoader*))dlsym(lib_discr, "releaseImgLoader"));
     IMGLoader *imloader = create_loader();
-    snake_pixels_map = imloader->getPixelMap("snake_body_simple.png");
+    snake_pixels_map = imloader->getPixelMap("assets/snake_body_simple.png");
 
     release_loader(imloader);
 }
@@ -162,9 +162,6 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
     int nextX = snake[0]->x;
     int nextY = snake[0]->y;
 
-    std::cout << "lastDirection 4: "  << std::to_string(lastDirection) << std::endl;
-    std::cout << "Direction     4: " << std::to_string(direction) << std::endl;
-
     switch (direction)
     {
         case (1):
@@ -250,10 +247,9 @@ bool    GameCore::checkObstacles(int x, int y)
 //     }
 // }
 
-void    GameCore::startGame(int libNumber)
+void    GameCore::getLib(int libNumber)
 {
-    void    *lib_discr;
-
+    std::cout << "GameCore::getLib 1" << std::endl;
     currentLib = libNumber;
     if (libNumber == 10)
         lib_discr = load_lib("GLFWdl/glfwwrapper.so");
@@ -266,18 +262,20 @@ void    GameCore::startGame(int libNumber)
 
     disp = create_wrapper(m_width, m_height);
 
-    run(lib_discr);
+    std::cout << "GameCore::getLib 2" << std::endl;
 }
 
-void	GameCore::run(void    *lib_discr)
+void	GameCore::run()
 {
+    std::cout << "GameCore::run 1_1" << std::endl;
+
+    initElements();
+    getLib(10);
     int   periodForBonus = 0;
     Timer           timer;
     timer.setTimeScale(0.2f);//TODO: replace by value of mandatory's requiroment
-    std::uint8_t m_pixels[m_width * m_height * 4 + 1];
-
+    std::uint8_t m_pixels[m_width * m_height * 4];
     std::function<void(GUIDisplay*)> release_wrapper((void(*)(GUIDisplay*))dlsym(lib_discr, "release_wrapper"));
-    
     sound.startGame();
     while (direction)
     {
@@ -308,7 +306,8 @@ void	GameCore::run(void    *lib_discr)
         else if (tmp >= 10 && tmp <= 30 && tmp != currentLib)
         {
             release_wrapper(disp);
-            startGame(tmp);
+            currentLib = tmp;
+            getLib(tmp);
         }
         else if (tmp == 0)
         {
@@ -316,6 +315,7 @@ void	GameCore::run(void    *lib_discr)
             exit(0);
         }
     }
+    std::cout << "GameCore::run 2" << std::endl;
 }
 
 //TODO:create separeted object for loader or functor or smth else

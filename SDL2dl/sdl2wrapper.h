@@ -10,6 +10,7 @@ class SDL2Wrapper : public GUIDisplay
 {
     int          m_width;
     int          m_height;
+    int          lastDirection;
     SDL_Window   *win;
     SDL_Renderer *ren;
     SDL_Texture  *tex;

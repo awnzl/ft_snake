@@ -4,6 +4,7 @@ SDL2Wrapper::SDL2Wrapper(int w, int h)
 {
     m_width = w;
     m_height = h;
+    lastDirection = -1;
 
     checkError(SDL_Init(SDL_INIT_VIDEO) != 0, "SDL_Init Error: ");
 
@@ -39,6 +40,7 @@ void SDL2Wrapper::checkError(bool condition, std::string s)
 
 void SDL2Wrapper::render(uint8_t *rawImage)
 {
+    std::cout << "GLFWWrapper::render 1" << std::endl;
     SDL_UpdateTexture(tex, NULL, rawImage, m_width * sizeof(uint32_t));
 
     std::cerr << "debug:/n";
@@ -46,11 +48,12 @@ void SDL2Wrapper::render(uint8_t *rawImage)
     SDL_RenderClear(ren);
     SDL_RenderCopy(ren, tex, NULL, NULL);
     SDL_RenderPresent(ren);
+    std::cout << "GLFWWrapper::render 2" << std::endl;
 }
 
 int SDL2Wrapper::getEvent()
 {
-    static int lastDirection = 3;
+    std::cout << "SDL2Wrapper::getEvent 1" << std::endl;
 
     SDL_PollEvent(event);
 
@@ -87,6 +90,8 @@ int SDL2Wrapper::getEvent()
             }
     }
 
+    std::cout << lastDirection << std::endl;
+    std::cout << "SDL2Wrapper::getEvent 2" << std::endl;
 	return lastDirection;
 }
 

@@ -10,6 +10,7 @@ class SFMLWrapper : public GUIDisplay
 {
     int                 m_width;
     int                 m_height;
+    int                 lastDirection;
     sf::RenderWindow    *win;
     sf::Image           *im;
     sf::Texture         *texture;

@@ -58,6 +58,7 @@ class GameCore
     int     m_width;
     int     m_height;
     int     currentLib;
+    void    *lib_discr;
 
     Block           *target;
     Block           *bonusTarget;
@@ -101,15 +102,16 @@ class GameCore
     // Debug functions																			//
     //////////////////////////////////////////////////////////////////////////////////////////////
     int     pixToInt(int x, int y, std::uint8_t *pixels);
-    void    run(void    *lib_discr);
+    void    getLib(int libNumber);
+    void	initElements();
 
 public:
     //TODO: canonical form!!!!!!!!!
     GameCore(int w, int h);
     ~GameCore();
     
-    void	initElements();
-    void    startGame(int libNumber);
+    void    run();
+    
 };
 
 #endif

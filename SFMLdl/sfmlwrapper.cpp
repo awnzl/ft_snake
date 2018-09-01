@@ -18,11 +18,13 @@ SFMLWrapper::SFMLWrapper(int w, int h) :
     sprite(new sf::Sprite),
     event(new sf::Event)
 {
+    lastDirection = -1;
     texture->create(m_width, m_height);
 }
 
 void SFMLWrapper::render(uint8_t *rawImage)
 {
+    std::cout << "SFMLWrapper::render 1" << std::endl;
     im->create(m_width, m_height, rawImage);
 
     texture->loadFromImage(*im);
@@ -30,6 +32,7 @@ void SFMLWrapper::render(uint8_t *rawImage)
     win->clear(sf::Color::White);
     win->draw(*sprite);
     win->display();
+    std::cout << "SFMLWrapper::render 2" << std::endl;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +40,7 @@ void SFMLWrapper::render(uint8_t *rawImage)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 int SFMLWrapper::getEvent()
 {
-    static int lastDirection = -1;
+    std::cout << "SFMLWrapper::getEvent 1" << std::endl;
     while (win->pollEvent(*event)) {
         if (event->type == sf::Event::Closed ||
             event->key.code == sf::Keyboard::Escape) {
@@ -66,6 +69,8 @@ int SFMLWrapper::getEvent()
             break;
         }
     }
+    std::cout << lastDirection << std::endl;
+    std::cout << "SFMLWrapper::getEvent 2" << std::endl;
 	return lastDirection;
 }
 
