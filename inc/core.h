@@ -101,7 +101,7 @@ class GameCore
     //////////////////////////////////////////////////////////////////////////////////////////////
     // Debug functions																			//
     //////////////////////////////////////////////////////////////////////////////////////////////
-    int     pixToInt(int x, int y, std::uint8_t *pixels);
+    int     pixToInt(int x, int y, int rowWidth, std::uint8_t *pixels);
     void    getLib(int libNumber);
     void	initElements();
 
@@ -109,9 +109,9 @@ public:
     //TODO: canonical form!!!!!!!!!
     GameCore(int w, int h);
     ~GameCore();
-    
+
     void    run();
-    
+
 };
 
 #endif

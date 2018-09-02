@@ -48,10 +48,10 @@ void    GameCore::setPixelToPixelArray(int x, int y, std::uint8_t *pixels,
                                        int rowLength, uint32_t color /* = 0x186a64ff */)
 {
     int idx = (y * rowLength + x) * 4;
-    pixels[idx + 0] = color >> 24; //b
-    pixels[idx + 1] = color >> 16; //g
-    pixels[idx + 2] = color >> 8;  //r
-    pixels[idx + 3] = color;       //a
+    pixels[idx++] = color >> 24; //b
+    pixels[idx++] = color >> 16; //g
+    pixels[idx++] = color >> 8;  //r
+    pixels[idx] = color;         //a
 }
 
 void    GameCore::fillBackground(std::uint8_t *pixels)
@@ -66,8 +66,16 @@ void    GameCore::insertBlockToScene(int bx, int by, std::uint8_t *block, std::u
     for (int y = 0, nextRow = 0; y < BLOCK_SIZE; y++)
     {
         int idx = ((by + y) * m_width + bx) * 4;
-        for (int i = nextRow; i < nextRow + BLOCK_SIZE * 4; i++)
-            scene[idx++] = block[i];
+        for (int i = nextRow; i < nextRow + BLOCK_SIZE * 4; i += 4)
+            if (block[i + 3])
+            {
+                scene[idx++] = block[i];
+                scene[idx++] = block[i + 1];
+                scene[idx++] = block[i + 2];
+                scene[idx++] = block[i + 3];
+            }
+            else
+                idx += 4;
 
         nextRow += BLOCK_SIZE * 4;
     }
@@ -270,7 +278,7 @@ void	GameCore::run()
     std::cout << "GameCore::run 1_1" << std::endl;
 
     initElements();
-    getLib(10);
+    getLib(20);
     int   periodForBonus = 0;
     Timer           timer;
     timer.setTimeScale(0.2f);//TODO: replace by value of mandatory's requiroment
@@ -339,9 +347,9 @@ void *GameCore::load_lib(std::string libname)
 // Debug functions																			    //
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-int GameCore::pixToInt(int x, int y, std::uint8_t *pixels)
+int GameCore::pixToInt(int x, int y, int rowWidth, std::uint8_t *pixels)
 {
-    int idx = (y * WIDTH_HEIGTH + x) * 4;
+    int idx = (y * rowWidth + x) * 4;
     // return ((pixels[idx + 3] << 24) +
     //         (pixels[idx + 2] << 16) +
     //         (pixels[idx + 1] << 8) + (pixels[idx]));
