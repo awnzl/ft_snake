@@ -1,5 +1,5 @@
 NAME	= nibbler
-SDL2	= libsdl2
+DLLIBS	=
 
 SHELL	= /bin/bash
 CC		= clang++
@@ -9,7 +9,7 @@ SRCDIR	= ./src
 INCDIR	= ./inc
 OBJDIR	= ./obj
 
-SRC		= main.cpp core.cpp timer.cpp audiowrapper.cpp #pngreader.cpp #minilibxwrapper.cpp
+SRC		= main.cpp core.cpp timer.cpp audiowrapper.cpp
 
 $LEXP1	= export CPLUS_INCLUDE_PATH=/Users/itsuman/.brew/include
 $LEXP2	= export LD_LIBRARY_PATH=/User/itsuman/.brew/Cellar/sfml/2.4.2_1/lib1
@@ -17,7 +17,7 @@ $LEXP2	= export LD_LIBRARY_PATH=/User/itsuman/.brew/Cellar/sfml/2.4.2_1/lib1
 ATTR	= -std=c++11
 #TODO: move audio to dynamic lib and rm sdl2_mixer from LBS
 LBS		= -I IMGLoader -I ~/.brew/include -L ~/.brew/lib \
-			-Wl,-rpath, ~/.brew/lib -lSDL2-2.0.0 -lSDL2_mixer -framework OpenGL -framework AppKit
+			-Wl,-rpath, ~/.brew/lib -lSDL2-2.0.0 -lSDL2_mixer
 
 
 OBJ		= $(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
@@ -26,14 +26,14 @@ $(NAME) : exp obj $(OBJ)
 	$(CC) $(FLG) $(OBJ) $(ATTR) $(LBS) -o $(NAME)
 
 
-all		: $(SDL2) $(NAME)
-
-$(SDL2):
-    #brew install sdl2
+all		: $(NAME)
 
 exp	:
 	set -e; \
     . ./define-my-variables.sh
+	@make -C GLFWdl/
+	@make -C SFMLdl/
+	@make -C SDL2dl/
 
 # echo SHELL export CPLUS_INCLUDE_PATH=/Users/itsuman/.brew/include
 # echo SHELL export LD_LIBRARY_PATH=/User/itsuman/.brew/Cellar/sfml/2.4.2_1/lib

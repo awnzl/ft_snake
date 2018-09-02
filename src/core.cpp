@@ -20,7 +20,11 @@ GameCore::GameCore(int w, int h) :
     std::function<IMGLoader*()> create_loader((IMGLoader*(*)())dlsym(lib_discr, "createImgLoader"));
     std::function<void(IMGLoader*)> release_loader((void(*)(IMGLoader*))dlsym(lib_discr, "releaseImgLoader"));
     IMGLoader *imloader = create_loader();
-    snake_pixels_map = imloader->getPixelMap("assets/snake_body_simple.png");
+    snake_body_pixels_map = imloader->getPixelMap("assets/body.png");
+    snake_h_north_pixels_map = imloader->getPixelMap("assets/head_north.png");
+    snake_h_south_pixels_map = imloader->getPixelMap("assets/head_south.png");
+    snake_h_west_pixels_map = imloader->getPixelMap("assets/head_west.png");
+    snake_h_east_pixels_map = imloader->getPixelMap("assets/head_east.png");
 
     release_loader(imloader);
 }
@@ -117,14 +121,16 @@ void    GameCore::initElements()
     // targets[3] = new Block(23*BLOCK_SIZE, 18*BLOCK_SIZE, true, Type::Target, target_pixels_map);
 
     int halfSize = BLOCK_SIZE * (BLOCKS_PER_SIDE / 2 - 1);
-    snake.push_back(new Block(halfSize + BLOCK_SIZE, halfSize, true, Type::Snake, snake_pixels_map));
-    snake.push_back(new Block(halfSize, halfSize, true, Type::Snake, snake_pixels_map));
-    snake.push_back(new Block(halfSize - BLOCK_SIZE, halfSize, true, Type::Snake, snake_pixels_map));
-    snake.push_back(new Block(halfSize - 2*BLOCK_SIZE, halfSize, true, Type::Snake, snake_pixels_map));
+    snake.push_back(new Block(halfSize + BLOCK_SIZE, halfSize, true, Type::Snake, getHeadPixels()));
+    snake.push_back(new Block(halfSize, halfSize, true, Type::Snake, snake_body_pixels_map));
+    snake.push_back(new Block(halfSize - BLOCK_SIZE, halfSize, true, Type::Snake, snake_body_pixels_map));
+    snake.push_back(new Block(halfSize - 2*BLOCK_SIZE, halfSize, true, Type::Snake, snake_body_pixels_map));
 }
 
 void    GameCore::updateSnake(int nx, int ny)
 {
+    snake[0]->pxls = getHeadPixels();
+
     int previousElementX = snake[0]->x;
     int previousElementY = snake[0]->y;
     int tmpX, tmpY;
@@ -158,7 +164,7 @@ void    GameCore::updateTarget(Block *m_target)
 
 void    GameCore::increaseSnake(int nx, int ny)
 {
-    snake.push_back(new Block(nx, ny, true, Type::Snake, snake_pixels_map));
+    snake.push_back(new Block(nx, ny, true, Type::Snake, snake_body_pixels_map));
 }
 
 //		1
@@ -214,6 +220,23 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
     fillBackground(pixels);
     insertElements(pixels);
     return pixels;
+}
+
+std::uint8_t    *GameCore::getHeadPixels()
+{
+    switch (direction)
+    {
+        case 1:
+            return snake_h_north_pixels_map;
+        case 4:
+            return snake_h_south_pixels_map;
+        case 2:
+            return snake_h_west_pixels_map;
+        case 3:
+            return snake_h_east_pixels_map;
+        default:
+            return snake_h_north_pixels_map;
+    }
 }
 
 bool    GameCore::checkTarget(int x, int y, Block* target)

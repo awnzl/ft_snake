@@ -19,6 +19,6 @@ $(SDL2):
 clean	: fclean
 
 fclean	:
-	rm -f $(NAME)
+	@rm -f $(NAME)
 
 re		: fclean all

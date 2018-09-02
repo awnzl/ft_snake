@@ -67,8 +67,11 @@ class GameCore
 
     std::uint8_t target_pixels_map[BLOCK_PIXELS_SIZE];
     std::uint8_t obstacle_pixels_map[BLOCK_PIXELS_SIZE];
-    // std::uint8_t snake_pixels_map[BLOCK_PIXELS_SIZE];
-    std::uint8_t *snake_pixels_map;
+    std::uint8_t *snake_body_pixels_map;
+    std::uint8_t *snake_h_north_pixels_map;
+    std::uint8_t *snake_h_south_pixels_map;
+    std::uint8_t *snake_h_west_pixels_map;
+    std::uint8_t *snake_h_east_pixels_map;
 
     std::vector<Block*> obstacles;
     std::vector<Block*> snake;
@@ -86,6 +89,7 @@ class GameCore
     void    increaseSnake(int nx, int ny);
 
     std::uint8_t	*getImage(std::uint8_t *pixels);
+    std::uint8_t	*getHeadPixels();
 
     bool    checkTarget(int x, int y, Block* target);
     bool    checkObstacles(int x, int y);
