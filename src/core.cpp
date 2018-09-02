@@ -31,13 +31,20 @@ GameCore::GameCore(int w, int h) :
 
 GameCore::~GameCore()
 {
-    //TODO: free blocks arrays content
+    //TODO: free block's arrays content
     for (auto e: obstacles)
         delete e;
     for (auto e: snake)
         delete e;
     delete target;
     delete bonusTarget;
+    // delete target_pixels_map;
+    // delete obstacle_pixels_map;
+    delete snake_body_pixels_map;
+    delete snake_h_north_pixels_map;
+    delete snake_h_south_pixels_map;
+    delete snake_h_west_pixels_map;
+    delete snake_h_east_pixels_map;
 }
 
 //uses to fill pixel arrays for blocks
@@ -359,7 +366,8 @@ void *GameCore::load_lib(std::string libname)
 
     if (!lib_discriptor)
 	{
-		printf("***ERROR***\ndescriptor is not present: %s\n***********\n", dlerror());
+		std::cout << "*** DINAMYC LIBRARY LOADING ERROR ***\ndescriptor is not present: "
+                  << dlerror() << std::endl;
 		exit(1);
 	}
 
