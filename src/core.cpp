@@ -16,17 +16,22 @@ GameCore::GameCore(int w, int h) :
     fillPixelsToPixelsMap(target_pixels_map, 0xf0ff0fFF);
     fillPixelsToPixelsMap(obstacle_pixels_map, 0xFF0000FF);
 
-    void *lib_discr = load_lib("IMGLoader/imgloader.so");
-    std::function<IMGLoader*()> create_loader((IMGLoader*(*)())dlsym(lib_discr, "createImgLoader"));
-    std::function<void(IMGLoader*)> release_loader((void(*)(IMGLoader*))dlsym(lib_discr, "releaseImgLoader"));
-    IMGLoader *imloader = create_loader();
+    void *imageLoaderDiscriptor = loadLib("IMGLoader/imgloader.so");
+    std::function<IMGLoader*()> createImgLoader((IMGLoader*(*)())dlsym(imageLoaderDiscriptor, "createImgLoader"));
+    std::function<void(IMGLoader*)> releaseImgLoader((void(*)(IMGLoader*))dlsym(imageLoaderDiscriptor, "releaseImgLoader"));
+    IMGLoader *imloader = createImgLoader();
+
     snake_body_pixels_map = imloader->getPixelMap("assets/body.png");
     snake_h_north_pixels_map = imloader->getPixelMap("assets/head_north.png");
     snake_h_south_pixels_map = imloader->getPixelMap("assets/head_south.png");
     snake_h_west_pixels_map = imloader->getPixelMap("assets/head_west.png");
     snake_h_east_pixels_map = imloader->getPixelMap("assets/head_east.png");
 
-    release_loader(imloader);
+    releaseImgLoader(imloader);
+
+    std::function<AudioWrapper*()> createAudioWrapper((AudioWrapper*(*)())dlsym(loadLib("AudioWrapper/audiowrapper.so"), "createAudioWrapper"));
+    sound = createAudioWrapper();
+
 }
 
 GameCore::~GameCore()
@@ -45,6 +50,9 @@ GameCore::~GameCore()
     delete snake_h_south_pixels_map;
     delete snake_h_west_pixels_map;
     delete snake_h_east_pixels_map;
+
+    std::function<void(AudioWrapper*)> releaseAudioWrapper((void(*)(AudioWrapper*))dlsym(loadLib("AudioWrapper/audiowrapper.so"), "releaseAudioWrapper"));
+    releaseAudioWrapper(sound);
 }
 
 //uses to fill pixel arrays for blocks
@@ -103,9 +111,6 @@ void    GameCore::insertElements(std::uint8_t *pixels)
     insertBlockToScene(target->x, target->y, target->pxls, pixels);
     if (bonusTarget->isVisible)
         insertBlockToScene(bonusTarget->x, bonusTarget->y, bonusTarget->pxls, pixels);
-    // for (auto e: targets)
-    //     if (e->isVisible)
-    //         insertBlockToScene(e->x, e->y, e->pxls, pixels);
 
     for (auto e: snake)
         insertBlockToScene(e->x, e->y, e->pxls, pixels);
@@ -201,14 +206,14 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
 
     if (checkTarget(nextX, nextY, target))
     {
-        sound.soundEat();
+        sound->soundEat();
         increaseSnake(nextX, nextY);
         updateTarget(target);
     }
 
     if (checkTarget(nextX, nextY, bonusTarget))
     {
-        sound.soundEat();
+        sound->soundEat();
         increaseSnake(nextX, nextY);
         updateTarget(bonusTarget);
         bonusTarget->isVisible = false;
@@ -216,7 +221,7 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
 
     if (checkObstacles(nextX, nextY))
     {
-        sound.endGame();
+        sound->endGame();
         exit(0);
     }
     else
@@ -290,11 +295,11 @@ void    GameCore::getLib(int libNumber)
     std::cout << "GameCore::getLib 1" << std::endl;
     currentLib = libNumber;
     if (libNumber == 10)
-        lib_discr = load_lib("GLFWdl/glfwwrapper.so");
+        lib_discr = loadLib("GLFWdl/glfwwrapper.so");
     else if (libNumber == 20)
-        lib_discr = load_lib("SFMLdl/sfmlwrapper.so");
+        lib_discr = loadLib("SFMLdl/sfmlwrapper.so");
     else if (libNumber == 30)
-        lib_discr = load_lib("SDL2dl/sdl2wrapper.so");
+        lib_discr = loadLib("SDL2dl/sdl2wrapper.so");
 
     std::function<GUIDisplay*(int, int)> create_wrapper((GUIDisplay*(*)(int, int))dlsym(lib_discr, "create_wrapper"));
 
@@ -314,7 +319,7 @@ void	GameCore::run()
     timer.setTimeScale(0.2f);//TODO: replace by value of mandatory's requiroment
     std::uint8_t m_pixels[m_width * m_height * 4];
     std::function<void(GUIDisplay*)> release_wrapper((void(*)(GUIDisplay*))dlsym(lib_discr, "release_wrapper"));
-    sound.startGame();
+    sound->startGame();
     while (direction)
     {
         timer.tick();
@@ -327,7 +332,7 @@ void	GameCore::run()
                 lastDirection = direction;
             timer.reset();
             disp->render(getImage(m_pixels));
-            sound.soundStep();
+            sound->soundStep();
             periodForBonus++;
         }
         if (periodForBonus == 30)
@@ -358,7 +363,7 @@ void	GameCore::run()
 
 //TODO:create separeted object for loader or functor or smth else
 //TODO: adjust realese resourses
-void *GameCore::load_lib(std::string libname)
+void *GameCore::loadLib(std::string libname)
 {
     void *lib_discriptor;
 

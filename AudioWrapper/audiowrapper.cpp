@@ -1,9 +1,10 @@
 #include "audiowrapper.h"
 
-AudioWrapper::AudioWrapper() {
+AudioWrapper::AudioWrapper()
+{
 	// Initialize SDL.
-	SDL_Init(SDL_INIT_EVERYTHING);		
-	//Initialize SDL_mixer 
+	SDL_Init(SDL_INIT_EVERYTHING);
+	//Initialize SDL_mixer
 	Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 );
 	// Load sound effects
 	startSound = Mix_LoadWAV("audio/startGame.wav");
@@ -12,13 +13,14 @@ AudioWrapper::AudioWrapper() {
 	endSound = Mix_LoadMUS("audio/gameOver.wav");
 }
 
-AudioWrapper::~AudioWrapper() {
+AudioWrapper::~AudioWrapper()
+{
 	// clean up our resources
 	Mix_FreeChunk(startSound);
 	Mix_FreeChunk(eat);
 	Mix_FreeChunk(step);
 	Mix_FreeMusic(endSound);
-	
+
 	// quit SDL_mixer
 	Mix_CloseAudio();
 }
@@ -43,4 +45,14 @@ void AudioWrapper::endGame()
 	Mix_PlayMusic( endSound, 0);
 
 	while ( Mix_PlayingMusic() ) ;
+}
+
+extern "C" AudioWrapper *createAudioWrapper()
+{
+    return new AudioWrapper();
+}
+
+extern "C" void releaseAudioWrapper(AudioWrapper *ptr)
+{
+    delete ptr;
 }

@@ -8,7 +8,7 @@
 #include <sstream>//TODO: delete this include
 #include "defines.h"
 #include "guidisplay.h"
-#include "audiowrapper.h"
+#include "../AudioWrapper/audiowrapper.h"
 
 class GameCore
 {
@@ -63,7 +63,7 @@ class GameCore
     Block           *target;
     Block           *bonusTarget;
     GUIDisplay      *disp;
-    AudioWrapper    sound;
+    AudioWrapper    *sound;
 
     std::uint8_t target_pixels_map[BLOCK_PIXELS_SIZE];
     std::uint8_t obstacle_pixels_map[BLOCK_PIXELS_SIZE];
@@ -100,7 +100,7 @@ class GameCore
     //                  std::array<Block*, OBJSIZE> &obstacles,
     //                  std::array<Block*, TARGETSSIZE> &targets);
 
-    void    *load_lib(std::string libname);
+    void    *loadLib(std::string libname);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     // Debug functions																			//
