@@ -9,15 +9,14 @@ SRCDIR	= ./src
 INCDIR	= ./inc
 OBJDIR	= ./obj
 
-SRC		= main.cpp core.cpp timer.cpp audiowrapper.cpp
+SRC		= main.cpp core.cpp timer.cpp
 
 $LEXP1	= export CPLUS_INCLUDE_PATH=/Users/itsuman/.brew/include
 $LEXP2	= export LD_LIBRARY_PATH=/User/itsuman/.brew/Cellar/sfml/2.4.2_1/lib1
 
 ATTR	= -std=c++11
 #TODO: move audio to dynamic lib and rm sdl2_mixer from LBS
-LBS		= -I IMGLoader -I ~/.brew/include -L ~/.brew/lib \
-			-Wl,-rpath, ~/.brew/lib -lSDL2-2.0.0 -lSDL2_mixer
+LBS		= -I AudioWrapper -I IMGLoader -I ~/.brew/include -L ~/.brew/lib
 
 
 OBJ		= $(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
@@ -34,6 +33,8 @@ exp	:
 	@make -C GLFWdl/
 	@make -C SFMLdl/
 	@make -C SDL2dl/
+	@make -C IMGLoader/
+	@make -C AudioWrapper/
 
 # echo SHELL export CPLUS_INCLUDE_PATH=/Users/itsuman/.brew/include
 # echo SHELL export LD_LIBRARY_PATH=/User/itsuman/.brew/Cellar/sfml/2.4.2_1/lib

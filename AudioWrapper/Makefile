@@ -5,14 +5,14 @@ CC		= clang++
 FLG		= -dynamiclib -flat_namespace #-Wall -Werror -Wextra TODO: uncomment
 
 ATTR	= -std=c++11
-LBS		= -I ../inc -I ~/.brew/include -L ~/.brew/lib \
-		  			-Wl,-rpath, ~/.brew/lib -lSDL2-2.0.0 -lSDL2_mixer
+LBS		= -I ~/.brew/include -L ~/.brew/lib -lSDL2_mixer
 
 $(NAME) :
 		$(CC) $(FLG) $(LBS) $(ATTR) audiowrapper.cpp -o $(NAME)
 
 all		: $(NAME)
 
+#TODO:
 $(SDL2):
 	    #brew install sdl2
 

@@ -5,7 +5,8 @@ CC		= clang++
 FLG		= -dynamiclib -flat_namespace #-Wall -Werror -Wextra TODO: uncomment
 
 ATTR	= -std=c++11
-LBS		= -I ../inc -I ~/.brew/include -L ~/.brew/lib -lsfml-graphics
+LBS		= -I ~/.brew/include -L ~/.brew/lib -lsfml-graphics \
+			-Wl,-rpath, ~/.brew/lib
 
 $(NAME) :
 	$(CC) $(FLG) $(LBS) $(ATTR) imgloader.cpp -o $(NAME)

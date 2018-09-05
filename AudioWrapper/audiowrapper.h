@@ -5,8 +5,8 @@
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL.h>
 
-class AudioWrapper {
-
+class AudioWrapper
+{
     AudioWrapper(AudioWrapper const &) = delete;
     AudioWrapper(AudioWrapper &&) = delete;
     AudioWrapper &operator=(AudioWrapper &) = delete;
@@ -21,10 +21,10 @@ public:
     AudioWrapper();
     ~AudioWrapper();
 
-    void    startGame();
-    void    soundEat();
-    void    soundStep();
-    void    endGame();
+    virtual void    startGame();
+    virtual void    soundEat();
+    virtual void    soundStep();
+    virtual void    endGame();
 };
 
 #endif

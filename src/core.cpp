@@ -6,6 +6,7 @@
 #include "timer.h"
 #include "../IMGLoader/imgloader.h"
 
+
 GameCore::GameCore(int w, int h) :
     direction(3),
     lastDirection(3),
@@ -17,8 +18,8 @@ GameCore::GameCore(int w, int h) :
     fillPixelsToPixelsMap(obstacle_pixels_map, 0xFF0000FF);
 
     void *imageLoaderDiscriptor = loadLib("IMGLoader/imgloader.so");
-    std::function<IMGLoader*()> createImgLoader((IMGLoader*(*)())dlsym(imageLoaderDiscriptor, "createImgLoader"));
-    std::function<void(IMGLoader*)> releaseImgLoader((void(*)(IMGLoader*))dlsym(imageLoaderDiscriptor, "releaseImgLoader"));
+    std::function<IMGLoader*()> createImgLoader(reinterpret_cast<IMGLoader*(*)()>(dlsym(imageLoaderDiscriptor, "createImgLoader")));
+    std::function<void(IMGLoader*)> releaseImgLoader(reinterpret_cast<void(*)(IMGLoader*)>(dlsym(imageLoaderDiscriptor, "releaseImgLoader")));
     IMGLoader *imloader = createImgLoader();
 
     snake_body_pixels_map = imloader->getPixelMap("assets/body.png");
@@ -29,9 +30,10 @@ GameCore::GameCore(int w, int h) :
 
     releaseImgLoader(imloader);
 
-    std::function<AudioWrapper*()> createAudioWrapper((AudioWrapper*(*)())dlsym(loadLib("AudioWrapper/audiowrapper.so"), "createAudioWrapper"));
+    std::function<AudioWrapper*()> createAudioWrapper(reinterpret_cast<AudioWrapper*(*)()>(dlsym(loadLib("AudioWrapper/audiowrapper.so"), "createAudioWrapper")));
+    std::cout << sound << std::endl;
     sound = createAudioWrapper();
-
+    std::cout << sound << std::endl;
 }
 
 GameCore::~GameCore()
@@ -51,7 +53,7 @@ GameCore::~GameCore()
     delete snake_h_west_pixels_map;
     delete snake_h_east_pixels_map;
 
-    std::function<void(AudioWrapper*)> releaseAudioWrapper((void(*)(AudioWrapper*))dlsym(loadLib("AudioWrapper/audiowrapper.so"), "releaseAudioWrapper"));
+    std::function<void(AudioWrapper*)> releaseAudioWrapper(reinterpret_cast<void(*)(AudioWrapper*)>(dlsym(loadLib("AudioWrapper/audiowrapper.so"), "releaseAudioWrapper")));
     releaseAudioWrapper(sound);
 }
 
@@ -301,7 +303,7 @@ void    GameCore::getLib(int libNumber)
     else if (libNumber == 30)
         lib_discr = loadLib("SDL2dl/sdl2wrapper.so");
 
-    std::function<GUIDisplay*(int, int)> create_wrapper((GUIDisplay*(*)(int, int))dlsym(lib_discr, "create_wrapper"));
+    std::function<GUIDisplay*(int, int)> create_wrapper(reinterpret_cast<GUIDisplay*(*)(int, int)>(dlsym(lib_discr, "create_wrapper")));
 
     disp = create_wrapper(m_width, m_height);
 
@@ -316,10 +318,12 @@ void	GameCore::run()
     getLib(20);
     int   periodForBonus = 0;
     Timer           timer;
-    timer.setTimeScale(0.2f);//TODO: replace by value of mandatory's requiroment
+    timer.setTimeScale(.3f);//TODO: replace by value of mandatory's requiroment
     std::uint8_t m_pixels[m_width * m_height * 4];
-    std::function<void(GUIDisplay*)> release_wrapper((void(*)(GUIDisplay*))dlsym(lib_discr, "release_wrapper"));
+    std::function<void(GUIDisplay*)> release_wrapper(reinterpret_cast<void(*)(GUIDisplay*)>(dlsym(lib_discr, "release_wrapper")));
+    std::cout << "~deb1\n";
     sound->startGame();
+    std::cout << "~deb2\n";
     while (direction)
     {
         timer.tick();
@@ -332,7 +336,7 @@ void	GameCore::run()
                 lastDirection = direction;
             timer.reset();
             disp->render(getImage(m_pixels));
-            sound->soundStep();
+            // sound->soundStep();
             periodForBonus++;
         }
         if (periodForBonus == 30)

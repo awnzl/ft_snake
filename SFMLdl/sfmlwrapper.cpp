@@ -12,7 +12,7 @@ SFMLWrapper::~SFMLWrapper()
 SFMLWrapper::SFMLWrapper(int w, int h) :
     m_width(w),
     m_height(h),
-    win(new sf::RenderWindow(sf::VideoMode(w, h), "nibbler")),
+    win(new sf::RenderWindow(sf::VideoMode(w, h), "nibbler/SFML")),
     im(new sf::Image()),
     texture(new sf::Texture),
     sprite(new sf::Sprite),

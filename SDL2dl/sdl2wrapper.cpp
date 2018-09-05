@@ -12,6 +12,8 @@ SDL2Wrapper::SDL2Wrapper(int w, int h)
                 m_height / 2, SDL_WINDOW_SHOWN, &win, &ren)),
         "SDL_CreateWindowAndRenderer Error: ");
 
+    SDL_SetWindowTitle(win, "nibbler/SDL2");
+
     tex = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ABGR8888,
                             SDL_TEXTUREACCESS_TARGET, m_width, m_height);
 
@@ -40,20 +42,15 @@ void SDL2Wrapper::checkError(bool condition, std::string s)
 
 void SDL2Wrapper::render(uint8_t *rawImage)
 {
-    std::cout << "GLFWWrapper::render 1" << std::endl;
     SDL_UpdateTexture(tex, NULL, rawImage, m_width * sizeof(uint32_t));
-
-    std::cerr << "debug:/n";
 
     SDL_RenderClear(ren);
     SDL_RenderCopy(ren, tex, NULL, NULL);
     SDL_RenderPresent(ren);
-    std::cout << "GLFWWrapper::render 2" << std::endl;
 }
 
 int SDL2Wrapper::getEvent()
 {
-    std::cout << "SDL2Wrapper::getEvent 1" << std::endl;
 
     SDL_PollEvent(event);
 
@@ -90,8 +87,6 @@ int SDL2Wrapper::getEvent()
             }
     }
 
-    std::cout << lastDirection << std::endl;
-    std::cout << "SDL2Wrapper::getEvent 2" << std::endl;
 	return lastDirection;
 }
 

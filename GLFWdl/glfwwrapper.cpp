@@ -16,7 +16,7 @@ GLFWWrapper::GLFWWrapper(int width, int height)
     lastDirection = -1;
     glfwInit();
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-    win = glfwCreateWindow(m_width / 2, m_height / 2, "Nibbler", NULL, NULL);
+    win = glfwCreateWindow(m_width / 2, m_height / 2, "Nibbler/GLFW", NULL, NULL);
     if(!win)
     {
         std::cout << "HER\n";
@@ -28,7 +28,6 @@ GLFWWrapper::GLFWWrapper(int width, int height)
 
 void GLFWWrapper::render(uint8_t *rawImage)
 {
-    std::cout << "GLFWWrapper::render 1" << std::endl;
     // Clear the colorbuffer
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -38,22 +37,14 @@ void GLFWWrapper::render(uint8_t *rawImage)
         GL_UNSIGNED_INT_8_8_8_8_REV, rawImage);
     // Swap the screen buffers
     glfwSwapBuffers(win);
-    std::cout << "GLFWWrapper::render 2" << std::endl;
 }
 
 int GLFWWrapper::getEvent()
 {
-    std::cout << "GLFWWrapper::getEvent 1" << std::endl;
-    // Check if any events have been activiated (key pressed, mouse moved etc.)
-    // and call corresponding response functions
-    if (!win)
-        std::cout << "win not good" << std::endl;
     glfwPollEvents();
-    
-    if(glfwWindowShouldClose(win))
+
+    if (glfwWindowShouldClose(win))
         return 0;
-    std::cout << lastDirection << std::endl;
-    std::cout << "GLFWWrapper::getEvent 2" << std::endl;
 	return lastDirection;
 }
 

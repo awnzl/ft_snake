@@ -5,8 +5,7 @@ CC		= clang++
 FLG		= -dynamiclib -flat_namespace #-Wall -Werror -Wextra TODO: uncomment
 
 ATTR	= -std=c++11
-LBS		= -I ../inc -L ~/.brew/lib \
-			-Wl,-rpath, ~/.brew/lib -lSDL2-2.0.0 -framework OpenGL -framework AppKit
+LBS		= -I ../inc -L ~/.brew/lib -lSDL2-2.0.0 -framework OpenGL -framework AppKit
 
 $(NAME) :
 	$(CC) $(FLG) $(LBS) $(ATTR) sdl2wrapper.cpp -o $(NAME)
