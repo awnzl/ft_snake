@@ -12,7 +12,7 @@ SDL2Wrapper::SDL2Wrapper(int w, int h)
                 m_height / 2, SDL_WINDOW_SHOWN, &win, &ren)),
         "SDL_CreateWindowAndRenderer Error: ");
 
-    SDL_SetWindowTitle(win, "nibbler/SDL2");
+    SDL_SetWindowTitle(win, "Nibbler/SDL2");
 
     tex = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ABGR8888,
                             SDL_TEXTUREACCESS_TARGET, m_width, m_height);
@@ -72,6 +72,18 @@ int SDL2Wrapper::getEvent()
                     break;
                 case SDLK_DOWN:
                     lastDirection = 4;
+                    break;
+                case SDLK_w:
+                    lastDirection = 5;
+                    break;
+                case SDLK_s:
+                    lastDirection = 6;
+                    break;
+                case SDLK_a:
+                    lastDirection = 7;
+                    break;
+                case SDLK_d:
+                    lastDirection = 8;
                     break;
                 case SDLK_1:
                     lastDirection = 10;

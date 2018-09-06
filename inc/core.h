@@ -53,8 +53,10 @@ class GameCore
     //////////////////////////////////////////////////////////////////////////////////////////////
     //keeps the last moving direction                                                           //
     //////////////////////////////////////////////////////////////////////////////////////////////
-    int		direction;
-    int     lastDirection;
+    int		direction_1;
+    int		direction_2;
+    int     lastDirection_1;
+    int     lastDirection_2;
     int     m_width;
     int     m_height;
     int     currentLib;
@@ -68,13 +70,20 @@ class GameCore
     std::uint8_t target_pixels_map[BLOCK_PIXELS_SIZE];
     std::uint8_t obstacle_pixels_map[BLOCK_PIXELS_SIZE];
     std::uint8_t *snake_body_pixels_map;
-    std::uint8_t *snake_h_north_pixels_map;
-    std::uint8_t *snake_h_south_pixels_map;
-    std::uint8_t *snake_h_west_pixels_map;
-    std::uint8_t *snake_h_east_pixels_map;
+    
+    std::uint8_t *snake1_h_north_pixels_map;
+    std::uint8_t *snake1_h_south_pixels_map;
+    std::uint8_t *snake1_h_west_pixels_map;
+    std::uint8_t *snake1_h_east_pixels_map;
+
+    std::uint8_t *snake2_h_north_pixels_map;
+    std::uint8_t *snake2_h_south_pixels_map;
+    std::uint8_t *snake2_h_west_pixels_map;
+    std::uint8_t *snake2_h_east_pixels_map;
 
     std::vector<Block*> obstacles;
-    std::vector<Block*> snake;
+    std::vector<Block*> snake_1;
+    std::vector<Block*> snake_2;
 
     void    fillPixelsToPixelsMap(std::uint8_t *px, std::uint32_t color);
     // void	fillBlocks();
@@ -84,15 +93,15 @@ class GameCore
                                  int rowLength, std::uint32_t color = 0x186a64ff);
     void	fillBackground(std::uint8_t *image);
     void	insertElements(std::uint8_t *pixels);
-    void    updateSnake(int nx, int ny);
+    void    updateSnake(int nx, int ny, std::vector<Block*> snake, int snakeNumber);
     void    updateTarget(Block *target);
-    void    increaseSnake(int nx, int ny);
+    void    increaseSnake(int nx, int ny, int snakeNumber);
 
     std::uint8_t	*getImage(std::uint8_t *pixels);
-    std::uint8_t	*getHeadPixels();
+    std::uint8_t	*getHeadPixels(int snakeNumber);
 
     bool    checkTarget(int x, int y, Block* target);
-    bool    checkObstacles(int x, int y);
+    bool    checkObstacles(int x, int y, std::vector<Block*> snake);
 
     // template<std::size_t ALLSIZE, std::size_t OBJSIZE, std::size_t TARGETSSIZE>
     // void	gameLoop(GUIDisplay &disp,
@@ -107,6 +116,8 @@ class GameCore
     //////////////////////////////////////////////////////////////////////////////////////////////
     int     pixToInt(int x, int y, int rowWidth, std::uint8_t *pixels);
     void    getLib(int libNumber);
+    void    getDirection(std::function<void(GUIDisplay*)> release_wrapper);
+    void    checkDirection();
     void	initElements();
 
 public:

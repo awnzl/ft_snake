@@ -8,8 +8,10 @@
 
 
 GameCore::GameCore(int w, int h) :
-    direction(3),
-    lastDirection(3),
+    direction_1(3),
+	direction_2(8),
+    lastDirection_1(3),
+	lastDirection_2(8),
     m_width(w * BLOCK_SIZE),
     m_height(h * BLOCK_SIZE)
 {
@@ -23,10 +25,15 @@ GameCore::GameCore(int w, int h) :
     IMGLoader *imloader = createImgLoader();
 
     snake_body_pixels_map = imloader->getPixelMap("assets/body.png");
-    snake_h_north_pixels_map = imloader->getPixelMap("assets/head_north.png");
-    snake_h_south_pixels_map = imloader->getPixelMap("assets/head_south.png");
-    snake_h_west_pixels_map = imloader->getPixelMap("assets/head_west.png");
-    snake_h_east_pixels_map = imloader->getPixelMap("assets/head_east.png");
+    snake1_h_north_pixels_map = imloader->getPixelMap("assets/head_north.png");
+    snake1_h_south_pixels_map = imloader->getPixelMap("assets/head_south.png");
+    snake1_h_west_pixels_map = imloader->getPixelMap("assets/head_west.png");
+    snake1_h_east_pixels_map = imloader->getPixelMap("assets/head_east.png");
+
+	snake2_h_north_pixels_map = imloader->getPixelMap("assets/head_north.png");
+    snake2_h_south_pixels_map = imloader->getPixelMap("assets/head_south.png");
+    snake2_h_west_pixels_map = imloader->getPixelMap("assets/head_west.png");
+    snake2_h_east_pixels_map = imloader->getPixelMap("assets/head_east.png");
 
     releaseImgLoader(imloader);
 
@@ -41,17 +48,21 @@ GameCore::~GameCore()
     //TODO: free block's arrays content
     for (auto e: obstacles)
         delete e;
-    for (auto e: snake)
+    for (auto e: snake_1)
         delete e;
     delete target;
     delete bonusTarget;
     // delete target_pixels_map;
     // delete obstacle_pixels_map;
     delete snake_body_pixels_map;
-    delete snake_h_north_pixels_map;
-    delete snake_h_south_pixels_map;
-    delete snake_h_west_pixels_map;
-    delete snake_h_east_pixels_map;
+    delete snake1_h_north_pixels_map;
+    delete snake1_h_south_pixels_map;
+    delete snake1_h_west_pixels_map;
+    delete snake1_h_east_pixels_map;
+	delete snake2_h_north_pixels_map;
+    delete snake2_h_south_pixels_map;
+    delete snake2_h_west_pixels_map;
+    delete snake2_h_east_pixels_map;
 
     std::function<void(AudioWrapper*)> releaseAudioWrapper(reinterpret_cast<void(*)(AudioWrapper*)>(dlsym(loadLib("AudioWrapper/audiowrapper.so"), "releaseAudioWrapper")));
     releaseAudioWrapper(sound);
@@ -114,7 +125,10 @@ void    GameCore::insertElements(std::uint8_t *pixels)
     if (bonusTarget->isVisible)
         insertBlockToScene(bonusTarget->x, bonusTarget->y, bonusTarget->pxls, pixels);
 
-    for (auto e: snake)
+    for (auto e: snake_1)
+        insertBlockToScene(e->x, e->y, e->pxls, pixels);
+
+	for (auto e: snake_2)
         insertBlockToScene(e->x, e->y, e->pxls, pixels);
 }
 
@@ -123,9 +137,9 @@ void    GameCore::initElements()
     //init obstacles
     //init targets
     obstacles.push_back(new Block(3*BLOCK_SIZE, 3*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
-    obstacles.push_back(new Block(1*BLOCK_SIZE, 1*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
-    obstacles.push_back(new Block(6*BLOCK_SIZE, 13*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
-    obstacles.push_back(new Block(16*BLOCK_SIZE, 3*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
+    obstacles.push_back(new Block(15*BLOCK_SIZE, 10*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
+    obstacles.push_back(new Block(6*BLOCK_SIZE, 20*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
+    obstacles.push_back(new Block(25*BLOCK_SIZE, 25*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
 
     target = new Block(20*BLOCK_SIZE, 12*BLOCK_SIZE, true, Type::Target, target_pixels_map);
     bonusTarget = new Block(8*BLOCK_SIZE, 4*BLOCK_SIZE, false, Type::Target, target_pixels_map);
@@ -135,15 +149,20 @@ void    GameCore::initElements()
     // targets[3] = new Block(23*BLOCK_SIZE, 18*BLOCK_SIZE, true, Type::Target, target_pixels_map);
 
     int halfSize = BLOCK_SIZE * (BLOCKS_PER_SIDE / 2 - 1);
-    snake.push_back(new Block(halfSize + BLOCK_SIZE, halfSize, true, Type::Snake, getHeadPixels()));
-    snake.push_back(new Block(halfSize, halfSize, true, Type::Snake, snake_body_pixels_map));
-    snake.push_back(new Block(halfSize - BLOCK_SIZE, halfSize, true, Type::Snake, snake_body_pixels_map));
-    snake.push_back(new Block(halfSize - 2*BLOCK_SIZE, halfSize, true, Type::Snake, snake_body_pixels_map));
+    snake_1.push_back(new Block(halfSize + BLOCK_SIZE, 32, true, Type::Snake, getHeadPixels(1)));
+    snake_1.push_back(new Block(halfSize, 32, true, Type::Snake, snake_body_pixels_map));
+    snake_1.push_back(new Block(halfSize - BLOCK_SIZE, 32, true, Type::Snake, snake_body_pixels_map));
+    snake_1.push_back(new Block(halfSize - 2*BLOCK_SIZE, 32, true, Type::Snake, snake_body_pixels_map));
+
+	snake_2.push_back(new Block(halfSize + BLOCK_SIZE, m_height - 2*BLOCK_SIZE, true, Type::Snake, getHeadPixels(2)));
+    snake_2.push_back(new Block(halfSize, m_height - 2*BLOCK_SIZE, true, Type::Snake, snake_body_pixels_map));
+    snake_2.push_back(new Block(halfSize - BLOCK_SIZE, m_height - 2*BLOCK_SIZE, true, Type::Snake, snake_body_pixels_map));
+    snake_2.push_back(new Block(halfSize - 2*BLOCK_SIZE, m_height - 2*BLOCK_SIZE, true, Type::Snake, snake_body_pixels_map));
 }
 
-void    GameCore::updateSnake(int nx, int ny)
+void    GameCore::updateSnake(int nx, int ny, std::vector<Block*> snake, int snakeNumber)
 {
-    snake[0]->pxls = getHeadPixels();
+    snake[0]->pxls = getHeadPixels(snakeNumber);
 
     int previousElementX = snake[0]->x;
     int previousElementY = snake[0]->y;
@@ -167,7 +186,7 @@ void    GameCore::updateTarget(Block *m_target)
 {
     int nextX = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
     int nextY = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
-    while(checkObstacles(nextX, nextY))
+    while(checkObstacles(nextX, nextY, snake_1) && checkObstacles(nextX, nextY, snake_2))
     {
         nextX = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
         nextY = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
@@ -176,9 +195,12 @@ void    GameCore::updateTarget(Block *m_target)
     m_target->y = nextY;
 }
 
-void    GameCore::increaseSnake(int nx, int ny)
+void    GameCore::increaseSnake(int nx, int ny, int snakeNumber)
 {
-    snake.push_back(new Block(nx, ny, true, Type::Snake, snake_body_pixels_map));
+	if (snakeNumber == 1)
+    	snake_1.push_back(new Block(nx, ny, true, Type::Snake, snake_body_pixels_map));
+	else
+		snake_2.push_back(new Block(nx, ny, true, Type::Snake, snake_body_pixels_map));
 }
 
 //		1
@@ -187,81 +209,131 @@ void    GameCore::increaseSnake(int nx, int ny)
 //a w s d
 std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
 {
-    int nextX = snake[0]->x;
-    int nextY = snake[0]->y;
+    int nextX_1 = snake_1[0]->x;
+    int nextY_1 = snake_1[0]->y;
+	int nextX_2 = snake_2[0]->x;
+    int nextY_2 = snake_2[0]->y;
 
-    switch (direction)
+    switch (direction_1)
     {
         case (1):
-            nextY -= (snake[0]->y - BLOCK_SIZE < 0) ? 0 : BLOCK_SIZE;
+            nextY_1 -= (snake_1[0]->y - BLOCK_SIZE < 0) ? 0 : BLOCK_SIZE;
             break;
         case (2):
-            nextX -= (snake[0]->x - BLOCK_SIZE < 0) ? 0 : BLOCK_SIZE;
+            nextX_1 -= (snake_1[0]->x - BLOCK_SIZE < 0) ? 0 : BLOCK_SIZE;
             break;
         case (3):
-            nextX += (snake[0]->x + BLOCK_SIZE >= m_width) ? 0 : BLOCK_SIZE;
+            nextX_1 += (snake_1[0]->x + BLOCK_SIZE >= m_width) ? 0 : BLOCK_SIZE;
             break;
         case (4):
-            nextY += (snake[0]->y + BLOCK_SIZE >= m_height) ? 0 : BLOCK_SIZE;
+            nextY_1 += (snake_1[0]->y + BLOCK_SIZE >= m_height) ? 0 : BLOCK_SIZE;
             break;
     }
 
-    if (checkTarget(nextX, nextY, target))
+	switch (direction_2)
     {
-        sound->soundEat();
-        increaseSnake(nextX, nextY);
-        updateTarget(target);
+        case (5):
+            nextY_2 -= (snake_2[0]->y - BLOCK_SIZE < 0) ? 0 : BLOCK_SIZE;
+            break;
+        case (7):
+            nextX_2 -= (snake_2[0]->x - BLOCK_SIZE < 0) ? 0 : BLOCK_SIZE;
+            break;
+        case (8):
+            nextX_2 += (snake_2[0]->x + BLOCK_SIZE >= m_width) ? 0 : BLOCK_SIZE;
+            break;
+        case (6):
+            nextY_2 += (snake_2[0]->y + BLOCK_SIZE >= m_height) ? 0 : BLOCK_SIZE;
+            break;
     }
 
-    if (checkTarget(nextX, nextY, bonusTarget))
+    if (checkTarget(nextX_1, nextY_1, target))
+        increaseSnake(nextX_1, nextY_1, 1);
+	else if (checkTarget(nextX_2, nextY_2, target))
+        increaseSnake(nextX_2, nextY_2, 2);
+
+    if (checkTarget(nextX_1, nextY_1, bonusTarget))
     {
-        sound->soundEat();
-        increaseSnake(nextX, nextY);
-        updateTarget(bonusTarget);
+        increaseSnake(nextX_1, nextY_1, 1);
+        bonusTarget->isVisible = false;
+    }
+	else if (checkTarget(nextX_2, nextY_2, bonusTarget))
+    {
+        increaseSnake(nextX_2, nextY_2, 2);
         bonusTarget->isVisible = false;
     }
 
-    if (checkObstacles(nextX, nextY))
+    if (checkObstacles(nextX_1, nextY_1, snake_1))
     {
-        sound->endGame();
-        exit(0);
+        // sound->endGame();
+        // exit(0);
     }
-    else
-        updateSnake(nextX, nextY);
+	else if (checkObstacles(nextX_2, nextY_2, snake_2))
+	{
 
-    // std::cout << "snX " << snake[0]->x << " snY " << snake[0]->y << " ";
+	}
+    else
+	{
+        updateSnake(nextX_1, nextY_1, snake_1, 1);
+		updateSnake(nextX_2, nextY_2, snake_2, 2);
+	}
+
     //TODO: add frame to window
     fillBackground(pixels);
     insertElements(pixels);
     return pixels;
 }
 
-std::uint8_t    *GameCore::getHeadPixels()
+std::uint8_t    *GameCore::getHeadPixels(int snakeNumber)
 {
-    switch (direction)
-    {
-        case 1:
-            return snake_h_north_pixels_map;
-        case 4:
-            return snake_h_south_pixels_map;
-        case 2:
-            return snake_h_west_pixels_map;
-        case 3:
-            return snake_h_east_pixels_map;
-        default:
-            return snake_h_north_pixels_map;
-    }
+	if (snakeNumber == 1)
+	{
+		switch (direction_1)
+		{
+			case 1:
+				return snake1_h_north_pixels_map;
+			case 4:
+				return snake1_h_south_pixels_map;
+			case 2:
+				return snake1_h_west_pixels_map;
+			case 3:
+				return snake1_h_east_pixels_map;
+			default:
+				return snake1_h_north_pixels_map;
+		}
+	}
+
+	if (snakeNumber == 2)
+	{
+		switch (direction_2)
+		{
+			case 5:
+				return snake2_h_north_pixels_map;
+			case 6:
+				return snake2_h_south_pixels_map;
+			case 7:
+				return snake2_h_west_pixels_map;
+			case 8:
+				return snake2_h_east_pixels_map;
+			default:
+				return snake2_h_north_pixels_map;
+		}
+	}
+	return nullptr;
 }
 
 bool    GameCore::checkTarget(int x, int y, Block* target)
 {
     if (target->isVisible && target->x == x && target->y == y)
+	{
+		sound->soundEat();
+        updateTarget(target);
         return true;
+	}
     else
         return false;
 }
 
-bool    GameCore::checkObstacles(int x, int y)
+bool    GameCore::checkObstacles(int x, int y, std::vector<Block*> snake)
 {
     // Check for a collision of a snake with obstacles
     for (auto each: obstacles)
@@ -310,10 +382,43 @@ void    GameCore::getLib(int libNumber)
     std::cout << "GameCore::getLib 2" << std::endl;
 }
 
+void	GameCore::getDirection(std::function<void(GUIDisplay*)> release_wrapper)
+{
+	    int tmp = disp->getEvent();
+        if (tmp >= 1 && tmp <= 4)
+            direction_1 = tmp;
+		else if (tmp >= 5 && tmp <= 8)
+			direction_2 = tmp;
+        else if (tmp >= 10 && tmp <= 30 && tmp != currentLib)
+        {
+            release_wrapper(disp);
+            currentLib = tmp;
+            getLib(tmp);
+        }
+        else if (tmp == 0)
+        {
+            release_wrapper(disp);
+            exit(0);
+        }
+}
+
+void	GameCore::checkDirection()
+{
+	if ((lastDirection_1 == 3 && direction_1 == 2) || (lastDirection_1 == 2 && direction_1 == 3) ||
+        (lastDirection_1 == 1 && direction_1 == 4) || (lastDirection_1 == 4 && direction_1 == 1))
+        direction_1 = lastDirection_1;
+    else
+        lastDirection_1 = direction_1;
+
+	if ((lastDirection_2 == 8 && direction_2 == 7) || (lastDirection_2 == 7 && direction_2 == 8) ||
+        (lastDirection_2 == 5 && direction_2 == 6) || (lastDirection_2 == 6 && direction_2 == 5))
+        direction_2 = lastDirection_2;
+    else
+        lastDirection_2 = direction_2;
+}
+
 void	GameCore::run()
 {
-    std::cout << "GameCore::run 1_1" << std::endl;
-
     initElements();
     getLib(20);
     int   periodForBonus = 0;
@@ -321,19 +426,13 @@ void	GameCore::run()
     timer.setTimeScale(.3f);//TODO: replace by value of mandatory's requiroment
     std::uint8_t m_pixels[m_width * m_height * 4];
     std::function<void(GUIDisplay*)> release_wrapper(reinterpret_cast<void(*)(GUIDisplay*)>(dlsym(lib_discr, "release_wrapper")));
-    std::cout << "~deb1\n";
     sound->startGame();
-    std::cout << "~deb2\n";
-    while (direction)
+    while (direction_1)
     {
         timer.tick();
         if (timer.deltaTime() >= timer.getTimeScale())
         {
-            if ((lastDirection == 3 && direction == 2) || (lastDirection == 2 && direction == 3) ||
-                (lastDirection == 1 && direction == 4) || (lastDirection == 4 && direction == 1))
-                direction = lastDirection;
-            else
-                lastDirection = direction;
+            checkDirection();
             timer.reset();
             disp->render(getImage(m_pixels));
             // sound->soundStep();
@@ -347,22 +446,8 @@ void	GameCore::run()
             bonusTarget->isVisible = false;
             updateTarget(bonusTarget);
         }
-        int tmp = disp->getEvent();
-        if (tmp >= 1 && tmp <= 4)
-            direction = tmp;
-        else if (tmp >= 10 && tmp <= 30 && tmp != currentLib)
-        {
-            release_wrapper(disp);
-            currentLib = tmp;
-            getLib(tmp);
-        }
-        else if (tmp == 0)
-        {
-            release_wrapper(disp);
-            exit(0);
-        }
+		getDirection(release_wrapper);
     }
-    std::cout << "GameCore::run 2" << std::endl;
 }
 
 //TODO:create separeted object for loader or functor or smth else

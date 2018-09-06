@@ -12,7 +12,7 @@ SFMLWrapper::~SFMLWrapper()
 SFMLWrapper::SFMLWrapper(int w, int h) :
     m_width(w),
     m_height(h),
-    win(new sf::RenderWindow(sf::VideoMode(w, h), "nibbler/SFML")),
+    win(new sf::RenderWindow(sf::VideoMode(w, h), "Nibbler/SFML")),
     im(new sf::Image()),
     texture(new sf::Texture),
     sprite(new sf::Sprite),
@@ -24,7 +24,6 @@ SFMLWrapper::SFMLWrapper(int w, int h) :
 
 void SFMLWrapper::render(uint8_t *rawImage)
 {
-    // std::cout << "SFMLWrapper::render 1" << std::endl;
     im->create(m_width, m_height, rawImage);
 
     texture->loadFromImage(*im);
@@ -32,7 +31,6 @@ void SFMLWrapper::render(uint8_t *rawImage)
     win->clear(sf::Color::White);
     win->draw(*sprite);
     win->display();
-    // std::cout << "SFMLWrapper::render 2" << std::endl;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -40,7 +38,6 @@ void SFMLWrapper::render(uint8_t *rawImage)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 int SFMLWrapper::getEvent()
 {
-    // std::cout << "SFMLWrapper::getEvent 1" << std::endl;
     while (win->pollEvent(*event)) {
         if (event->type == sf::Event::Closed ||
             event->key.code == sf::Keyboard::Escape) {
@@ -58,6 +55,18 @@ int SFMLWrapper::getEvent()
         } else if (event->key.code ==  sf::Keyboard::Down) {
             lastDirection = 4;
             break;
+        } else if (event->key.code ==  sf::Keyboard::W) {
+            lastDirection = 5;
+            break;
+        } else if (event->key.code ==  sf::Keyboard::S) {
+            lastDirection = 6;
+            break;
+        } else if (event->key.code ==  sf::Keyboard::A) {
+            lastDirection = 7;
+            break;
+        } else if (event->key.code ==  sf::Keyboard::D) {
+            lastDirection = 8;
+            break;
         } else if (event->key.code ==  sf::Keyboard::Num1) {
             lastDirection = 10;
             break;
@@ -69,8 +78,6 @@ int SFMLWrapper::getEvent()
             break;
         }
     }
-    // std::cout << lastDirection << std::endl;
-    // std::cout << "SFMLWrapper::getEvent 2" << std::endl;
 	return lastDirection;
 }
 

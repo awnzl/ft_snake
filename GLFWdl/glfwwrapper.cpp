@@ -63,6 +63,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         lastDirection = 1;
     else if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
         lastDirection = 4;
+    else if (key == GLFW_KEY_W && action == GLFW_PRESS)
+        lastDirection = 5;
+    else if (key == GLFW_KEY_S && action == GLFW_PRESS)
+        lastDirection = 6;
+    else if (key == GLFW_KEY_A && action == GLFW_PRESS)
+        lastDirection = 7;
+    else if (key == GLFW_KEY_D && action == GLFW_PRESS)
+        lastDirection = 8;
     else if (key == GLFW_KEY_1)
         lastDirection = 10;
     else if (key == GLFW_KEY_2)
