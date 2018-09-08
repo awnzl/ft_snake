@@ -25,7 +25,6 @@ SFMLWrapper::SFMLWrapper(int w, int h) :
 void SFMLWrapper::render(uint8_t *rawImage)
 {
     im->create(m_width, m_height, rawImage);
-
     texture->loadFromImage(*im);
     sprite->setTexture(*texture);
     win->clear(sf::Color::White);

@@ -43,7 +43,7 @@ int main(int ac, char *av[])
         {
             width = std::stoi(av[1]);
             height = std::stoi(av[2]);
-            if(width < 30 || height < 30 || width > 99 || height > 99)
+            if(width < 10 || height < 10 || width > 61 || height > 61)
                 throw std::invalid_argument(exceptionMessage);
             GameCore *gc = new GameCore(width, height);
             // timer.setTimeScale(0.2f);//TODO: replace by value of mandatory's requiroment

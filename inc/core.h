@@ -58,6 +58,8 @@ class GameCore
     int		direction_2;
     int     lastDirection_1;
     int     lastDirection_2;
+    int     horizontBlocksNum;
+    int     verticalBlocksNum;
     int     m_width;
     int     m_height;
     int     currentLib;
@@ -98,12 +100,6 @@ class GameCore
 
     bool    checkTarget(int x, int y, Block* target);
     bool    checkObstacles(int x, int y, std::vector<Block*> snake);
-
-    // template<std::size_t ALLSIZE, std::size_t OBJSIZE, std::size_t TARGETSSIZE>
-    // void	gameLoop(GUIDisplay &disp,
-    //                  std::array<Block*, ALLSIZE> &allElements,
-    //                  std::array<Block*, OBJSIZE> &obstacles,
-    //                  std::array<Block*, TARGETSSIZE> &targets);
 
     void    *loadLib(std::string libname);
 

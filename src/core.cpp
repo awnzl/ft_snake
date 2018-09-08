@@ -7,55 +7,23 @@
 #include "imgloader.h"
 #include "audiowrapper.h"
 
-
-
-
-
-/*
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-    move to 48 pix size
-
-
-*/
-
-
 GameCore::GameCore(int w, int h) :
     direction_1(3),
 	direction_2(8),
     lastDirection_1(3),
 	lastDirection_2(8),
+    horizontBlocksNum(w),
+    verticalBlocksNum(h),
     m_width(w * BLOCK_SIZE),
     m_height(h * BLOCK_SIZE)
 {
     //TODO: temporary block start:
     fillPixelsToPixelsMap(obstacle_pixels_map, 0xFF0000FF);
 
-    void *imageLoaderDiscriptor = loadLib("IMGLoader/imgloader.so");
-    std::function<IMGLoader*()> createImgLoader(reinterpret_cast<IMGLoader*(*)()>(dlsym(imageLoaderDiscriptor, "createImgLoader")));
-    std::function<void(IMGLoader*)> releaseImgLoader(reinterpret_cast<void(*)(IMGLoader*)>(dlsym(imageLoaderDiscriptor, "releaseImgLoader")));
-    IMGLoader *imloader = createImgLoader();
-
-    snake_body_pixels_map = imloader->getPixelMap("assets/body.png");
-    snake_h_north_pixels_map = imloader->getPixelMap("assets/head_north.png");
-    snake_h_south_pixels_map = imloader->getPixelMap("assets/head_south.png");
-    snake_h_west_pixels_map = imloader->getPixelMap("assets/head_west.png");
-    snake_h_east_pixels_map = imloader->getPixelMap("assets/head_east.png");
-
-    targetPixelMaps[0] = imloader->getPixelMap("assets/apple_red_48.png");
-    targetPixelMaps[1] = imloader->getPixelMap("assets/apple_green_48.png");
-    targetPixelMaps[2] = imloader->getPixelMap("assets/cherry_48.png");
-    targetPixelMaps[3] = imloader->getPixelMap("assets/icecream_48.png");
-    targetPixelMaps[4] = imloader->getPixelMap("assets/pie_48.png");
-    targetPixelMaps[5] = imloader->getPixelMap("assets/strawberry_48.png");
-
-    releaseImgLoader(imloader);
-
     std::function<AudioWrapper*()> createAudioWrapper(reinterpret_cast<AudioWrapper*(*)()>(dlsym(loadLib("AudioWrapper/audiowrapper.so"), "createAudioWrapper")));
-    std::cout << sound << std::endl;
     sound = createAudioWrapper();
-    std::cout << sound << std::endl;
+
+    initElements();
 }
 
 GameCore::~GameCore()
@@ -133,8 +101,8 @@ void    GameCore::insertElements(std::uint8_t *pixels)
         if (e->isVisible)
             insertBlockToScene(e->x, e->y, e->pxls, pixels);
 
-    // if (target->isVisible)
     insertBlockToScene(target->x, target->y, target->pxls, pixels);
+
     if (bonusTarget->isVisible)
         insertBlockToScene(bonusTarget->x, bonusTarget->y, bonusTarget->pxls, pixels);
 
@@ -147,30 +115,52 @@ void    GameCore::insertElements(std::uint8_t *pixels)
 
 void    GameCore::initElements()
 {
+    //load textures
+    void *imageLoaderDiscriptor = loadLib("IMGLoader/imgloader.so");
+    std::function<IMGLoader*()> createImgLoader(reinterpret_cast<IMGLoader*(*)()>(dlsym(imageLoaderDiscriptor, "createImgLoader")));
+    std::function<void(IMGLoader*)> releaseImgLoader(reinterpret_cast<void(*)(IMGLoader*)>(dlsym(imageLoaderDiscriptor, "releaseImgLoader")));
+    IMGLoader *imloader = createImgLoader();
+
+    snake_body_pixels_map = imloader->getPixelMap("assets/body_48.png");
+    snake_h_north_pixels_map = imloader->getPixelMap("assets/head_north_48.png");
+    snake_h_south_pixels_map = imloader->getPixelMap("assets/head_north_48.png");
+    snake_h_west_pixels_map = imloader->getPixelMap("assets/head_north_48.png");
+    snake_h_east_pixels_map = imloader->getPixelMap("assets/head_north_48.png");
+
+    targetPixelMaps[0] = imloader->getPixelMap("assets/apple_red_48.png");
+    targetPixelMaps[1] = imloader->getPixelMap("assets/apple_green_48.png");
+    targetPixelMaps[2] = imloader->getPixelMap("assets/cherry_48.png");
+    targetPixelMaps[3] = imloader->getPixelMap("assets/icecream_48.png");
+    targetPixelMaps[4] = imloader->getPixelMap("assets/pie_48.png");
+    targetPixelMaps[5] = imloader->getPixelMap("assets/strawberry_48.png");
+
+    releaseImgLoader(imloader);
+
     //init obstacles
-    //init targets
+    //TODO: here we need to use random number between 0 and horizontal and vertical blocks number
     obstacles.push_back(new Block(3*BLOCK_SIZE, 3*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
     obstacles.push_back(new Block(15*BLOCK_SIZE, 10*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
-    obstacles.push_back(new Block(6*BLOCK_SIZE, 20*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
-    obstacles.push_back(new Block(25*BLOCK_SIZE, 25*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
+    obstacles.push_back(new Block(6*BLOCK_SIZE, 12*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
+    obstacles.push_back(new Block(25*BLOCK_SIZE, 16*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
 
+    //init targets
+  //TODO: the same as above
     target = new Block(20*BLOCK_SIZE, 12*BLOCK_SIZE, true, Type::Target, targetPixelMaps[0]);
     bonusTarget = new Block(8*BLOCK_SIZE, 4*BLOCK_SIZE, false, Type::Target, targetPixelMaps[1]);
-    // targets[0] = new Block(3*BLOCK_SIZE, 4*BLOCK_SIZE, true, Type::Target, target_pixels_map);
-    // targets[1] = new Block(7*BLOCK_SIZE, 8*BLOCK_SIZE, true, Type::Target, target_pixels_map);
-    // targets[2] = new Block(11*BLOCK_SIZE, 12*BLOCK_SIZE, true, Type::Target, target_pixels_map);
-    // targets[3] = new Block(23*BLOCK_SIZE, 18*BLOCK_SIZE, true, Type::Target, target_pixels_map);
 
-    int halfSize = BLOCK_SIZE * (BLOCKS_PER_SIDE / 2 - 1);
-    snake_1.push_back(new Block(halfSize + BLOCK_SIZE, 32, true, Type::Snake, getHeadPixels(1)));
-    snake_1.push_back(new Block(halfSize, 32, true, Type::Snake, snake_body_pixels_map));
-    snake_1.push_back(new Block(halfSize - BLOCK_SIZE, 32, true, Type::Snake, snake_body_pixels_map));
-    snake_1.push_back(new Block(halfSize - 2*BLOCK_SIZE, 32, true, Type::Snake, snake_body_pixels_map));
+    //init snakes
+    int horizontalHalfSize = BLOCK_SIZE * (horizontBlocksNum / 2 - 1);
+    int verticalHalfSize = BLOCK_SIZE * (verticalBlocksNum / 2 - 1);
+    snake_1.push_back(new Block(horizontalHalfSize + BLOCK_SIZE, BLOCK_SIZE, true, Type::Snake, getHeadPixels(1)));
+    snake_1.push_back(new Block(horizontalHalfSize, BLOCK_SIZE, true, Type::Snake, snake_body_pixels_map));
+    snake_1.push_back(new Block(horizontalHalfSize - BLOCK_SIZE, BLOCK_SIZE, true, Type::Snake, snake_body_pixels_map));
+    snake_1.push_back(new Block(horizontalHalfSize - 2*BLOCK_SIZE, BLOCK_SIZE, true, Type::Snake, snake_body_pixels_map));
 
-	snake_2.push_back(new Block(halfSize + BLOCK_SIZE, m_height - 2*BLOCK_SIZE, true, Type::Snake, getHeadPixels(2)));
-    snake_2.push_back(new Block(halfSize, m_height - 2*BLOCK_SIZE, true, Type::Snake, snake_body_pixels_map));
-    snake_2.push_back(new Block(halfSize - BLOCK_SIZE, m_height - 2*BLOCK_SIZE, true, Type::Snake, snake_body_pixels_map));
-    snake_2.push_back(new Block(halfSize - 2*BLOCK_SIZE, m_height - 2*BLOCK_SIZE, true, Type::Snake, snake_body_pixels_map));
+    int bottomIndention = m_height - 2 * BLOCK_SIZE;
+	snake_2.push_back(new Block(horizontalHalfSize + BLOCK_SIZE, bottomIndention, true, Type::Snake, getHeadPixels(2)));
+    snake_2.push_back(new Block(horizontalHalfSize, bottomIndention, true, Type::Snake, snake_body_pixels_map));
+    snake_2.push_back(new Block(horizontalHalfSize - BLOCK_SIZE, bottomIndention, true, Type::Snake, snake_body_pixels_map));
+    snake_2.push_back(new Block(horizontalHalfSize - 2*BLOCK_SIZE, bottomIndention, true, Type::Snake, snake_body_pixels_map));
 }
 
 void    GameCore::updateSnake(int nx, int ny, std::vector<Block*> snake, int snakeNumber)
@@ -198,12 +188,13 @@ void    GameCore::updateSnake(int nx, int ny, std::vector<Block*> snake, int sna
 void    GameCore::updateTarget(Block *target)
 {
     srand(time(nullptr));
-    int nextX = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
-    int nextY = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
+
+    int nextX = rand() % horizontBlocksNum * BLOCK_SIZE;
+    int nextY = rand() % verticalBlocksNum * BLOCK_SIZE;
     while (checkObstacles(nextX, nextY, snake_1) && checkObstacles(nextX, nextY, snake_2))
     {
-        nextX = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
-        nextY = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
+        nextX = rand() % horizontBlocksNum * BLOCK_SIZE;
+        nextY = rand() % verticalBlocksNum * BLOCK_SIZE;
     }
     target->x = nextX;
     target->y = nextY;
@@ -361,36 +352,31 @@ bool    GameCore::checkObstacles(int x, int y, std::vector<Block*> snake)
     return false;
 }
 
-// template <std::size_t OBJSIZE, std::size_t TARGETSSIZE>
-// void    GameCore::gameLoop(GUIDisplay &disp,
-//                            std::array<Block*, OBJSIZE> &obstacles
-//                            std::array<Block*, TARGETSSIZE> &targets)
-// {
-//     int event = 0;
-//     std::uint8_t pixels[ARRAY_SIZE];
-
-//     while (event > -1) {
-//         event = disp.run(getImage(event, pixels));
-//         std::cout << "debug: libreturn: " << event << std::endl;
-//     }
-// }
-
 void    GameCore::getLib(int libNumber)
 {
-    std::cout << "GameCore::getLib 1" << std::endl;
+    std::cout << "GameCore::getLib: " << libNumber << std::endl;
     currentLib = libNumber;
-    if (libNumber == 10)
-        lib_discr = loadLib("GLFWdl/glfwwrapper.so");
-    else if (libNumber == 20)
-        lib_discr = loadLib("SFMLdl/sfmlwrapper.so");
-    else if (libNumber == 30)
-        lib_discr = loadLib("SDL2dl/sdl2wrapper.so");
+
+    switch (libNumber)
+    {
+        case (10):
+            lib_discr = loadLib("GLFWdl/glfwwrapper.so");
+            break;
+        case (20):
+            lib_discr = loadLib("SFMLdl/sfmlwrapper.so");
+            break;
+        case (30):
+            lib_discr = loadLib("SDL2dl/sdl2wrapper.so");
+            break;
+        default:
+            lib_discr = loadLib("SFMLdl/sfmlwrapper.so");
+    }
 
     std::function<GUIDisplay*(int, int)> create_wrapper(reinterpret_cast<GUIDisplay*(*)(int, int)>(dlsym(lib_discr, "create_wrapper")));
 
     disp = create_wrapper(m_width, m_height);
 
-    std::cout << "GameCore::getLib 2" << std::endl;
+    std::cout << "GameCore::getLib, current lib: " << currentLib << std::endl;
 }
 
 void	GameCore::getDirection(std::function<void(GUIDisplay*)> release_wrapper)
@@ -409,7 +395,7 @@ void	GameCore::getDirection(std::function<void(GUIDisplay*)> release_wrapper)
         else if (tmp == 0)
         {
             release_wrapper(disp);
-            exit(0);
+            exit(0);//TODO: we need to end game, nod just exit program
         }
 }
 
@@ -430,13 +416,14 @@ void	GameCore::checkDirection()
 
 void	GameCore::run()
 {
-    initElements();
-    getLib(20);
-    int   periodForBonus = 0;
+    getLib(10);
+    int             periodForBonus = 0;
     Timer           timer;
-    timer.setTimeScale(.3f);//TODO: replace by value of mandatory's requiroment
-    std::uint8_t m_pixels[m_width * m_height * 4];
+    std::uint8_t    m_pixels[m_width * m_height * 4];
     std::function<void(GUIDisplay*)> release_wrapper(reinterpret_cast<void(*)(GUIDisplay*)>(dlsym(lib_discr, "release_wrapper")));
+
+    timer.setTimeScale(.3f);//TODO: replace by value of mandatory's requiroment
+
     sound->startGame();
     while (direction_1)
     {
@@ -446,9 +433,9 @@ void	GameCore::run()
             checkDirection();
             timer.reset();
             disp->render(getImage(m_pixels));
-            // sound->soundStep();
             periodForBonus++;
         }
+
         if (periodForBonus == 30)
             bonusTarget->isVisible = true;
         else if (periodForBonus == 60)
