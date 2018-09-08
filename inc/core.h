@@ -70,17 +70,13 @@ class GameCore
     std::uint8_t *target_pixels_map;
     std::uint8_t obstacle_pixels_map[BLOCK_PIXELS_SIZE];
     std::uint8_t *snake_body_pixels_map;
-    
-    std::uint8_t *snake1_h_north_pixels_map;
-    std::uint8_t *snake1_h_south_pixels_map;
-    std::uint8_t *snake1_h_west_pixels_map;
-    std::uint8_t *snake1_h_east_pixels_map;
 
-    std::uint8_t *snake2_h_north_pixels_map;
-    std::uint8_t *snake2_h_south_pixels_map;
-    std::uint8_t *snake2_h_west_pixels_map;
-    std::uint8_t *snake2_h_east_pixels_map;
+    std::uint8_t *snake_h_north_pixels_map;
+    std::uint8_t *snake_h_south_pixels_map;
+    std::uint8_t *snake_h_west_pixels_map;
+    std::uint8_t *snake_h_east_pixels_map;
 
+    std::array<std::uint8_t*, 6> targets;
     std::vector<Block*> obstacles;
     std::vector<Block*> snake_1;
     std::vector<Block*> snake_2;

@@ -41,15 +41,10 @@ GameCore::GameCore(int w, int h) :
     IMGLoader *imloader = createImgLoader();
 
     snake_body_pixels_map = imloader->getPixelMap("assets/body.png");
-    snake1_h_north_pixels_map = imloader->getPixelMap("assets/head_north.png");
-    snake1_h_south_pixels_map = imloader->getPixelMap("assets/head_south.png");
-    snake1_h_west_pixels_map = imloader->getPixelMap("assets/head_west.png");
-    snake1_h_east_pixels_map = imloader->getPixelMap("assets/head_east.png");
-
-	snake2_h_north_pixels_map = imloader->getPixelMap("assets/head_north.png");
-    snake2_h_south_pixels_map = imloader->getPixelMap("assets/head_south.png");
-    snake2_h_west_pixels_map = imloader->getPixelMap("assets/head_west.png");
-    snake2_h_east_pixels_map = imloader->getPixelMap("assets/head_east.png");
+    snake_h_north_pixels_map = imloader->getPixelMap("assets/head_north.png");
+    snake_h_south_pixels_map = imloader->getPixelMap("assets/head_south.png");
+    snake_h_west_pixels_map = imloader->getPixelMap("assets/head_west.png");
+    snake_h_east_pixels_map = imloader->getPixelMap("assets/head_east.png");
 
     target_pixels_map = imloader->getPixelMap("assets/apple_red.png");
 
@@ -68,19 +63,17 @@ GameCore::~GameCore()
         delete e;
     for (auto e: snake_1)
         delete e;
+    for (auto e: targets)
+        delete e;
     delete target;
     delete bonusTarget;
     // delete target_pixels_map;
     // delete obstacle_pixels_map;
     delete snake_body_pixels_map;
-    delete snake1_h_north_pixels_map;
-    delete snake1_h_south_pixels_map;
-    delete snake1_h_west_pixels_map;
-    delete snake1_h_east_pixels_map;
-	delete snake2_h_north_pixels_map;
-    delete snake2_h_south_pixels_map;
-    delete snake2_h_west_pixels_map;
-    delete snake2_h_east_pixels_map;
+    delete snake_h_north_pixels_map;
+    delete snake_h_south_pixels_map;
+    delete snake_h_west_pixels_map;
+    delete snake_h_east_pixels_map;
 
     std::function<void(AudioWrapper*)> releaseAudioWrapper(reinterpret_cast<void(*)(AudioWrapper*)>(dlsym(loadLib("AudioWrapper/audiowrapper.so"), "releaseAudioWrapper")));
     releaseAudioWrapper(sound);
@@ -304,38 +297,34 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
 std::uint8_t    *GameCore::getHeadPixels(int snakeNumber)
 {
 	if (snakeNumber == 1)
-	{
 		switch (direction_1)
 		{
 			case 1:
-				return snake1_h_north_pixels_map;
+				return snake_h_north_pixels_map;
 			case 4:
-				return snake1_h_south_pixels_map;
+				return snake_h_south_pixels_map;
 			case 2:
-				return snake1_h_west_pixels_map;
+				return snake_h_west_pixels_map;
 			case 3:
-				return snake1_h_east_pixels_map;
+				return snake_h_east_pixels_map;
 			default:
-				return snake1_h_north_pixels_map;
+				return snake_h_north_pixels_map;
 		}
-	}
 
 	if (snakeNumber == 2)
-	{
 		switch (direction_2)
 		{
 			case 5:
-				return snake2_h_north_pixels_map;
+				return snake_h_north_pixels_map;
 			case 6:
-				return snake2_h_south_pixels_map;
+				return snake_h_south_pixels_map;
 			case 7:
-				return snake2_h_west_pixels_map;
+				return snake_h_west_pixels_map;
 			case 8:
-				return snake2_h_east_pixels_map;
+				return snake_h_east_pixels_map;
 			default:
-				return snake2_h_north_pixels_map;
+				return snake_h_north_pixels_map;
 		}
-	}
 	return nullptr;
 }
 
