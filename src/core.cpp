@@ -7,6 +7,23 @@
 #include "../IMGLoader/imgloader.h"
 
 
+
+
+
+/*
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    Перекрутить всё на больший размер блоксайза (48 или 64 )
+
+
+
+
+
+
+*/
+
+
 GameCore::GameCore(int w, int h) :
     direction_1(3),
 	direction_2(8),
@@ -16,7 +33,6 @@ GameCore::GameCore(int w, int h) :
     m_height(h * BLOCK_SIZE)
 {
     //TODO: temporary block start:
-    fillPixelsToPixelsMap(target_pixels_map, 0xf0ff0fFF);
     fillPixelsToPixelsMap(obstacle_pixels_map, 0xFF0000FF);
 
     void *imageLoaderDiscriptor = loadLib("IMGLoader/imgloader.so");
@@ -34,6 +50,8 @@ GameCore::GameCore(int w, int h) :
     snake2_h_south_pixels_map = imloader->getPixelMap("assets/head_south.png");
     snake2_h_west_pixels_map = imloader->getPixelMap("assets/head_west.png");
     snake2_h_east_pixels_map = imloader->getPixelMap("assets/head_east.png");
+
+    target_pixels_map = imloader->getPixelMap("assets/apple_red.png");
 
     releaseImgLoader(imloader);
 

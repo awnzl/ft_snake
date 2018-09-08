@@ -67,7 +67,7 @@ class GameCore
     GUIDisplay      *disp;
     AudioWrapper    *sound;
 
-    std::uint8_t target_pixels_map[BLOCK_PIXELS_SIZE];
+    std::uint8_t *target_pixels_map;
     std::uint8_t obstacle_pixels_map[BLOCK_PIXELS_SIZE];
     std::uint8_t *snake_body_pixels_map;
     
