@@ -4,7 +4,8 @@
 #include <unistd.h>
 #include "core.h"
 #include "timer.h"
-#include "../IMGLoader/imgloader.h"
+#include "imgloader.h"
+#include "audiowrapper.h"
 
 
 
@@ -14,11 +15,7 @@
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    Перекрутить всё на больший размер блоксайза (48 или 64 )
-
-
-
-
+    move to 48 pix size
 
 
 */
@@ -46,7 +43,12 @@ GameCore::GameCore(int w, int h) :
     snake_h_west_pixels_map = imloader->getPixelMap("assets/head_west.png");
     snake_h_east_pixels_map = imloader->getPixelMap("assets/head_east.png");
 
-    target_pixels_map = imloader->getPixelMap("assets/apple_red.png");
+    targetPixelMaps[0] = imloader->getPixelMap("assets/apple_red_48.png");
+    targetPixelMaps[1] = imloader->getPixelMap("assets/apple_green_48.png");
+    targetPixelMaps[2] = imloader->getPixelMap("assets/cherry_48.png");
+    targetPixelMaps[3] = imloader->getPixelMap("assets/icecream_48.png");
+    targetPixelMaps[4] = imloader->getPixelMap("assets/pie_48.png");
+    targetPixelMaps[5] = imloader->getPixelMap("assets/strawberry_48.png");
 
     releaseImgLoader(imloader);
 
@@ -63,7 +65,7 @@ GameCore::~GameCore()
         delete e;
     for (auto e: snake_1)
         delete e;
-    for (auto e: targets)
+    for (auto e: targetPixelMaps)
         delete e;
     delete target;
     delete bonusTarget;
@@ -152,8 +154,8 @@ void    GameCore::initElements()
     obstacles.push_back(new Block(6*BLOCK_SIZE, 20*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
     obstacles.push_back(new Block(25*BLOCK_SIZE, 25*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
 
-    target = new Block(20*BLOCK_SIZE, 12*BLOCK_SIZE, true, Type::Target, target_pixels_map);
-    bonusTarget = new Block(8*BLOCK_SIZE, 4*BLOCK_SIZE, false, Type::Target, target_pixels_map);
+    target = new Block(20*BLOCK_SIZE, 12*BLOCK_SIZE, true, Type::Target, targetPixelMaps[0]);
+    bonusTarget = new Block(8*BLOCK_SIZE, 4*BLOCK_SIZE, false, Type::Target, targetPixelMaps[1]);
     // targets[0] = new Block(3*BLOCK_SIZE, 4*BLOCK_SIZE, true, Type::Target, target_pixels_map);
     // targets[1] = new Block(7*BLOCK_SIZE, 8*BLOCK_SIZE, true, Type::Target, target_pixels_map);
     // targets[2] = new Block(11*BLOCK_SIZE, 12*BLOCK_SIZE, true, Type::Target, target_pixels_map);
@@ -193,17 +195,19 @@ void    GameCore::updateSnake(int nx, int ny, std::vector<Block*> snake, int sna
     }
 }
 
-void    GameCore::updateTarget(Block *m_target)
+void    GameCore::updateTarget(Block *target)
 {
+    srand(time(nullptr));
     int nextX = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
     int nextY = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
-    while(checkObstacles(nextX, nextY, snake_1) && checkObstacles(nextX, nextY, snake_2))
+    while (checkObstacles(nextX, nextY, snake_1) && checkObstacles(nextX, nextY, snake_2))
     {
         nextX = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
         nextY = rand() % BLOCKS_PER_SIDE * BLOCK_SIZE;
     }
-    m_target->x = nextX;
-    m_target->y = nextY;
+    target->x = nextX;
+    target->y = nextY;
+    target->pxls = targetPixelMaps[rand() % 6];
 }
 
 void    GameCore::increaseSnake(int nx, int ny, int snakeNumber)

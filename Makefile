@@ -16,7 +16,8 @@ $LEXP2	= export LD_LIBRARY_PATH=/User/itsuman/.brew/Cellar/sfml/2.4.2_1/lib1
 
 ATTR	= -std=c++11
 #TODO: move audio to dynamic lib and rm sdl2_mixer from LBS
-LBS		= -I AudioWrapper -I IMGLoader -I ~/.brew/include -L ~/.brew/lib
+LBS		= -I ~/.brew/include -L ~/.brew/lib
+WRP		= -I AudioWrapper -I IMGLoader
 
 
 OBJ		= $(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
@@ -45,7 +46,7 @@ obj		:
 
 
 $(OBJDIR)/%.o:$(SRCDIR)/%.cpp
-	$(CC) $(FLG) $(ATTR) -I $(INCDIR) -o $@ -c $<
+	$(CC) $(FLG) $(ATTR) -I $(INCDIR) $(WRP) -o $@ -c $<
 
 clean	:
 	rm -rf $(OBJDIR)

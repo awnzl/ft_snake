@@ -1,14 +1,19 @@
 #include "imgloader.h"
 #include <SFML/Graphics.hpp>
 
+void    IMGLoader::printError(std::string err)
+{
+    std::cerr << "Image load error:\n\t" << err << std::endl;
+    exit(1);
+}
+
 uint8_t *IMGLoader::getPixelMap(std::string s)
 {
+    if (s.empty())
+        printError("empty asset path");
     sf::Image im;
     if (!im.loadFromFile(s))
-    {
-        std::cerr << "error: imgloader.cpp:16\n";
-        exit (1);
-    }
+        printError("wrong asset path?");
 
     sf::Vector2u dimensions = im.getSize();
     uint32_t size = dimensions.x * dimensions.y * 4;

@@ -4,6 +4,7 @@
 #include <iostream>
 
 class IMGLoader {
+    void printError(std::string s);
 public:
     IMGLoader()= default;
     ~IMGLoader() = default;
