@@ -122,6 +122,7 @@ void    GameCore::initElements()
     IMGLoader *imloader = createImgLoader();
 
     snake_body_pixels_map = imloader->getPixelMap("assets/body_48.png");
+    //TODO: replace by simple snake head and body, scaled to 48 pix
     snake_h_north_pixels_map = imloader->getPixelMap("assets/head_north_48.png");
     snake_h_south_pixels_map = imloader->getPixelMap("assets/head_north_48.png");
     snake_h_west_pixels_map = imloader->getPixelMap("assets/head_north_48.png");
@@ -137,24 +138,36 @@ void    GameCore::initElements()
     releaseImgLoader(imloader);
 
     //init obstacles
-    //TODO: here we need to use random number between 0 and horizontal and vertical blocks number
-    obstacles.push_back(new Block(3*BLOCK_SIZE, 3*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
-    obstacles.push_back(new Block(15*BLOCK_SIZE, 10*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
-    obstacles.push_back(new Block(6*BLOCK_SIZE, 12*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
-    obstacles.push_back(new Block(25*BLOCK_SIZE, 16*BLOCK_SIZE, true, Type::Obstacle, obstacle_pixels_map));
+    auto getRandCoordinate = [](int distance) {
+        // auto randnum = rand() % distance;
+        // auto ret =  BLOCK_SIZE * randnum;
+        // std::cout << "rand coordinate, dist: " << distance << ", randnum: " << randnum << ", ret: " << ret << std::endl;
+        return (rand() % distance) * BLOCK_SIZE;
+    };
+
+//TODO: need to resolve collision (into getRandCoordinate) between obstacles positions and initial snake's positions and
+//      directions to prevent an issue, when snakes appear in face with obstacle. Also need to resolve collisions between
+//      currently inserted items and new items (for new obstacles, targets)
+    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstacle_pixels_map));
+    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstacle_pixels_map));
+    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstacle_pixels_map));
+    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstacle_pixels_map));
+    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstacle_pixels_map));
 
     //init targets
   //TODO: the same as above
-    target = new Block(20*BLOCK_SIZE, 12*BLOCK_SIZE, true, Type::Target, targetPixelMaps[0]);
-    bonusTarget = new Block(8*BLOCK_SIZE, 4*BLOCK_SIZE, false, Type::Target, targetPixelMaps[1]);
+    target = new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Target, targetPixelMaps[rand() % 6]);
+    bonusTarget = new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), false, Type::Target, targetPixelMaps[rand() % 6]);
 
     //init snakes
     int horizontalHalfSize = BLOCK_SIZE * (horizontBlocksNum / 2 - 1);
     int verticalHalfSize = BLOCK_SIZE * (verticalBlocksNum / 2 - 1);
-    snake_1.push_back(new Block(horizontalHalfSize + BLOCK_SIZE, BLOCK_SIZE, true, Type::Snake, getHeadPixels(1)));
-    snake_1.push_back(new Block(horizontalHalfSize, BLOCK_SIZE, true, Type::Snake, snake_body_pixels_map));
-    snake_1.push_back(new Block(horizontalHalfSize - BLOCK_SIZE, BLOCK_SIZE, true, Type::Snake, snake_body_pixels_map));
-    snake_1.push_back(new Block(horizontalHalfSize - 2*BLOCK_SIZE, BLOCK_SIZE, true, Type::Snake, snake_body_pixels_map));
+
+    int topIndention = BLOCK_SIZE;
+    snake_1.push_back(new Block(horizontalHalfSize + BLOCK_SIZE, topIndention, true, Type::Snake, getHeadPixels(1)));
+    snake_1.push_back(new Block(horizontalHalfSize, topIndention, true, Type::Snake, snake_body_pixels_map));
+    snake_1.push_back(new Block(horizontalHalfSize - BLOCK_SIZE, topIndention, true, Type::Snake, snake_body_pixels_map));
+    snake_1.push_back(new Block(horizontalHalfSize - 2*BLOCK_SIZE, topIndention, true, Type::Snake, snake_body_pixels_map));
 
     int bottomIndention = m_height - 2 * BLOCK_SIZE;
 	snake_2.push_back(new Block(horizontalHalfSize + BLOCK_SIZE, bottomIndention, true, Type::Snake, getHeadPixels(2)));
@@ -187,8 +200,6 @@ void    GameCore::updateSnake(int nx, int ny, std::vector<Block*> snake, int sna
 
 void    GameCore::updateTarget(Block *target)
 {
-    srand(time(nullptr));
-
     int nextX = rand() % horizontBlocksNum * BLOCK_SIZE;
     int nextY = rand() % verticalBlocksNum * BLOCK_SIZE;
     while (checkObstacles(nextX, nextY, snake_1) && checkObstacles(nextX, nextY, snake_2))
