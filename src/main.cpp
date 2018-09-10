@@ -25,27 +25,32 @@ void printUsage()
 int main(int ac, char *av[])
 {
     srand(time(NULL));
-    int width, height;
+    int width, height, gameMode;
     std::cmatch result;
     std::regex regular("[0-9]+");
 
-    if (ac != 3)
+    if (ac < 3 || ac > 4)
         printUsage();
-    std::string s1 = av[1], s2 = av[2];
+    std::string s1 = av[1], s2 = av[2], s3;
+    if (ac == 4)
+        s3 = av[3];
+    else
+        s3 = "1";
     try
     {
         std::string exceptionMessage("\nEXEPTION: Incorrect value of field sizes.\n"
                                       "Minimum field sizes: 30x30 \n"
                                       "Maximum field sizes: 99х99\n");
-
         if (std::regex_match(s1.c_str(), result, regular) &&
-            std::regex_match(s2.c_str(), result, regular))
+            std::regex_match(s2.c_str(), result, regular) &&
+            std::regex_match(s3.c_str(), result, regular))
         {
             width = std::stoi(av[1]);
             height = std::stoi(av[2]);
-            if(width < 10 || height < 10 || width > 61 || height > 61)
+            gameMode = std::stoi(s3);
+            if(width < 10 || height < 10 || width > 61 || height > 61 || gameMode > 2)
                 throw std::invalid_argument(exceptionMessage);
-            GameCore *gc = new GameCore(width, height);
+            GameCore *gc = new GameCore(width, height, gameMode);
             // timer.setTimeScale(0.2f);//TODO: replace by value of mandatory's requiroment
             gc->run();
             delete gc;

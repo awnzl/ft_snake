@@ -54,6 +54,7 @@ class GameCore
     //////////////////////////////////////////////////////////////////////////////////////////////
     //keeps the last moving direction                                                           //
     //////////////////////////////////////////////////////////////////////////////////////////////
+    int     gameMode;
     int		direction_1;
     int		direction_2;
     int     lastDirection_1;
@@ -113,7 +114,7 @@ class GameCore
 
 public:
     //TODO: canonical form!!!!!!!!!
-    GameCore(int w, int h);
+    GameCore(int w, int h, int mode);
     ~GameCore();
 
     void    run();

@@ -7,13 +7,14 @@
 #include "imgloader.h"
 #include "audiowrapper.h"
 
-GameCore::GameCore(int w, int h) :
+GameCore::GameCore(int w, int h, int mode) :
     direction_1(3),
 	direction_2(8),
     lastDirection_1(3),
 	lastDirection_2(8),
     horizontBlocksNum(w),
     verticalBlocksNum(h),
+    gameMode(mode),
     m_width(w * BLOCK_SIZE),
     m_height(h * BLOCK_SIZE)
 {
@@ -106,8 +107,11 @@ void    GameCore::insertElements(std::uint8_t *pixels)
     for (auto e: snake_1)
         insertBlockToScene(e->x, e->y, e->pxls, pixels);
 
-	for (auto e: snake_2)
-        insertBlockToScene(e->x, e->y, e->pxls, pixels);
+    if (gameMode == 2)
+    {
+	    for (auto e: snake_2)
+            insertBlockToScene(e->x, e->y, e->pxls, pixels);
+    }
 }
 
 void    GameCore::initElements()
@@ -273,7 +277,7 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
 
     if (checkTarget(nextX_1, nextY_1, target))
         increaseSnake(nextX_1, nextY_1, 1);
-	else if (checkTarget(nextX_2, nextY_2, target))
+	else if (checkTarget(nextX_2, nextY_2, target) && gameMode == 2)
         increaseSnake(nextX_2, nextY_2, 2);
 
     if (checkTarget(nextX_1, nextY_1, bonusTarget))
@@ -281,7 +285,7 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
         increaseSnake(nextX_1, nextY_1, 1);
         bonusTarget->isVisible = false;
     }
-	else if (checkTarget(nextX_2, nextY_2, bonusTarget))
+	else if (checkTarget(nextX_2, nextY_2, bonusTarget) && gameMode == 2)
     {
         increaseSnake(nextX_2, nextY_2, 2);
         bonusTarget->isVisible = false;
@@ -292,14 +296,15 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
         // sound->endGame();
         // exit(0);
     }
-	else if (checkObstacles(nextX_2, nextY_2, snake_2))
+	else if (checkObstacles(nextX_2, nextY_2, snake_2) && gameMode == 2)
 	{
 
 	}
     else
 	{
         updateSnake(nextX_1, nextY_1, snake_1, 1);
-		updateSnake(nextX_2, nextY_2, snake_2, 2);
+        if (gameMode == 2)
+		    updateSnake(nextX_2, nextY_2, snake_2, 2);
 	}
 
     //TODO: add frame to window
