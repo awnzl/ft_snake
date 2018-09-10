@@ -17,36 +17,32 @@ GameCore::GameCore(int w, int h) :
     m_width(w * BLOCK_SIZE),
     m_height(h * BLOCK_SIZE)
 {
-    //TODO: temporary block start:
-    fillPixelsToPixelsMap(obstacle_pixels_map, 0xFF0000FF);
-
-    std::function<AudioWrapper*()> createAudioWrapper(reinterpret_cast<AudioWrapper*(*)()>(dlsym(loadLib("AudioWrapper/audiowrapper.so"), "createAudioWrapper")));
-    sound = createAudioWrapper();
-
     initElements();
 }
 
 GameCore::~GameCore()
 {
-    //TODO: free block's arrays content
+    delete target;
+    delete bonusTarget;
     for (auto e: obstacles)
         delete e;
     for (auto e: snake_1)
         delete e;
-    for (auto e: targetPixelMaps)
+    for (auto e: snake_2)
         delete e;
-    delete target;
-    delete bonusTarget;
-    // delete target_pixels_map;
-    // delete obstacle_pixels_map;
-    delete snake_body_pixels_map;
-    delete snake_h_north_pixels_map;
-    delete snake_h_south_pixels_map;
-    delete snake_h_west_pixels_map;
-    delete snake_h_east_pixels_map;
+    for (auto e: targetPixelMaps)
+        delete[] e;
+    for (auto e: obstaclePixelMaps)
+        delete[] e;
+    delete[] snake_body_pixels_map;
+    delete[] snake_h_north_pixels_map;
+    delete[] snake_h_south_pixels_map;
+    delete[] snake_h_west_pixels_map;
+    delete[] snake_h_east_pixels_map;
 
     std::function<void(AudioWrapper*)> releaseAudioWrapper(reinterpret_cast<void(*)(AudioWrapper*)>(dlsym(loadLib("AudioWrapper/audiowrapper.so"), "releaseAudioWrapper")));
     releaseAudioWrapper(sound);
+    //TODO: were are we release last graphic lib?
 }
 
 //uses to fill pixel arrays for blocks
@@ -74,12 +70,13 @@ void    GameCore::fillBackground(std::uint8_t *pixels)
             setPixelToPixelArray(x, y, pixels, m_width);
 }
 
+//TODO: rework to get possibility to insert block with given width and height
 void    GameCore::insertBlockToScene(int bx, int by, std::uint8_t *block, std::uint8_t *scene)
 {
-    for (int y = 0, nextRow = 0; y < BLOCK_SIZE; y++)
+    for (int y = 0, nextRow = 0; y < BLOCK_SIZE; y++)//heigh
     {
         int idx = ((by + y) * m_width + bx) * 4;
-        for (int i = nextRow; i < nextRow + BLOCK_SIZE * 4; i += 4)
+        for (int i = nextRow; i < nextRow + BLOCK_SIZE * 4; i += 4)//width
             if (block[i + 3])
             {
                 scene[idx++] = block[i];
@@ -90,7 +87,7 @@ void    GameCore::insertBlockToScene(int bx, int by, std::uint8_t *block, std::u
             else
                 idx += 4;
 
-        nextRow += BLOCK_SIZE * 4;
+        nextRow += BLOCK_SIZE * 4;//width?
     }
 }
 
@@ -115,12 +112,17 @@ void    GameCore::insertElements(std::uint8_t *pixels)
 
 void    GameCore::initElements()
 {
+    //init audio lib
+    std::function<AudioWrapper*()> createAudioWrapper(reinterpret_cast<AudioWrapper*(*)()>(dlsym(loadLib("AudioWrapper/audiowrapper.so"), "createAudioWrapper")));
+    sound = createAudioWrapper();
+
     //load textures
     void *imageLoaderDiscriptor = loadLib("IMGLoader/imgloader.so");
     std::function<IMGLoader*()> createImgLoader(reinterpret_cast<IMGLoader*(*)()>(dlsym(imageLoaderDiscriptor, "createImgLoader")));
     std::function<void(IMGLoader*)> releaseImgLoader(reinterpret_cast<void(*)(IMGLoader*)>(dlsym(imageLoaderDiscriptor, "releaseImgLoader")));
     IMGLoader *imloader = createImgLoader();
 
+    //TODO: try reduce size of png files (use https://pnggauntlet.com or https://tinypng.com or similar tools)
     snake_body_pixels_map = imloader->getPixelMap("assets/body_48.png");
     //TODO: replace by simple snake head and body, scaled to 48 pix
     snake_h_north_pixels_map = imloader->getPixelMap("assets/head_north_48.png");
@@ -135,6 +137,12 @@ void    GameCore::initElements()
     targetPixelMaps[4] = imloader->getPixelMap("assets/pie_48.png");
     targetPixelMaps[5] = imloader->getPixelMap("assets/strawberry_48.png");
 
+    obstaclePixelMaps[0] = imloader->getPixelMap("assets/stones_1_48.png");
+    obstaclePixelMaps[1] = imloader->getPixelMap("assets/stones_2_48.png");
+    obstaclePixelMaps[2] = imloader->getPixelMap("assets/stones_3_48.png");
+    obstaclePixelMaps[3] = imloader->getPixelMap("assets/stones_4_48.png");
+    obstaclePixelMaps[4] = imloader->getPixelMap("assets/stones_5_48.png");
+
     releaseImgLoader(imloader);
 
     //init obstacles
@@ -148,11 +156,11 @@ void    GameCore::initElements()
 //TODO: need to resolve collision (into getRandCoordinate) between obstacles positions and initial snake's positions and
 //      directions to prevent an issue, when snakes appear in face with obstacle. Also need to resolve collisions between
 //      currently inserted items and new items (for new obstacles, targets)
-    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstacle_pixels_map));
-    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstacle_pixels_map));
-    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstacle_pixels_map));
-    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstacle_pixels_map));
-    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstacle_pixels_map));
+    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstaclePixelMaps[0]));
+    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstaclePixelMaps[1]));
+    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstaclePixelMaps[2]));
+    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstaclePixelMaps[3]));
+    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstaclePixelMaps[4]));
 
     //init targets
   //TODO: the same as above
@@ -406,7 +414,7 @@ void	GameCore::getDirection(std::function<void(GUIDisplay*)> release_wrapper)
         else if (tmp == 0)
         {
             release_wrapper(disp);
-            exit(0);//TODO: we need to end game, nod just exit program
+            exit(0);//TODO: we need to end game, not just exit program
         }
 }
 
@@ -427,7 +435,7 @@ void	GameCore::checkDirection()
 
 void	GameCore::run()
 {
-    getLib(10);
+    getLib(20);
     int             periodForBonus = 0;
     Timer           timer;
     std::uint8_t    m_pixels[m_width * m_height * 4];
