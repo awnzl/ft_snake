@@ -8,13 +8,13 @@
 #include "audiowrapper.h"
 
 GameCore::GameCore(int w, int h, int mode) :
+    gameMode(mode),
     direction_1(3),
 	direction_2(8),
     lastDirection_1(3),
 	lastDirection_2(8),
     horizontBlocksNum(w),
     verticalBlocksNum(h),
-    gameMode(mode),
     m_width(w * BLOCK_SIZE),
     m_height(h * BLOCK_SIZE)
 {
@@ -40,6 +40,11 @@ GameCore::~GameCore()
     delete[] snake_h_south_pixels_map;
     delete[] snake_h_west_pixels_map;
     delete[] snake_h_east_pixels_map;
+    delete[] snake_2_body_pixels_map;
+    delete[] snake_2_h_north_pixels_map;
+    delete[] snake_2_h_south_pixels_map;
+    delete[] snake_2_h_west_pixels_map;
+    delete[] snake_2_h_east_pixels_map;
 
     std::function<void(AudioWrapper*)> releaseAudioWrapper(reinterpret_cast<void(*)(AudioWrapper*)>(dlsym(loadLib("AudioWrapper/audiowrapper.so"), "releaseAudioWrapper")));
     releaseAudioWrapper(sound);
@@ -128,11 +133,16 @@ void    GameCore::initElements()
 
     //TODO: try reduce size of png files (use https://pnggauntlet.com or https://tinypng.com or similar tools)
     snake_body_pixels_map = imloader->getPixelMap("assets/body_48.png");
-    //TODO: replace by simple snake head and body, scaled to 48 pix
     snake_h_north_pixels_map = imloader->getPixelMap("assets/head_north_48.png");
-    snake_h_south_pixels_map = imloader->getPixelMap("assets/head_north_48.png");
-    snake_h_west_pixels_map = imloader->getPixelMap("assets/head_north_48.png");
-    snake_h_east_pixels_map = imloader->getPixelMap("assets/head_north_48.png");
+    snake_h_south_pixels_map = imloader->getPixelMap("assets/head_south_48.png");
+    snake_h_west_pixels_map = imloader->getPixelMap("assets/head_west_48.png");
+    snake_h_east_pixels_map = imloader->getPixelMap("assets/head_east_48.png");
+
+    snake_2_body_pixels_map = imloader->getPixelMap("assets/body_2_48.png");
+    snake_2_h_north_pixels_map = imloader->getPixelMap("assets/head_2_north_48.png");
+    snake_2_h_south_pixels_map = imloader->getPixelMap("assets/head_2_south_48.png");
+    snake_2_h_west_pixels_map = imloader->getPixelMap("assets/head_2_west_48.png");
+    snake_2_h_east_pixels_map = imloader->getPixelMap("assets/head_2_east_48.png");
 
     targetPixelMaps[0] = imloader->getPixelMap("assets/apple_red_48.png");
     targetPixelMaps[1] = imloader->getPixelMap("assets/apple_green_48.png");
@@ -183,9 +193,9 @@ void    GameCore::initElements()
 
     int bottomIndention = m_height - 2 * BLOCK_SIZE;
 	snake_2.push_back(new Block(horizontalHalfSize + BLOCK_SIZE, bottomIndention, true, Type::Snake, getHeadPixels(2)));
-    snake_2.push_back(new Block(horizontalHalfSize, bottomIndention, true, Type::Snake, snake_body_pixels_map));
-    snake_2.push_back(new Block(horizontalHalfSize - BLOCK_SIZE, bottomIndention, true, Type::Snake, snake_body_pixels_map));
-    snake_2.push_back(new Block(horizontalHalfSize - 2*BLOCK_SIZE, bottomIndention, true, Type::Snake, snake_body_pixels_map));
+    snake_2.push_back(new Block(horizontalHalfSize, bottomIndention, true, Type::Snake, snake_2_body_pixels_map));
+    snake_2.push_back(new Block(horizontalHalfSize - BLOCK_SIZE, bottomIndention, true, Type::Snake, snake_2_body_pixels_map));
+    snake_2.push_back(new Block(horizontalHalfSize - 2*BLOCK_SIZE, bottomIndention, true, Type::Snake, snake_2_body_pixels_map));
 }
 
 void    GameCore::updateSnake(int nx, int ny, std::vector<Block*> snake, int snakeNumber)
@@ -229,7 +239,7 @@ void    GameCore::increaseSnake(int nx, int ny, int snakeNumber)
 	if (snakeNumber == 1)
     	snake_1.push_back(new Block(nx, ny, true, Type::Snake, snake_body_pixels_map));
 	else
-		snake_2.push_back(new Block(nx, ny, true, Type::Snake, snake_body_pixels_map));
+		snake_2.push_back(new Block(nx, ny, true, Type::Snake, snake_2_body_pixels_map));
 }
 
 //		1
@@ -334,15 +344,15 @@ std::uint8_t    *GameCore::getHeadPixels(int snakeNumber)
 		switch (direction_2)
 		{
 			case 5:
-				return snake_h_north_pixels_map;
+				return snake_2_h_north_pixels_map;
 			case 6:
-				return snake_h_south_pixels_map;
+				return snake_2_h_south_pixels_map;
 			case 7:
-				return snake_h_west_pixels_map;
+				return snake_2_h_west_pixels_map;
 			case 8:
-				return snake_h_east_pixels_map;
+				return snake_2_h_east_pixels_map;
 			default:
-				return snake_h_north_pixels_map;
+				return snake_2_h_north_pixels_map;
 		}
 	return nullptr;
 }
