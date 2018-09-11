@@ -12,9 +12,7 @@ OBJDIR	= ./obj
 SRC		= main.cpp core.cpp timer.cpp
 
 ATTR	= -std=c++11
-#TODO: move audio to dynamic lib and rm sdl2_mixer from LBS
 LBS		= -I ~/.brew/include
-INC		= -L ~/.brew/lib
 WRP		= -I AudioWrapper -I IMGLoader
 
 

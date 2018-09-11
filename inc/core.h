@@ -20,15 +20,15 @@ class GameCore
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    // x, y of left top corner																	//
+    // x, y of left top corner                                                                  //
     //////////////////////////////////////////////////////////////////////////////////////////////
     struct Block
     {
-        int		x;
-        int		y;
-        bool	isVisible;
+        int     x;
+        int     y;
+        bool    isVisible;
         Type    type;
-        std::uint8_t	*pxls;
+        std::uint8_t    *pxls;
 
         Block(int x, int y, bool visible, Type type, std::uint8_t *px)
             :
@@ -55,14 +55,16 @@ class GameCore
     //keeps the last moving direction                                                           //
     //////////////////////////////////////////////////////////////////////////////////////////////
     int     gameMode;
-    int		direction_1;
-    int		direction_2;
+    int     direction_1;
+    int     direction_2;
     int     lastDirection_1;
     int     lastDirection_2;
     int     horizontBlocksNum;
     int     verticalBlocksNum;
     int     m_width;
     int     m_height;
+    int     scoreBlockWidth;
+    int     scoreBlockHeight;
     int     currentLib;
     void    *lib_discr;
 
@@ -89,19 +91,21 @@ class GameCore
     std::vector<Block*> snake_2;
 
     void    fillPixelsToPixelsMap(std::uint8_t *px, std::uint32_t color);
-    // void	fillBlocks();
-    void	insertBlockToScene(int bx, int by, std::uint8_t *block, std::uint8_t *scene);
+    // void fillBlocks();
+    void    insertBlockToScene(int bx, int by, int blockWidth,
+                               int blockHeight, std::uint8_t *block, std::uint8_t *scene);
     //by default backgraund color
-    void	setPixelToPixelArray(int x, int y, std::uint8_t *pixels,
+    void    setPixelToPixelArray(int x, int y, std::uint8_t *pixels,
                                  int rowLength, std::uint32_t color = 0x186a64ff);
-    void	fillBackground(std::uint8_t *image);
-    void	insertElements(std::uint8_t *pixels);
+    void    fillBackground(std::uint8_t *pixels, int xFrom, int xTo, int yFrom, int yTo);
+    void    insertElements(std::uint8_t *pixels);
+    void    insertScore(std::uint8_t *pixels);
+    void    increaseSnake(int nx, int ny, int snakeNumber);
     void    updateSnake(int nx, int ny, std::vector<Block*> snake, int snakeNumber);
     void    updateTarget(Block *target);
-    void    increaseSnake(int nx, int ny, int snakeNumber);
 
-    std::uint8_t	*getImage(std::uint8_t *pixels);
-    std::uint8_t	*getHeadPixels(int snakeNumber);
+    std::uint8_t    *getImage(std::uint8_t *pixels);
+    std::uint8_t    *getHeadPixels(int snakeNumber);
 
     bool    checkTarget(int x, int y, Block* target);
     bool    checkObstacles(int x, int y, std::vector<Block*> snake);
@@ -109,13 +113,13 @@ class GameCore
     void    *loadLib(std::string libname);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    // Debug functions																			//
+    // Debug functions                                                                          //
     //////////////////////////////////////////////////////////////////////////////////////////////
     int     pixToInt(int x, int y, int rowWidth, std::uint8_t *pixels);
     void    getLib(int libNumber);
     void    getDirection(std::function<void(GUIDisplay*)> release_wrapper);
     void    checkDirection();
-    void	initElements();
+    void    initElements();
 
 public:
     //TODO: canonical form!!!!!!!!!
