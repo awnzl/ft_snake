@@ -11,12 +11,10 @@ OBJDIR	= ./obj
 
 SRC		= main.cpp core.cpp timer.cpp
 
-$LEXP1	= export CPLUS_INCLUDE_PATH=/Users/itsuman/.brew/include
-$LEXP2	= export LD_LIBRARY_PATH=/User/itsuman/.brew/Cellar/sfml/2.4.2_1/lib1
-
 ATTR	= -std=c++11
 #TODO: move audio to dynamic lib and rm sdl2_mixer from LBS
-LBS		= -I ~/.brew/include -L ~/.brew/lib
+LBS		= -I ~/.brew/include
+INC		= -L ~/.brew/lib
 WRP		= -I AudioWrapper -I IMGLoader
 
 
@@ -47,7 +45,7 @@ obj		:
 
 
 $(OBJDIR)/%.o:$(SRCDIR)/%.cpp
-	$(CC) $(FLG) $(ATTR) -I $(INCDIR) $(WRP) -o $@ -c $<
+	$(CC) $(FLG) $(ATTR) -I $(INCDIR) $(WRP) $(LBS) -o $@ -c $<
 
 clean	:
 	rm -rf $(OBJDIR)
