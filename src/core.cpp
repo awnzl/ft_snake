@@ -47,6 +47,7 @@ GameCore::~GameCore()
     delete[] snake_2_h_south_pixels_map;
     delete[] snake_2_h_west_pixels_map;
     delete[] snake_2_h_east_pixels_map;
+    delete[] scorePixelMap;
 
     std::function<void(AudioWrapper*)> releaseAudioWrapper(reinterpret_cast<void(*)(AudioWrapper*)>(dlsym(loadLib("AudioWrapper/audiowrapper.so"), "releaseAudioWrapper")));
     releaseAudioWrapper(sound);
@@ -70,7 +71,7 @@ void    GameCore::setPixelToPixelArray(int x, int y, std::uint8_t *pixels,
     pixels[idx++] = color >> 8;  //r
     pixels[idx] = color;         //a
 }
-
+//TODO: replace by insertion of background pixelmaps
 void    GameCore::fillBackground(std::uint8_t *pixels, int xFrom, int xTo, int yFrom, int yTo)
 {
     for (int y = yFrom; y < yTo; y++)
@@ -79,12 +80,12 @@ void    GameCore::fillBackground(std::uint8_t *pixels, int xFrom, int xTo, int y
 }
 
 //TODO: rework to get possibility to insert block with given width and height
-void    GameCore::insertBlockToScene(int bx, int by, int blockWidth,
+void    GameCore::insertBlockToScene(int sceneX, int sceneY, int blockWidth,
                                      int blockHeight, std::uint8_t *block, std::uint8_t *scene)
 {
     for (int y = 0, nextRow = 0; y < blockHeight; y++)//heigh
     {
-        int idx = ((by + y) * m_width + bx) * 4;
+        int idx = ((sceneY + y) * m_width + sceneX) * 4;
         for (int i = nextRow; i < nextRow + blockWidth * 4; i += 4)//width
             if (block[i + 3])
             {
@@ -96,7 +97,7 @@ void    GameCore::insertBlockToScene(int bx, int by, int blockWidth,
             else
                 idx += 4;
 
-        nextRow += blockHeight * 4;//height
+        nextRow += blockWidth * 4;//height
     }
 }
 
@@ -124,7 +125,7 @@ void    GameCore::insertElements(std::uint8_t *pixels)
 
 void    GameCore::insertScore(std::uint8_t *pixels)
 {
-    // insertBlockToScene(std::uint8_t *block, pixels);
+    insertBlockToScene(0, m_height, 272, 96, scorePixelMap, pixels);
 }
 
 void    GameCore::increaseSnake(int nx, int ny, int snakeNumber)
@@ -172,6 +173,8 @@ void    GameCore::initElements()
     obstaclePixelMaps[2] = imloader->getPixelMap("assets/stones_3_48.png");
     obstaclePixelMaps[3] = imloader->getPixelMap("assets/stones_4_48.png");
     obstaclePixelMaps[4] = imloader->getPixelMap("assets/stones_5_48.png");
+
+    scorePixelMap = imloader->getPixelMap("assets/score_272_96.png");
 
     releaseImgLoader(imloader);
 
