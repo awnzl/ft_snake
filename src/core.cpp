@@ -18,7 +18,8 @@ GameCore::GameCore(int w, int h, int mode) :
     m_width(w * BLOCK_SIZE),
     m_height(h * BLOCK_SIZE),
     scoreBlockWidth(w * BLOCK_SIZE),
-    scoreBlockHeight(96)
+    scoreBlockHeight(96),
+    scoreCount(0)
 {
     initElements();
 }
@@ -37,6 +38,8 @@ GameCore::~GameCore()
         delete[] e;
     for (auto e: obstaclePixelMaps)
         delete[] e;
+    for (auto e: numbersPixelMaps)
+        delete[] e;
     delete[] snake_body_pixels_map;
     delete[] snake_h_north_pixels_map;
     delete[] snake_h_south_pixels_map;
@@ -54,14 +57,6 @@ GameCore::~GameCore()
     //TODO: were are we release last graphic lib?
 }
 
-//uses to fill pixel arrays for blocks
-void    GameCore::fillPixelsToPixelsMap(std::uint8_t *px, uint32_t color)
-{
-    for (int y = 0; y < BLOCK_SIZE; y++)
-        for (int x = 0; x < BLOCK_SIZE; x++)
-            setPixelToPixelArray(x, y, px, BLOCK_SIZE, color);
-}
-
 void    GameCore::setPixelToPixelArray(int x, int y, std::uint8_t *pixels,
                                        int rowLength, uint32_t color /* = 0x186a64ff */)
 {
@@ -72,21 +67,20 @@ void    GameCore::setPixelToPixelArray(int x, int y, std::uint8_t *pixels,
     pixels[idx] = color;         //a
 }
 //TODO: replace by insertion of background pixelmaps
-void    GameCore::fillBackground(std::uint8_t *pixels, int xFrom, int xTo, int yFrom, int yTo)
+void    GameCore::fillBackground(std::uint8_t *pixels, int xFrom, int xTo, int yFrom, int yTo, uint32_t color /* = 0x186a64ff */)
 {
     for (int y = yFrom; y < yTo; y++)
         for (int x = xFrom; x < xTo; x++)
-            setPixelToPixelArray(x, y, pixels, m_width);
+            setPixelToPixelArray(x, y, pixels, m_width, color);
 }
 
-//TODO: rework to get possibility to insert block with given width and height
 void    GameCore::insertBlockToScene(int sceneX, int sceneY, int blockWidth,
                                      int blockHeight, std::uint8_t *block, std::uint8_t *scene)
 {
-    for (int y = 0, nextRow = 0; y < blockHeight; y++)//heigh
+    for (int y = 0, nextRow = 0; y < blockHeight; y++)
     {
         int idx = ((sceneY + y) * m_width + sceneX) * 4;
-        for (int i = nextRow; i < nextRow + blockWidth * 4; i += 4)//width
+        for (int i = nextRow; i < nextRow + blockWidth * 4; i += 4)
             if (block[i + 3])
             {
                 scene[idx++] = block[i];
@@ -97,7 +91,7 @@ void    GameCore::insertBlockToScene(int sceneX, int sceneY, int blockWidth,
             else
                 idx += 4;
 
-        nextRow += blockWidth * 4;//height
+        nextRow += blockWidth * 4;
     }
 }
 
@@ -126,6 +120,24 @@ void    GameCore::insertElements(std::uint8_t *pixels)
 void    GameCore::insertScore(std::uint8_t *pixels)
 {
     insertBlockToScene(0, m_height, 272, 96, scorePixelMap, pixels);
+    fillBackground(pixels, 272, m_width - 192, m_height, m_height + 96, 0);
+    insertScoreCount(pixels);
+}
+
+void    GameCore::insertScoreCount(std::uint8_t *pixels)
+{
+    std::array<std::uint8_t, 4> idx;
+    int tmp = scoreCount;
+
+    idx[3] = tmp % 10; tmp /= 10;
+    idx[2] = tmp % 10; tmp /= 10;
+    idx[1] = tmp % 10; tmp /= 10;
+    idx[0] = tmp % 10; tmp /= 10;
+
+    insertBlockToScene(m_width - 192, m_height, 48, 96, numbersPixelMaps[idx[0]], pixels);//first
+    insertBlockToScene(m_width - 144, m_height, 48, 96, numbersPixelMaps[idx[1]], pixels);
+    insertBlockToScene(m_width - 96, m_height, 48, 96, numbersPixelMaps[idx[2]], pixels);
+    insertBlockToScene(m_width - 48, m_height, 48, 96, numbersPixelMaps[idx[3]], pixels);
 }
 
 void    GameCore::increaseSnake(int nx, int ny, int snakeNumber)
@@ -174,7 +186,18 @@ void    GameCore::initElements()
     obstaclePixelMaps[3] = imloader->getPixelMap("assets/stones_4_48.png");
     obstaclePixelMaps[4] = imloader->getPixelMap("assets/stones_5_48.png");
 
-    scorePixelMap = imloader->getPixelMap("assets/score_272_96.png");
+    scorePixelMap = imloader->getPixelMap("assets/score_272_96_.png");
+
+    numbersPixelMaps[0] = imloader->getPixelMap("assets/zero_48_96.png");
+    numbersPixelMaps[1] = imloader->getPixelMap("assets/one_48_96.png");
+    numbersPixelMaps[2] = imloader->getPixelMap("assets/two_48_96.png");
+    numbersPixelMaps[3] = imloader->getPixelMap("assets/three_48_96.png");
+    numbersPixelMaps[4] = imloader->getPixelMap("assets/four_48_96.png");
+    numbersPixelMaps[5] = imloader->getPixelMap("assets/five_48_96.png");
+    numbersPixelMaps[6] = imloader->getPixelMap("assets/six_48_96.png");
+    numbersPixelMaps[7] = imloader->getPixelMap("assets/seven_48_96.png");
+    numbersPixelMaps[8] = imloader->getPixelMap("assets/eight_48_96.png");
+    numbersPixelMaps[9] = imloader->getPixelMap("assets/nine_48_96.png");
 
     releaseImgLoader(imloader);
 
@@ -372,6 +395,7 @@ bool    GameCore::checkTarget(int x, int y, Block* target)
     if (target->isVisible && target->x == x && target->y == y)
     {
         sound->soundEat();
+        scoreCount++;
         updateTarget(target);
         return true;
     }

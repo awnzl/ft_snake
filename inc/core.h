@@ -65,6 +65,7 @@ class GameCore
     int     m_height;
     int     scoreBlockWidth;
     int     scoreBlockHeight;
+    int     scoreCount;
     int     currentLib;
     void    *lib_discr;
 
@@ -86,22 +87,24 @@ class GameCore
 
     std::uint8_t *scorePixelMap;
 
+    std::array<std::uint8_t*, 10> numbersPixelMaps;
     std::array<std::uint8_t*, 5> obstaclePixelMaps;
     std::array<std::uint8_t*, 6> targetPixelMaps;
     std::vector<Block*> obstacles;
     std::vector<Block*> snake_1;
     std::vector<Block*> snake_2;
 
-    void    fillPixelsToPixelsMap(std::uint8_t *px, std::uint32_t color);
     //by default backgraund color
     void    setPixelToPixelArray(int sceneX, int sceneY, std::uint8_t *pixels,
                                  int rowLength, std::uint32_t color = 0x186a64ff);
-    void    fillBackground(std::uint8_t *pixels, int xFrom, int xTo, int yFrom, int yTo);
+    void    fillBackground(std::uint8_t *pixels, int xFrom, int xTo,
+                           int yFrom, int yTo, uint32_t color = 0x186a64ff);
     // void fillBlocks();
     void    insertBlockToScene(int sceneX, int sceneY, int blockWidth,
-                               int blockHeight, std::uint8_t *block, std::uint8_t *scene);
+                               int blockHeight, std::uint8_t *blockPxls, std::uint8_t *scene);
     void    insertElements(std::uint8_t *pixels);
     void    insertScore(std::uint8_t *pixels);
+    void    insertScoreCount(std::uint8_t *pixels);
     void    increaseSnake(int nx, int ny, int snakeNumber);
     void    updateSnake(int nx, int ny, std::vector<Block*> snake, int snakeNumber);
     void    updateTarget(Block *target);
