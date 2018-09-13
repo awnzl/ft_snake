@@ -5,9 +5,10 @@
 #include <array>
 #include <vector>
 #include <string>//TODO: delete this include
-#include <sstream>//TODO: delete this include
-#include "defines.h"
+#include <functional>
 #include "guidisplay.h"
+
+#define BLOCK_SIZE 48
 
 class AudioWrapper;
 
@@ -38,16 +39,6 @@ class GameCore
             type(type),
             pxls(px)
         {
-        }
-
-        //TODO: canonical form?
-
-        //TODO: delete this func
-        std::string toString()
-        {
-            std::stringstream ss;
-            ss << x << " | " << y << " | " << isVisible << std::endl;
-            return ss.str();
         }
     };
 
@@ -96,11 +87,10 @@ class GameCore
     std::vector<Block*> snake_1;
     std::vector<Block*> snake_2;
 
-    //by default backgraund color
     void    setPixelToPixelArray(int sceneX, int sceneY, std::uint8_t *pixels,
-                                 int rowLength, std::uint32_t color = 0x186a64ff);
+                                 int rowLength, std::uint32_t color = 0);
     void    fillBackground(std::uint8_t *pixels, int xFrom, int xTo,
-                           int yFrom, int yTo, uint32_t color = 0x186a64ff);
+                           int yFrom, int yTo, uint32_t color = 0);
     void    insertBlockToScene(int sceneX, int sceneY, int blockWidth,
                                int blockHeight, std::uint8_t *blockPxls, std::uint8_t *scene);
     void    insertElements(std::uint8_t *pixels);
@@ -128,8 +118,12 @@ class GameCore
     void    checkDirection();
     void    initElements();
 
+    GameCore() = delete;
+    GameCore(const GameCore &) = delete;
+    GameCore &operator=(const GameCore &) = delete;
+    GameCore &operator=(GameCore &&) = delete;
+
 public:
-    //TODO: canonical form!!!!!!!!!
     GameCore(int w, int h, int mode);
     ~GameCore();
 

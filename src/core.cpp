@@ -1,6 +1,5 @@
 #include <dlfcn.h>
 #include <iostream>
-#include <functional>
 #include <unistd.h>
 #include "core.h"
 #include "timer.h"

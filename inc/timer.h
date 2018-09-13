@@ -7,7 +7,7 @@ class Timer
 {
     Timer(Timer const &) = delete;
     Timer(Timer &&) = delete;
-    Timer &operator=(Timer &) = delete;
+    Timer &operator=(const Timer &) = delete;
     Timer &operator=(Timer &&) = delete;
 
     std::chrono::system_clock::time_point _startTime;
