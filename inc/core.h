@@ -85,11 +85,13 @@ class GameCore
     std::uint8_t *snake_2_h_west_pixels_map;
     std::uint8_t *snake_2_h_east_pixels_map;
 
+    std::uint8_t *fieldPixelMap;
     std::uint8_t *scorePixelMap;
 
     std::array<std::uint8_t*, 10> numbersPixelMaps;
     std::array<std::uint8_t*, 5> obstaclePixelMaps;
     std::array<std::uint8_t*, 6> targetPixelMaps;
+
     std::vector<Block*> obstacles;
     std::vector<Block*> snake_1;
     std::vector<Block*> snake_2;
@@ -103,6 +105,7 @@ class GameCore
     void    insertBlockToScene(int sceneX, int sceneY, int blockWidth,
                                int blockHeight, std::uint8_t *blockPxls, std::uint8_t *scene);
     void    insertElements(std::uint8_t *pixels);
+    void    insertField(std::uint8_t *pixels);
     void    insertScore(std::uint8_t *pixels);
     void    insertScoreCount(std::uint8_t *pixels);
     void    increaseSnake(int nx, int ny, int snakeNumber);

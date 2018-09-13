@@ -50,6 +50,7 @@ GameCore::~GameCore()
     delete[] snake_2_h_south_pixels_map;
     delete[] snake_2_h_west_pixels_map;
     delete[] snake_2_h_east_pixels_map;
+    delete[] fieldPixelMap;
     delete[] scorePixelMap;
 
     std::function<void(AudioWrapper*)> releaseAudioWrapper(reinterpret_cast<void(*)(AudioWrapper*)>(dlsym(loadLib("AudioWrapper/audiowrapper.so"), "releaseAudioWrapper")));
@@ -66,18 +67,18 @@ void    GameCore::setPixelToPixelArray(int x, int y, std::uint8_t *pixels,
     pixels[idx++] = color >> 8;  //r
     pixels[idx] = color;         //a
 }
-//TODO: replace by insertion of background pixelmaps
+
 void    GameCore::fillBackground(std::uint8_t *pixels, int xFrom, int xTo, int yFrom, int yTo, uint32_t color /* = 0x186a64ff */)
 {
-    for (int y = yFrom; y < yTo; y++)
-        for (int x = xFrom; x < xTo; x++)
+    for (int y = yFrom; y < yTo; ++y)
+        for (int x = xFrom; x < xTo; ++x)
             setPixelToPixelArray(x, y, pixels, m_width, color);
 }
 
 void    GameCore::insertBlockToScene(int sceneX, int sceneY, int blockWidth,
                                      int blockHeight, std::uint8_t *block, std::uint8_t *scene)
 {
-    for (int y = 0, nextRow = 0; y < blockHeight; y++)
+    for (int y = 0, nextRow = 0; y < blockHeight; ++y)
     {
         int idx = ((sceneY + y) * m_width + sceneX) * 4;
         for (int i = nextRow; i < nextRow + blockWidth * 4; i += 4)
@@ -117,9 +118,17 @@ void    GameCore::insertElements(std::uint8_t *pixels)
     }
 }
 
+void    GameCore::insertField(std::uint8_t *pixels)
+{
+    for (int y = 0; y < verticalBlocksNum; ++y)
+        for (int x = 0; x < horizontBlocksNum; ++x)
+            insertBlockToScene(x * BLOCK_SIZE, y * BLOCK_SIZE, 48, 48, fieldPixelMap, pixels);
+}
+
 void    GameCore::insertScore(std::uint8_t *pixels)
 {
     insertBlockToScene(0, m_height, 272, 96, scorePixelMap, pixels);
+    //fill the gap between 'score:' and score count
     fillBackground(pixels, 272, m_width - 192, m_height, m_height + 96, 0);
     insertScoreCount(pixels);
 }
@@ -186,7 +195,8 @@ void    GameCore::initElements()
     obstaclePixelMaps[3] = imloader->getPixelMap("assets/stones_4_48.png");
     obstaclePixelMaps[4] = imloader->getPixelMap("assets/stones_5_48.png");
 
-    scorePixelMap = imloader->getPixelMap("assets/score_272_96_.png");
+    fieldPixelMap = imloader->getPixelMap("assets/field.png");
+    scorePixelMap = imloader->getPixelMap("assets/score_272_96.png");
 
     numbersPixelMaps[0] = imloader->getPixelMap("assets/zero_48_96.png");
     numbersPixelMaps[1] = imloader->getPixelMap("assets/one_48_96.png");
@@ -248,7 +258,7 @@ void    GameCore::updateSnake(int nx, int ny, std::vector<Block*> snake, int sna
     snake[0]->x = nx;
     snake[0]->y = ny;
 
-    for (int idx = 1; idx < snake.size(); idx++)
+    for (int idx = 1; idx < snake.size(); ++idx)
     {
         tmpX = snake[idx]->x;
         tmpY = snake[idx]->y;
@@ -349,8 +359,7 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
             updateSnake(nextX_2, nextY_2, snake_2, 2);
     }
 
-    //TODO: add frame to window
-    fillBackground(pixels, 0, m_width, 0, m_height);
+    insertField(pixels);
     insertElements(pixels);
     insertScore(pixels);
     return pixels;
@@ -410,7 +419,7 @@ bool    GameCore::checkObstacles(int x, int y, std::vector<Block*> snake)
         if (each->x == x && each->y == y)
             return true;
     // Check for a collision of a snake with its own tail
-    for (int i = 1; i < snake.size(); i++)
+    for (int i = 1; i < snake.size(); ++i)
         if(snake[0]->x == snake[i]->x && snake[0]->y == snake[i]->y)
             return true;
     // Check for a collision of a snake with wall
