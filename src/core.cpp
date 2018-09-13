@@ -143,7 +143,7 @@ void    GameCore::insertScoreCount(std::uint8_t *pixels)
     idx[1] = tmp % 10; tmp /= 10;
     idx[0] = tmp % 10; tmp /= 10;
 
-    insertBlockToScene(m_width - 192, m_height, 48, 96, numbersPixelMaps[idx[0]], pixels);//first
+    insertBlockToScene(m_width - 192, m_height, 48, 96, numbersPixelMaps[idx[0]], pixels);
     insertBlockToScene(m_width - 144, m_height, 48, 96, numbersPixelMaps[idx[1]], pixels);
     insertBlockToScene(m_width - 96, m_height, 48, 96, numbersPixelMaps[idx[2]], pixels);
     insertBlockToScene(m_width - 48, m_height, 48, 96, numbersPixelMaps[idx[3]], pixels);
@@ -283,10 +283,6 @@ void    GameCore::updateTarget(Block *target)
     target->pxls = targetPixelMaps[rand() % 6];
 }
 
-//      1
-//  2   0   3
-//      4
-//a w s d
 std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
 {
     int nextX_1 = snake_1[0]->x;

@@ -101,7 +101,6 @@ class GameCore
                                  int rowLength, std::uint32_t color = 0x186a64ff);
     void    fillBackground(std::uint8_t *pixels, int xFrom, int xTo,
                            int yFrom, int yTo, uint32_t color = 0x186a64ff);
-    // void fillBlocks();
     void    insertBlockToScene(int sceneX, int sceneY, int blockWidth,
                                int blockHeight, std::uint8_t *blockPxls, std::uint8_t *scene);
     void    insertElements(std::uint8_t *pixels);

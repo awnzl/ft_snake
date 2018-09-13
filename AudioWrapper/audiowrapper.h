@@ -7,9 +7,9 @@
 
 class AudioWrapper
 {
-    AudioWrapper(AudioWrapper const &) = delete;
+    AudioWrapper(const AudioWrapper &) = delete;
     AudioWrapper(AudioWrapper &&) = delete;
-    AudioWrapper &operator=(AudioWrapper &) = delete;
+    AudioWrapper &operator=(const AudioWrapper &) = delete;
     AudioWrapper &operator=(AudioWrapper &&) = delete;
 
     Mix_Chunk *startSound = NULL;
