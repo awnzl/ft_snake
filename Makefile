@@ -26,13 +26,13 @@ all		: $(NAME)
 
 #TODO: need to implement lib checking, exports, install
 exp	:
-# 	set -e; \
-#     . ./define-my-variables.sh
-# 	@make -C GLFWdl/
-# 	@make -C SFMLdl/
-# 	@make -C SDL2dl/
-# 	@make -C IMGLoader/
-# 	@make -C AudioWrapper/
+	set -e; \
+	. ./define-my-variables.sh
+	@make -C GLFWdl/
+	@make -C SFMLdl/
+	@make -C SDL2dl/
+	@make -C IMGLoader/
+	@make -C AudioWrapper/
 
 # echo SHELL export CPLUS_INCLUDE_PATH=/Users/itsuman/.brew/include
 # echo SHELL export LD_LIBRARY_PATH=/User/itsuman/.brew/Cellar/sfml/2.4.2_1/lib
@@ -50,5 +50,10 @@ clean	:
 
 fclean	: clean
 	rm -f $(NAME)
+	@make -C GLFWdl/
+	@make -C SFMLdl/
+	@make -C SDL2dl/
+	@make -C IMGLoader/
+	make -C AudioWrapper/
 
 re		: fclean all

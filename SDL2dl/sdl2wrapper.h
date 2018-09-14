@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <SDL2/SDL.h>
-#include "defines.h"
 #include "guidisplay.h"
 
 class SDL2Wrapper : public GUIDisplay

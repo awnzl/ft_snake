@@ -73,6 +73,7 @@ class GameCore
     std::uint8_t *snake_2_h_west_pixels_map;
     std::uint8_t *snake_2_h_east_pixels_map;
 
+    std::uint8_t *startGamePixelMap;
     std::uint8_t *fieldPixelMap;
     std::uint8_t *scorePixelMap;
 

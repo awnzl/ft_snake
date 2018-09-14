@@ -49,6 +49,7 @@ GameCore::~GameCore()
     delete[] snake_2_h_south_pixels_map;
     delete[] snake_2_h_west_pixels_map;
     delete[] snake_2_h_east_pixels_map;
+    delete[] startGamePixelMap;
     delete[] fieldPixelMap;
     delete[] scorePixelMap;
 
@@ -194,6 +195,7 @@ void    GameCore::initElements()
     obstaclePixelMaps[3] = imloader->getPixelMap("assets/stones_4_48.png");
     obstaclePixelMaps[4] = imloader->getPixelMap("assets/stones_5_48.png");
 
+    startGamePixelMap = imloader->getPixelMap("assets/game_opening.png");
     fieldPixelMap = imloader->getPixelMap("assets/field.png");
     scorePixelMap = imloader->getPixelMap("assets/score_272_96.png");
 
@@ -237,13 +239,13 @@ void    GameCore::initElements()
     snake_1.push_back(new Block(horizontalHalfSize + BLOCK_SIZE, topIndention, true, Type::Snake, getHeadPixels(1)));
     snake_1.push_back(new Block(horizontalHalfSize, topIndention, true, Type::Snake, snake_body_pixels_map));
     snake_1.push_back(new Block(horizontalHalfSize - BLOCK_SIZE, topIndention, true, Type::Snake, snake_body_pixels_map));
-    snake_1.push_back(new Block(horizontalHalfSize - 2*BLOCK_SIZE, topIndention, true, Type::Snake, snake_body_pixels_map));
+    snake_1.push_back(new Block(horizontalHalfSize - 2 * BLOCK_SIZE, topIndention, true, Type::Snake, snake_body_pixels_map));
 
     int bottomIndention = m_height - 2 * BLOCK_SIZE;
     snake_2.push_back(new Block(horizontalHalfSize + BLOCK_SIZE, bottomIndention, true, Type::Snake, getHeadPixels(2)));
     snake_2.push_back(new Block(horizontalHalfSize, bottomIndention, true, Type::Snake, snake_2_body_pixels_map));
     snake_2.push_back(new Block(horizontalHalfSize - BLOCK_SIZE, bottomIndention, true, Type::Snake, snake_2_body_pixels_map));
-    snake_2.push_back(new Block(horizontalHalfSize - 2*BLOCK_SIZE, bottomIndention, true, Type::Snake, snake_2_body_pixels_map));
+    snake_2.push_back(new Block(horizontalHalfSize - 2 * BLOCK_SIZE, bottomIndention, true, Type::Snake, snake_2_body_pixels_map));
 }
 
 void    GameCore::updateSnake(int nx, int ny, std::vector<Block*> snake, int snakeNumber)
@@ -488,18 +490,32 @@ void    GameCore::checkDirection()
 
 void    GameCore::run()
 {
-    getLib(20);
     int             periodForBonus = 0;
     Timer           timer;
     unsigned int    imageSize = m_width * m_height * scoreBlockWidth * scoreBlockHeight * 4;
-    // int             imageSize = m_width * m_height * 4;
-
     std::uint8_t    *pixels = new std::uint8_t[imageSize];
+
+    getLib(20);
+
     std::function<void(GUIDisplay*)> release_wrapper(reinterpret_cast<void(*)(GUIDisplay*)>(dlsym(lib_discr, "release_wrapper")));
 
-    timer.setTimeScale(.3f);//TODO: replace by value of mandatory's requiroment
-
+    fillBackground(pixels, 0, m_width, 0, m_height + scoreBlockHeight);
+    insertBlockToScene((m_width - 320) / 2,
+                       (m_height + scoreBlockHeight - 320) / 2,
+                       320, 320, startGamePixelMap, pixels);
     sound->startGame();
+    disp->render(pixels);
+    disp->getEvent();
+    timer.reset();
+    timer.setTimeScale(3.0f);
+    while (true)
+    {
+        timer.tick();
+        if (timer.deltaTime() >= timer.getTimeScale())
+            break;
+    }
+
+    timer.setTimeScale(.3f);//TODO: replace by value of mandatory's requiroment
     while (direction_1)
     {
         timer.tick();

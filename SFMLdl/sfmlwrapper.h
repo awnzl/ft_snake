@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <SFML/Graphics.hpp>
-#include "defines.h"
 #include "guidisplay.h"
 
 class SFMLWrapper : public GUIDisplay

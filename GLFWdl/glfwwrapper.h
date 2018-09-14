@@ -4,7 +4,6 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
-#include "defines.h"
 #include "guidisplay.h"
 
 class GLFWWrapper : public GUIDisplay
