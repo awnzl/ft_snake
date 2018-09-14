@@ -495,22 +495,33 @@ void    GameCore::run()
     unsigned int    imageSize = m_width * m_height * scoreBlockWidth * scoreBlockHeight * 4;
     std::uint8_t    *pixels = new std::uint8_t[imageSize];
 
-    getLib(20);
+    getLib(30);
 
     std::function<void(GUIDisplay*)> release_wrapper(reinterpret_cast<void(*)(GUIDisplay*)>(dlsym(lib_discr, "release_wrapper")));
 
-    fillBackground(pixels, 0, m_width, 0, m_height + scoreBlockHeight);
+    insertField(pixels);
+    for (int x = 0; x < m_width; x += BLOCK_SIZE)
+    {
+        insertBlockToScene(x, m_height, 48, 48, fieldPixelMap, pixels);
+        insertBlockToScene(x, m_height + scoreBlockHeight / 2, 48, 48, fieldPixelMap, pixels);
+    }
+
     insertBlockToScene((m_width - 320) / 2,
                        (m_height + scoreBlockHeight - 320) / 2,
                        320, 320, startGamePixelMap, pixels);
+
     sound->startGame();
     disp->render(pixels);
-    disp->getEvent();
     timer.reset();
     timer.setTimeScale(3.0f);
     while (true)
     {
         timer.tick();
+        if (disp->getEvent() == 0)
+        {
+            release_wrapper(disp);
+            exit(0);//TODO: we need to end game, not just exit program
+        }
         if (timer.deltaTime() >= timer.getTimeScale())
             break;
     }
