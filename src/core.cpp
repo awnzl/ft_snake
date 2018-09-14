@@ -488,17 +488,8 @@ void    GameCore::checkDirection()
         lastDirection_2 = direction_2;
 }
 
-void    GameCore::run()
+void    GameCore::showOpening(std::uint8_t *pixels)
 {
-    int             periodForBonus = 0;
-    Timer           timer;
-    unsigned int    imageSize = m_width * m_height * scoreBlockWidth * scoreBlockHeight * 4;
-    std::uint8_t    *pixels = new std::uint8_t[imageSize];
-
-    getLib(30);
-
-    std::function<void(GUIDisplay*)> release_wrapper(reinterpret_cast<void(*)(GUIDisplay*)>(dlsym(lib_discr, "release_wrapper")));
-
     insertField(pixels);
     for (int x = 0; x < m_width; x += BLOCK_SIZE)
     {
@@ -512,6 +503,8 @@ void    GameCore::run()
 
     sound->startGame();
     disp->render(pixels);
+
+    Timer timer;
     timer.reset();
     timer.setTimeScale(3.0f);
     while (true)
@@ -519,13 +512,28 @@ void    GameCore::run()
         timer.tick();
         if (disp->getEvent() == 0)
         {
-            release_wrapper(disp);
+            // release_wrapper(disp);
             exit(0);//TODO: we need to end game, not just exit program
         }
         if (timer.deltaTime() >= timer.getTimeScale())
             break;
     }
+}
 
+void    GameCore::run()
+{
+    int             periodForBonus = 0;
+    Timer           timer;
+    unsigned int    imageSize = m_width * m_height * scoreBlockWidth * scoreBlockHeight * 4;
+    std::uint8_t    *pixels = new std::uint8_t[imageSize];
+
+    getLib(20);
+
+    std::function<void(GUIDisplay*)> release_wrapper(reinterpret_cast<void(*)(GUIDisplay*)>(dlsym(lib_discr, "release_wrapper")));
+
+    showOpening(pixels);
+
+    timer.reset();
     timer.setTimeScale(.3f);//TODO: replace by value of mandatory's requiroment
     while (direction_1)
     {
@@ -548,6 +556,8 @@ void    GameCore::run()
         }
         getDirection(release_wrapper);
     }
+
+    delete[] pixels;
 }
 
 //TODO:create separeted object for loader or functor or smth else

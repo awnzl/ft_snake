@@ -98,6 +98,7 @@ class GameCore
     void    increaseSnake(int nx, int ny, int snakeNumber);
     void    updateSnake(int nx, int ny, std::vector<Block*> snake, int snakeNumber);
     void    updateTarget(Block *target);
+    void    showOpening(std::uint8_t *pixels);
 
     std::uint8_t    *getImage(std::uint8_t *pixels);
     std::uint8_t    *getHeadPixels(int snakeNumber);
