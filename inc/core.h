@@ -14,12 +14,6 @@ class AudioWrapper;
 
 class GameCore
 {
-    enum class Type {
-        Snake,
-        Obstacle,
-        Target
-    };
-
     //////////////////////////////////////////////////////////////////////////////////////////////
     // x, y of the left top corner                                                              //
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,15 +22,13 @@ class GameCore
         int     x;
         int     y;
         bool    isVisible;
-        Type    type;
         std::uint8_t    *pxls;
 
-        Block(int x, int y, bool visible, Type type, std::uint8_t *px)
+        Block(int x, int y, bool visible, std::uint8_t *px)
             :
             x(x),
             y(y),
             isVisible(visible),
-            type(type),
             pxls(px)
         {
         }
@@ -85,6 +77,8 @@ class GameCore
     std::vector<Block*> snake_1;
     std::vector<Block*> snake_2;
 
+    void    initElements();
+    Block   *getBlock();
     void    setPixelToPixelArray(int sceneX, int sceneY, std::uint8_t *pixels,
                                  int rowLength, std::uint32_t color = 0);
     void    fillBackground(std::uint8_t *pixels, int xFrom, int xTo,
@@ -99,6 +93,9 @@ class GameCore
     void    updateSnake(int nx, int ny, std::vector<Block*> snake, int snakeNumber);
     void    updateTarget(Block *target);
     void    showOpening(std::uint8_t *pixels);
+    void    getLib(int libNumber);
+    void    getDirection(std::function<void(GUIDisplay*)> release_wrapper);
+    void    checkDirection();
 
     std::uint8_t    *getImage(std::uint8_t *pixels);
     std::uint8_t    *getHeadPixels(int snakeNumber);
@@ -112,10 +109,6 @@ class GameCore
     // Debug functions                                                                          //
     //////////////////////////////////////////////////////////////////////////////////////////////
     int     pixToInt(int x, int y, int rowWidth, std::uint8_t *pixels);
-    void    getLib(int libNumber);
-    void    getDirection(std::function<void(GUIDisplay*)> release_wrapper);
-    void    checkDirection();
-    void    initElements();
 
     GameCore() = delete;
     GameCore(const GameCore &) = delete;

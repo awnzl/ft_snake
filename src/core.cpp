@@ -58,6 +58,94 @@ GameCore::~GameCore()
     //TODO: were are we release last graphic lib?
 }
 
+void    GameCore::initElements()
+{
+    //init audio lib
+    std::function<AudioWrapper*()> createAudioWrapper(reinterpret_cast<AudioWrapper*(*)()>(dlsym(loadLib("AudioWrapper/audiowrapper.so"), "createAudioWrapper")));
+    sound = createAudioWrapper();
+
+    //load textures
+    void *imageLoaderDiscriptor = loadLib("IMGLoader/imgloader.so");
+    std::function<IMGLoader*()> createImgLoader(reinterpret_cast<IMGLoader*(*)()>(dlsym(imageLoaderDiscriptor, "createImgLoader")));
+    std::function<void(IMGLoader*)> releaseImgLoader(reinterpret_cast<void(*)(IMGLoader*)>(dlsym(imageLoaderDiscriptor, "releaseImgLoader")));
+    IMGLoader *imloader = createImgLoader();
+
+    //TODO: try reduce size of png files (use https://pnggauntlet.com or https://tinypng.com or similar tools)
+    snake_body_pixels_map = imloader->getPixelMap("assets/body_48.png");
+    snake_h_north_pixels_map = imloader->getPixelMap("assets/head_north_48.png");
+    snake_h_south_pixels_map = imloader->getPixelMap("assets/head_south_48.png");
+    snake_h_west_pixels_map = imloader->getPixelMap("assets/head_west_48.png");
+    snake_h_east_pixels_map = imloader->getPixelMap("assets/head_east_48.png");
+
+    snake_2_body_pixels_map = imloader->getPixelMap("assets/body_2_48.png");
+    snake_2_h_north_pixels_map = imloader->getPixelMap("assets/head_2_north_48.png");
+    snake_2_h_south_pixels_map = imloader->getPixelMap("assets/head_2_south_48.png");
+    snake_2_h_west_pixels_map = imloader->getPixelMap("assets/head_2_west_48.png");
+    snake_2_h_east_pixels_map = imloader->getPixelMap("assets/head_2_east_48.png");
+
+    targetPixelMaps[0] = imloader->getPixelMap("assets/apple_red_48.png");
+    targetPixelMaps[1] = imloader->getPixelMap("assets/apple_green_48.png");
+    targetPixelMaps[2] = imloader->getPixelMap("assets/cherry_48.png");
+    targetPixelMaps[3] = imloader->getPixelMap("assets/icecream_48.png");
+    targetPixelMaps[4] = imloader->getPixelMap("assets/pie_48.png");
+    targetPixelMaps[5] = imloader->getPixelMap("assets/strawberry_48.png");
+
+    obstaclePixelMaps[0] = imloader->getPixelMap("assets/stones_1_48.png");
+    obstaclePixelMaps[1] = imloader->getPixelMap("assets/stones_2_48.png");
+    obstaclePixelMaps[2] = imloader->getPixelMap("assets/stones_3_48.png");
+    obstaclePixelMaps[3] = imloader->getPixelMap("assets/stones_4_48.png");
+    obstaclePixelMaps[4] = imloader->getPixelMap("assets/stones_5_48.png");
+
+    startGamePixelMap = imloader->getPixelMap("assets/game_opening.png");
+    fieldPixelMap = imloader->getPixelMap("assets/field.png");
+    scorePixelMap = imloader->getPixelMap("assets/score_272_96.png");
+
+    numbersPixelMaps[0] = imloader->getPixelMap("assets/zero_48_96.png");
+    numbersPixelMaps[1] = imloader->getPixelMap("assets/one_48_96.png");
+    numbersPixelMaps[2] = imloader->getPixelMap("assets/two_48_96.png");
+    numbersPixelMaps[3] = imloader->getPixelMap("assets/three_48_96.png");
+    numbersPixelMaps[4] = imloader->getPixelMap("assets/four_48_96.png");
+    numbersPixelMaps[5] = imloader->getPixelMap("assets/five_48_96.png");
+    numbersPixelMaps[6] = imloader->getPixelMap("assets/six_48_96.png");
+    numbersPixelMaps[7] = imloader->getPixelMap("assets/seven_48_96.png");
+    numbersPixelMaps[8] = imloader->getPixelMap("assets/eight_48_96.png");
+    numbersPixelMaps[9] = imloader->getPixelMap("assets/nine_48_96.png");
+
+    releaseImgLoader(imloader);
+
+    //init snakes
+    int horizontalHalfSize = BLOCK_SIZE * (horizontBlocksNum / 2 - 1);
+    int verticalHalfSize = BLOCK_SIZE * (verticalBlocksNum / 2 - 1);
+
+    int topIndention = (gameMode == 2) ? BLOCK_SIZE : verticalHalfSize;
+    snake_1.push_back(new Block(horizontalHalfSize + BLOCK_SIZE, topIndention, true, getHeadPixels(1)));
+    snake_1.push_back(new Block(horizontalHalfSize, topIndention, true, snake_body_pixels_map));
+    snake_1.push_back(new Block(horizontalHalfSize - BLOCK_SIZE, topIndention, true, snake_body_pixels_map));
+    snake_1.push_back(new Block(horizontalHalfSize - 2 * BLOCK_SIZE, topIndention, true, snake_body_pixels_map));
+
+    int bottomIndention = m_height - 2 * BLOCK_SIZE;
+    snake_2.push_back(new Block(horizontalHalfSize + BLOCK_SIZE, bottomIndention, true, getHeadPixels(2)));
+    snake_2.push_back(new Block(horizontalHalfSize, bottomIndention, true, snake_2_body_pixels_map));
+    snake_2.push_back(new Block(horizontalHalfSize - BLOCK_SIZE, bottomIndention, true, snake_2_body_pixels_map));
+    snake_2.push_back(new Block(horizontalHalfSize - 2 * BLOCK_SIZE, bottomIndention, true, snake_2_body_pixels_map));
+
+    //init obstacles
+    auto getRandCoordinate = [](int distance) {
+        return (rand() % distance + 1) * BLOCK_SIZE;
+    };
+//TODO: need a function, wich will return new block with given params
+    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum - 2), getRandCoordinate(verticalBlocksNum - 2), true, obstaclePixelMaps[0]));
+    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum - 2), getRandCoordinate(verticalBlocksNum - 2), true, obstaclePixelMaps[1]));
+    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum - 2), getRandCoordinate(verticalBlocksNum - 2), true, obstaclePixelMaps[2]));
+    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum - 2), getRandCoordinate(verticalBlocksNum - 2), true, obstaclePixelMaps[3]));
+    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum - 2), getRandCoordinate(verticalBlocksNum - 2), true, obstaclePixelMaps[4]));
+
+    //init targets
+  //TODO: the same as above
+    target = new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, targetPixelMaps[rand() % 6]);
+    bonusTarget = new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), false, targetPixelMaps[rand() % 6]);
+}
+
 void    GameCore::setPixelToPixelArray(int x, int y, std::uint8_t *pixels,
                                        int rowLength, uint32_t color /* = 0x186a64ff */)
 {
@@ -152,100 +240,9 @@ void    GameCore::insertScoreCount(std::uint8_t *pixels)
 void    GameCore::increaseSnake(int nx, int ny, int snakeNumber)
 {
     if (snakeNumber == 1)
-        snake_1.push_back(new Block(nx, ny, true, Type::Snake, snake_body_pixels_map));
+        snake_1.push_back(new Block(nx, ny, true, snake_body_pixels_map));
     else
-        snake_2.push_back(new Block(nx, ny, true, Type::Snake, snake_2_body_pixels_map));
-}
-
-void    GameCore::initElements()
-{
-    //init audio lib
-    std::function<AudioWrapper*()> createAudioWrapper(reinterpret_cast<AudioWrapper*(*)()>(dlsym(loadLib("AudioWrapper/audiowrapper.so"), "createAudioWrapper")));
-    sound = createAudioWrapper();
-
-    //load textures
-    void *imageLoaderDiscriptor = loadLib("IMGLoader/imgloader.so");
-    std::function<IMGLoader*()> createImgLoader(reinterpret_cast<IMGLoader*(*)()>(dlsym(imageLoaderDiscriptor, "createImgLoader")));
-    std::function<void(IMGLoader*)> releaseImgLoader(reinterpret_cast<void(*)(IMGLoader*)>(dlsym(imageLoaderDiscriptor, "releaseImgLoader")));
-    IMGLoader *imloader = createImgLoader();
-
-    //TODO: try reduce size of png files (use https://pnggauntlet.com or https://tinypng.com or similar tools)
-    snake_body_pixels_map = imloader->getPixelMap("assets/body_48.png");
-    snake_h_north_pixels_map = imloader->getPixelMap("assets/head_north_48.png");
-    snake_h_south_pixels_map = imloader->getPixelMap("assets/head_south_48.png");
-    snake_h_west_pixels_map = imloader->getPixelMap("assets/head_west_48.png");
-    snake_h_east_pixels_map = imloader->getPixelMap("assets/head_east_48.png");
-
-    snake_2_body_pixels_map = imloader->getPixelMap("assets/body_2_48.png");
-    snake_2_h_north_pixels_map = imloader->getPixelMap("assets/head_2_north_48.png");
-    snake_2_h_south_pixels_map = imloader->getPixelMap("assets/head_2_south_48.png");
-    snake_2_h_west_pixels_map = imloader->getPixelMap("assets/head_2_west_48.png");
-    snake_2_h_east_pixels_map = imloader->getPixelMap("assets/head_2_east_48.png");
-
-    targetPixelMaps[0] = imloader->getPixelMap("assets/apple_red_48.png");
-    targetPixelMaps[1] = imloader->getPixelMap("assets/apple_green_48.png");
-    targetPixelMaps[2] = imloader->getPixelMap("assets/cherry_48.png");
-    targetPixelMaps[3] = imloader->getPixelMap("assets/icecream_48.png");
-    targetPixelMaps[4] = imloader->getPixelMap("assets/pie_48.png");
-    targetPixelMaps[5] = imloader->getPixelMap("assets/strawberry_48.png");
-
-    obstaclePixelMaps[0] = imloader->getPixelMap("assets/stones_1_48.png");
-    obstaclePixelMaps[1] = imloader->getPixelMap("assets/stones_2_48.png");
-    obstaclePixelMaps[2] = imloader->getPixelMap("assets/stones_3_48.png");
-    obstaclePixelMaps[3] = imloader->getPixelMap("assets/stones_4_48.png");
-    obstaclePixelMaps[4] = imloader->getPixelMap("assets/stones_5_48.png");
-
-    startGamePixelMap = imloader->getPixelMap("assets/game_opening.png");
-    fieldPixelMap = imloader->getPixelMap("assets/field.png");
-    scorePixelMap = imloader->getPixelMap("assets/score_272_96.png");
-
-    numbersPixelMaps[0] = imloader->getPixelMap("assets/zero_48_96.png");
-    numbersPixelMaps[1] = imloader->getPixelMap("assets/one_48_96.png");
-    numbersPixelMaps[2] = imloader->getPixelMap("assets/two_48_96.png");
-    numbersPixelMaps[3] = imloader->getPixelMap("assets/three_48_96.png");
-    numbersPixelMaps[4] = imloader->getPixelMap("assets/four_48_96.png");
-    numbersPixelMaps[5] = imloader->getPixelMap("assets/five_48_96.png");
-    numbersPixelMaps[6] = imloader->getPixelMap("assets/six_48_96.png");
-    numbersPixelMaps[7] = imloader->getPixelMap("assets/seven_48_96.png");
-    numbersPixelMaps[8] = imloader->getPixelMap("assets/eight_48_96.png");
-    numbersPixelMaps[9] = imloader->getPixelMap("assets/nine_48_96.png");
-
-    releaseImgLoader(imloader);
-
-    //init obstacles
-    auto getRandCoordinate = [](int distance) {
-        return (rand() % distance) * BLOCK_SIZE;
-    };
-
-//TODO: need to resolve collision (into getRandCoordinate) between obstacles positions and initial snake's positions and
-//      directions to prevent an issue, when snakes appear in face with obstacle. Also need to resolve collisions between
-//      currently inserted items and new items (for new obstacles, targets)
-    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstaclePixelMaps[0]));
-    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstaclePixelMaps[1]));
-    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstaclePixelMaps[2]));
-    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstaclePixelMaps[3]));
-    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Obstacle, obstaclePixelMaps[4]));
-
-    //init targets
-  //TODO: the same as above
-    target = new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, Type::Target, targetPixelMaps[rand() % 6]);
-    bonusTarget = new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), false, Type::Target, targetPixelMaps[rand() % 6]);
-
-    //init snakes
-    int horizontalHalfSize = BLOCK_SIZE * (horizontBlocksNum / 2 - 1);
-    int verticalHalfSize = BLOCK_SIZE * (verticalBlocksNum / 2 - 1);
-
-    int topIndention = BLOCK_SIZE;
-    snake_1.push_back(new Block(horizontalHalfSize + BLOCK_SIZE, topIndention, true, Type::Snake, getHeadPixels(1)));
-    snake_1.push_back(new Block(horizontalHalfSize, topIndention, true, Type::Snake, snake_body_pixels_map));
-    snake_1.push_back(new Block(horizontalHalfSize - BLOCK_SIZE, topIndention, true, Type::Snake, snake_body_pixels_map));
-    snake_1.push_back(new Block(horizontalHalfSize - 2 * BLOCK_SIZE, topIndention, true, Type::Snake, snake_body_pixels_map));
-
-    int bottomIndention = m_height - 2 * BLOCK_SIZE;
-    snake_2.push_back(new Block(horizontalHalfSize + BLOCK_SIZE, bottomIndention, true, Type::Snake, getHeadPixels(2)));
-    snake_2.push_back(new Block(horizontalHalfSize, bottomIndention, true, Type::Snake, snake_2_body_pixels_map));
-    snake_2.push_back(new Block(horizontalHalfSize - BLOCK_SIZE, bottomIndention, true, Type::Snake, snake_2_body_pixels_map));
-    snake_2.push_back(new Block(horizontalHalfSize - 2 * BLOCK_SIZE, bottomIndention, true, Type::Snake, snake_2_body_pixels_map));
+        snake_2.push_back(new Block(nx, ny, true, snake_2_body_pixels_map));
 }
 
 void    GameCore::updateSnake(int nx, int ny, std::vector<Block*> snake, int snakeNumber)
@@ -543,7 +540,7 @@ void    GameCore::run()
             checkDirection();
             timer.reset();
             disp->render(getImage(pixels));
-            periodForBonus++;
+            periodForBonus++;//TODO: replace this logic by second timer
         }
 
         if (periodForBonus == 30)
