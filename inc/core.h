@@ -78,7 +78,9 @@ class GameCore
     std::vector<Block*> snake_2;
 
     void    initElements();
-    Block   *getBlock();
+    Block   *getBlock(int rangeX, int rangeY, std::uint8_t *blockPxls, bool isVisible);
+    void    getRandomCoordinates(int &x, int &y, int rangeX, int rangeY);
+    bool    isCoordinatesFree(int &x, int &y);
     void    setPixelToPixelArray(int sceneX, int sceneY, std::uint8_t *pixels,
                                  int rowLength, std::uint32_t color = 0);
     void    fillBackground(std::uint8_t *pixels, int xFrom, int xTo,

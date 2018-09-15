@@ -130,20 +130,50 @@ void    GameCore::initElements()
     snake_2.push_back(new Block(horizontalHalfSize - 2 * BLOCK_SIZE, bottomIndention, true, snake_2_body_pixels_map));
 
     //init obstacles
-    auto getRandCoordinate = [](int distance) {
-        return (rand() % distance + 1) * BLOCK_SIZE;
-    };
-//TODO: need a function, wich will return new block with given params
-    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum - 2), getRandCoordinate(verticalBlocksNum - 2), true, obstaclePixelMaps[0]));
-    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum - 2), getRandCoordinate(verticalBlocksNum - 2), true, obstaclePixelMaps[1]));
-    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum - 2), getRandCoordinate(verticalBlocksNum - 2), true, obstaclePixelMaps[2]));
-    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum - 2), getRandCoordinate(verticalBlocksNum - 2), true, obstaclePixelMaps[3]));
-    obstacles.push_back(new Block(getRandCoordinate(horizontBlocksNum - 2), getRandCoordinate(verticalBlocksNum - 2), true, obstaclePixelMaps[4]));
+    obstacles.push_back(getBlock(horizontBlocksNum - 2, verticalBlocksNum - 2, obstaclePixelMaps[0], true));
+    obstacles.push_back(getBlock(horizontBlocksNum - 2, verticalBlocksNum - 2, obstaclePixelMaps[1], true));
+    obstacles.push_back(getBlock(horizontBlocksNum - 2, verticalBlocksNum - 2, obstaclePixelMaps[2], true));
+    obstacles.push_back(getBlock(horizontBlocksNum - 2, verticalBlocksNum - 2, obstaclePixelMaps[3], true));
+    obstacles.push_back(getBlock(horizontBlocksNum - 2, verticalBlocksNum - 2, obstaclePixelMaps[4], true));
 
     //init targets
-  //TODO: the same as above
-    target = new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), true, targetPixelMaps[rand() % 6]);
-    bonusTarget = new Block(getRandCoordinate(horizontBlocksNum), getRandCoordinate(verticalBlocksNum), false, targetPixelMaps[rand() % 6]);
+    target = getBlock(horizontBlocksNum - 1, verticalBlocksNum - 1, targetPixelMaps[rand() % 6], true);
+    bonusTarget = getBlock(horizontBlocksNum - 1, verticalBlocksNum - 1, targetPixelMaps[rand() % 6], false);
+}
+
+GameCore::Block   *GameCore::getBlock(int rangeX, int rangeY, std::uint8_t *blockPxls, bool isVisible)
+{
+    int x, y;
+
+    getRandomCoordinates(x, y, rangeX, rangeY);
+
+    return new Block(x, y, isVisible, blockPxls);
+}
+
+void    GameCore::getRandomCoordinates(int &x, int &y, int rangeX, int rangeY)
+{
+    do
+    {
+        x = (rand() % rangeX + 1) * BLOCK_SIZE;
+        y = (rand() % rangeY + 1) * BLOCK_SIZE;
+    }
+    while (!isCoordinatesFree(x, y));
+}
+
+bool    GameCore::isCoordinatesFree(int &x, int &y)
+{
+    for (auto e: snake_1)
+        if (e->x == x && e->y == y)
+            return false;
+    if (gameMode == 2)
+        for (auto e: snake_2)
+            if (e->x == x && e->y == y)
+                return false;
+    for (auto e: obstacles)
+        if (e->x == x && e->y == y)
+            return false;
+
+    return true;
 }
 
 void    GameCore::setPixelToPixelArray(int x, int y, std::uint8_t *pixels,
@@ -269,15 +299,7 @@ void    GameCore::updateSnake(int nx, int ny, std::vector<Block*> snake, int sna
 
 void    GameCore::updateTarget(Block *target)
 {
-    int nextX = rand() % horizontBlocksNum * BLOCK_SIZE;
-    int nextY = rand() % verticalBlocksNum * BLOCK_SIZE;
-    while (checkObstacles(nextX, nextY, snake_1) && checkObstacles(nextX, nextY, snake_2))
-    {
-        nextX = rand() % horizontBlocksNum * BLOCK_SIZE;
-        nextY = rand() % verticalBlocksNum * BLOCK_SIZE;
-    }
-    target->x = nextX;
-    target->y = nextY;
+    getRandomCoordinates(target->x, target->y, horizontBlocksNum - 1, verticalBlocksNum - 1);
     target->pxls = targetPixelMaps[rand() % 6];
 }
 
@@ -325,12 +347,12 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
     else if (checkTarget(nextX_2, nextY_2, target) && gameMode == 2)
         increaseSnake(nextX_2, nextY_2, 2);
 
-    if (checkTarget(nextX_1, nextY_1, bonusTarget))
+    if (bonusTarget->isVisible && checkTarget(nextX_1, nextY_1, bonusTarget))
     {
         increaseSnake(nextX_1, nextY_1, 1);
         bonusTarget->isVisible = false;
     }
-    else if (checkTarget(nextX_2, nextY_2, bonusTarget) && gameMode == 2)
+    else if (bonusTarget->isVisible && checkTarget(nextX_2, nextY_2, bonusTarget) && gameMode == 2)
     {
         increaseSnake(nextX_2, nextY_2, 2);
         bonusTarget->isVisible = false;
@@ -544,12 +566,14 @@ void    GameCore::run()
         }
 
         if (periodForBonus == 30)
+        {
             bonusTarget->isVisible = true;
+            updateTarget(bonusTarget);
+        }
         else if (periodForBonus == 60)
         {
             periodForBonus = 0;
             bonusTarget->isVisible = false;
-            updateTarget(bonusTarget);
         }
         getDirection(release_wrapper);
     }
