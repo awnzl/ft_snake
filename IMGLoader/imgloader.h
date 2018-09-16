@@ -12,7 +12,7 @@ class IMGLoader {
     IMGLoader &operator=(IMGLoader &&) = delete;
 public:
     IMGLoader() = default;
-    ~IMGLoader() = default;
+    virtual ~IMGLoader() = default;
 
     virtual uint8_t *getPixelMap(std::string s);
 };

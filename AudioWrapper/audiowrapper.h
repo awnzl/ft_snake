@@ -19,7 +19,7 @@ class AudioWrapper
 
 public:
     AudioWrapper();
-    ~AudioWrapper();
+    virtual ~AudioWrapper();
 
     virtual void    startGame();
     virtual void    soundEat();

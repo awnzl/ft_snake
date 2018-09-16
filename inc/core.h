@@ -46,6 +46,7 @@ class GameCore
     int     scoreBlockWidth;
     int     scoreBlockHeight;
     int     scoreCount;
+    bool    increaseSpeed;
     int     currentLib;
     void    *lib_discr;
 
@@ -66,6 +67,7 @@ class GameCore
     std::uint8_t *snake_2_h_east_pixels_map;
 
     std::uint8_t *startGamePixelMap;
+    std::uint8_t *endGamePixelMap;
     std::uint8_t *fieldPixelMap;
     std::uint8_t *scorePixelMap;
 
@@ -95,11 +97,13 @@ class GameCore
     void    updateSnake(int nx, int ny, std::vector<Block*> snake, int snakeNumber);
     void    updateTarget(Block *target);
     void    showOpening(std::uint8_t *pixels);
+    void    gameOver(std::uint8_t *pixels);
+    void    showingLoop(float duration);
     void    getLib(int libNumber);
-    void    getDirection(std::function<void(GUIDisplay*)> release_wrapper);
+    bool    getDirection(std::uint8_t *pixels);
     void    checkDirection();
 
-    std::uint8_t    *getImage(std::uint8_t *pixels);
+    bool    getImage(std::uint8_t *pixels);
     std::uint8_t    *getHeadPixels(int snakeNumber);
 
     bool    checkTarget(int x, int y, Block* target);

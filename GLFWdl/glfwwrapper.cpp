@@ -1,5 +1,5 @@
 #include "glfwwrapper.h"
-
+#define UNUSED(x) if (x);
 // Function prototypes
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 int         lastDirection;
@@ -77,6 +77,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         lastDirection = 20;
     else if (key == GLFW_KEY_3)
         lastDirection = 30;
+    UNUSED(scancode);
+    UNUSED(mode);
 }
 
 extern "C" GUIDisplay *create_wrapper(int w, int h)

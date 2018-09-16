@@ -1,9 +1,11 @@
 #include "timer.h"
 
-Timer::Timer()
+Timer::Timer() : _timeScale(1.0f), _deltaTime(std::chrono::duration<float>(0.0f))
 {
-    _timeScale = 1.0f;
-    _deltaTime = std::chrono::duration<float>(0.0f);
+}
+
+Timer::Timer(float ts) : _timeScale(ts), _deltaTime(std::chrono::duration<float>(0.0f))
+{
 }
 
 void Timer::reset()

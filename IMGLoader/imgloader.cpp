@@ -21,7 +21,7 @@ uint8_t *IMGLoader::getPixelMap(std::string s)
 
     const uint8_t *pixMap = static_cast<const uint8_t*>(im.getPixelsPtr());
 
-    for (int idx = 0; idx < size; idx++)
+    for (std::uint32_t idx = 0; idx < size; idx++)
         ret[idx] = pixMap[idx];
 
     return ret;

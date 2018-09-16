@@ -10,12 +10,13 @@ class Timer
     Timer &operator=(const Timer &) = delete;
     Timer &operator=(Timer &&) = delete;
 
-    std::chrono::system_clock::time_point _startTime;
-    std::chrono::duration<float> _deltaTime;
     float _timeScale;
+    std::chrono::duration<float> _deltaTime;
+    std::chrono::system_clock::time_point _startTime;
 
 public:
     Timer();
+    Timer(float ts);
     ~Timer() = default;
 
     void reset();

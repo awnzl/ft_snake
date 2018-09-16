@@ -3,7 +3,7 @@ DLLIBS	=
 
 SHELL	= /bin/bash
 CC		= clang++
-FLG		= #-Wall -Werror -Wextra TODO: uncomment
+FLG		= -Wall -Werror -Wextra
 
 SRCDIR	= ./src
 INCDIR	= ./inc
@@ -34,9 +34,6 @@ exp	:
 	@make -C IMGLoader/
 	@make -C AudioWrapper/
 
-# echo SHELL export CPLUS_INCLUDE_PATH=/Users/itsuman/.brew/include
-# echo SHELL export LD_LIBRARY_PATH=/User/itsuman/.brew/Cellar/sfml/2.4.2_1/lib
-#нужно понять, как сделать экспорт переменных и выполнить баш код
 
 obj		:
 	@mkdir -p $(OBJDIR)
@@ -50,10 +47,10 @@ clean	:
 
 fclean	: clean
 	rm -f $(NAME)
-	@make -C GLFWdl/
-	@make -C SFMLdl/
-	@make -C SDL2dl/
-	@make -C IMGLoader/
-	make -C AudioWrapper/
+	make -C GLFWdl/ clean
+	make -C SFMLdl/ clean
+	make -C SDL2dl/ clean
+	make -C IMGLoader/ clean
+	make -C AudioWrapper/ clean
 
 re		: fclean all

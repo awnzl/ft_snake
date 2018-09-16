@@ -18,7 +18,8 @@ GameCore::GameCore(int w, int h, int mode) :
     m_height(h * BLOCK_SIZE),
     scoreBlockWidth(w * BLOCK_SIZE),
     scoreBlockHeight(96),
-    scoreCount(0)
+    scoreCount(0),
+    increaseSpeed(false)
 {
     initElements();
 }
@@ -55,7 +56,6 @@ GameCore::~GameCore()
 
     std::function<void(AudioWrapper*)> releaseAudioWrapper(reinterpret_cast<void(*)(AudioWrapper*)>(dlsym(loadLib("AudioWrapper/audiowrapper.so"), "releaseAudioWrapper")));
     releaseAudioWrapper(sound);
-    //TODO: were are we release last graphic lib?
 }
 
 void    GameCore::initElements()
@@ -70,7 +70,6 @@ void    GameCore::initElements()
     std::function<void(IMGLoader*)> releaseImgLoader(reinterpret_cast<void(*)(IMGLoader*)>(dlsym(imageLoaderDiscriptor, "releaseImgLoader")));
     IMGLoader *imloader = createImgLoader();
 
-    //TODO: try reduce size of png files (use https://pnggauntlet.com or https://tinypng.com or similar tools)
     snake_body_pixels_map = imloader->getPixelMap("assets/body_48.png");
     snake_h_north_pixels_map = imloader->getPixelMap("assets/head_north_48.png");
     snake_h_south_pixels_map = imloader->getPixelMap("assets/head_south_48.png");
@@ -97,6 +96,7 @@ void    GameCore::initElements()
     obstaclePixelMaps[4] = imloader->getPixelMap("assets/stones_5_48.png");
 
     startGamePixelMap = imloader->getPixelMap("assets/game_opening.png");
+    endGamePixelMap = imloader->getPixelMap("assets/game_over.png");
     fieldPixelMap = imloader->getPixelMap("assets/field.png");
     scorePixelMap = imloader->getPixelMap("assets/score_272_96.png");
 
@@ -138,7 +138,7 @@ void    GameCore::initElements()
 
     //init targets
     target = getBlock(horizontBlocksNum - 1, verticalBlocksNum - 1, targetPixelMaps[rand() % 6], true);
-    bonusTarget = getBlock(horizontBlocksNum - 1, verticalBlocksNum - 1, targetPixelMaps[rand() % 6], false);
+    bonusTarget = getBlock(horizontBlocksNum - 1, verticalBlocksNum - 1, targetPixelMaps[rand() % 6], true);
 }
 
 GameCore::Block   *GameCore::getBlock(int rangeX, int rangeY, std::uint8_t *blockPxls, bool isVisible)
@@ -286,7 +286,7 @@ void    GameCore::updateSnake(int nx, int ny, std::vector<Block*> snake, int sna
     snake[0]->x = nx;
     snake[0]->y = ny;
 
-    for (int idx = 1; idx < snake.size(); ++idx)
+    for (std::uint32_t idx = 1; idx < snake.size(); ++idx)
     {
         tmpX = snake[idx]->x;
         tmpY = snake[idx]->y;
@@ -303,70 +303,74 @@ void    GameCore::updateTarget(Block *target)
     target->pxls = targetPixelMaps[rand() % 6];
 }
 
-std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
+bool    GameCore::getImage(std::uint8_t *pixels)
 {
     int nextX_1 = snake_1[0]->x;
     int nextY_1 = snake_1[0]->y;
     int nextX_2 = snake_2[0]->x;
     int nextY_2 = snake_2[0]->y;
 
+    //get the coordinates of the next position
     switch (direction_1)
     {
         case (1):
-            nextY_1 -= (snake_1[0]->y - BLOCK_SIZE < 0) ? 0 : BLOCK_SIZE;
+            nextY_1 -= BLOCK_SIZE;
             break;
         case (2):
-            nextX_1 -= (snake_1[0]->x - BLOCK_SIZE < 0) ? 0 : BLOCK_SIZE;
+            nextX_1 -= BLOCK_SIZE;
             break;
         case (3):
-            nextX_1 += (snake_1[0]->x + BLOCK_SIZE >= m_width) ? 0 : BLOCK_SIZE;
+            nextX_1 += BLOCK_SIZE;
             break;
         case (4):
-            nextY_1 += (snake_1[0]->y + BLOCK_SIZE >= m_height) ? 0 : BLOCK_SIZE;
+            nextY_1 += BLOCK_SIZE;
             break;
     }
 
-    switch (direction_2)
-    {
-        case (5):
-            nextY_2 -= (snake_2[0]->y - BLOCK_SIZE < 0) ? 0 : BLOCK_SIZE;
-            break;
-        case (7):
-            nextX_2 -= (snake_2[0]->x - BLOCK_SIZE < 0) ? 0 : BLOCK_SIZE;
-            break;
-        case (8):
-            nextX_2 += (snake_2[0]->x + BLOCK_SIZE >= m_width) ? 0 : BLOCK_SIZE;
-            break;
-        case (6):
-            nextY_2 += (snake_2[0]->y + BLOCK_SIZE >= m_height) ? 0 : BLOCK_SIZE;
-            break;
-    }
+    if (gameMode == 2)
+        switch (direction_2)
+        {
+            case (5):
+                nextY_2 -= BLOCK_SIZE;
+                break;
+            case (7):
+                nextX_2 -= BLOCK_SIZE;
+                break;
+            case (8):
+                nextX_2 += BLOCK_SIZE;
+                break;
+            case (6):
+                nextY_2 += BLOCK_SIZE;
+                break;
+        }
 
+    //check the targets
     if (checkTarget(nextX_1, nextY_1, target))
         increaseSnake(nextX_1, nextY_1, 1);
-    else if (checkTarget(nextX_2, nextY_2, target) && gameMode == 2)
+    else if (gameMode == 2 && checkTarget(nextX_2, nextY_2, target))
         increaseSnake(nextX_2, nextY_2, 2);
 
-    if (bonusTarget->isVisible && checkTarget(nextX_1, nextY_1, bonusTarget))
+    if (bonusTarget->isVisible)
     {
-        increaseSnake(nextX_1, nextY_1, 1);
-        bonusTarget->isVisible = false;
-    }
-    else if (bonusTarget->isVisible && checkTarget(nextX_2, nextY_2, bonusTarget) && gameMode == 2)
-    {
-        increaseSnake(nextX_2, nextY_2, 2);
-        bonusTarget->isVisible = false;
+        if (checkTarget(nextX_1, nextY_1, bonusTarget))
+        {
+            increaseSnake(nextX_1, nextY_1, 1);
+            bonusTarget->isVisible = false;
+        }
+        else if (gameMode == 2 && checkTarget(nextX_2, nextY_2, bonusTarget))
+        {
+            increaseSnake(nextX_2, nextY_2, 2);
+            bonusTarget->isVisible = false;
+        }
     }
 
-    if (checkObstacles(nextX_1, nextY_1, snake_1))
+    //check the obstacles
+    if (checkObstacles(nextX_1, nextY_1, snake_1) ||
+        (gameMode == 2 && checkObstacles(nextX_2, nextY_2, snake_2)))
     {
-        //TODO: game over because snake hit obstacle
-        // sound->endGame();
-        // exit(0);
-    }
-    else if (checkObstacles(nextX_2, nextY_2, snake_2) && gameMode == 2)
-    {
-        //TODO: game over because snake hit obstacle
+        sound->endGame();
+        showingLoop(1.0f);
+        return false;
     }
     else
     {
@@ -378,7 +382,7 @@ std::uint8_t    *GameCore::getImage(std::uint8_t *pixels)
     insertField(pixels);
     insertElements(pixels);
     insertScore(pixels);
-    return pixels;
+    return true;
 }
 
 std::uint8_t    *GameCore::getHeadPixels(int snakeNumber)
@@ -397,8 +401,7 @@ std::uint8_t    *GameCore::getHeadPixels(int snakeNumber)
             default:
                 return snake_h_north_pixels_map;
         }
-
-    if (snakeNumber == 2)
+    else if (snakeNumber == 2)
         switch (direction_2)
         {
             case 5:
@@ -412,15 +415,16 @@ std::uint8_t    *GameCore::getHeadPixels(int snakeNumber)
             default:
                 return snake_2_h_north_pixels_map;
         }
-    return nullptr;
+    return snake_h_north_pixels_map;
 }
 
 bool    GameCore::checkTarget(int x, int y, Block* target)
 {
-    if (target->isVisible && target->x == x && target->y == y)
+    if (target->x == x && target->y == y)
     {
         sound->soundEat();
         scoreCount++;
+        increaseSpeed = true;
         updateTarget(target);
         return true;
     }
@@ -435,11 +439,11 @@ bool    GameCore::checkObstacles(int x, int y, std::vector<Block*> snake)
         if (each->x == x && each->y == y)
             return true;
     // Check for a collision of a snake with its own tail
-    for (int i = 1; i < snake.size(); ++i)
+    for (std::uint32_t i = 1; i < snake.size(); ++i)
         if(snake[0]->x == snake[i]->x && snake[0]->y == snake[i]->y)
             return true;
     // Check for a collision of a snake with wall
-    if (x == -1 || x == m_width || y == -1 || y == m_height)
+    if (x < 0 || x > m_width - BLOCK_SIZE || y < 0 || y > m_height - BLOCK_SIZE)
         return true;
 
     return false;
@@ -472,24 +476,27 @@ void    GameCore::getLib(int libNumber)
     std::cout << "GameCore::getLib, current lib: " << currentLib << std::endl;
 }
 
-void    GameCore::getDirection(std::function<void(GUIDisplay*)> release_wrapper)
+bool    GameCore::getDirection(std::uint8_t *pixels)
 {
-        int tmp = disp->getEvent();
-        if (tmp >= 1 && tmp <= 4)
-            direction_1 = tmp;
-        else if (tmp >= 5 && tmp <= 8)
-            direction_2 = tmp;
-        else if (tmp >= 10 && tmp <= 30 && tmp != currentLib)
-        {
-            release_wrapper(disp);
-            currentLib = tmp;
-            getLib(tmp);
-        }
-        else if (tmp == 0)
-        {
-            release_wrapper(disp);
-            exit(0);//TODO: we need to end game, not just exit program
-        }
+    int event = disp->getEvent();
+
+    if (event >= 1 && event <= 4)
+        direction_1 = event;
+    else if (event >= 5 && event <= 8)
+        direction_2 = event;
+    else if (event >= 10 && event <= 30 && event != currentLib)
+    {
+        std::function<void(GUIDisplay*)> release_wrapper(reinterpret_cast<void(*)(GUIDisplay*)>(dlsym(lib_discr, "release_wrapper")));
+        release_wrapper(disp);
+        lib_discr = nullptr;
+        currentLib = event;
+        getLib(event);
+        disp->render(pixels);
+    }
+    else if (event == 0)
+        return false;
+
+    return true;
 }
 
 void    GameCore::checkDirection()
@@ -522,18 +529,27 @@ void    GameCore::showOpening(std::uint8_t *pixels)
 
     sound->startGame();
     disp->render(pixels);
+    disp->getEvent();
+    showingLoop(3.0f);
+}
 
-    Timer timer;
+void    GameCore::gameOver(std::uint8_t *pixels)
+{
+    fillBackground(pixels, 0, m_width, 0, m_height + scoreBlockHeight, 0);
+    insertBlockToScene((m_width - 480) / 2,
+                       (m_height + scoreBlockHeight - 480) / 2,
+                       480, 480, endGamePixelMap, pixels);
+    disp->render(pixels);
+    showingLoop(1.0f);
+}
+
+void    GameCore::showingLoop(float duration)
+{
+    Timer timer(duration);
     timer.reset();
-    timer.setTimeScale(3.0f);
     while (true)
     {
         timer.tick();
-        if (disp->getEvent() == 0)
-        {
-            // release_wrapper(disp);
-            exit(0);//TODO: we need to end game, not just exit program
-        }
         if (timer.deltaTime() >= timer.getTimeScale())
             break;
     }
@@ -541,48 +557,62 @@ void    GameCore::showOpening(std::uint8_t *pixels)
 
 void    GameCore::run()
 {
-    int             periodForBonus = 0;
-    Timer           timer;
+    Timer           timer(1.0f);
+    Timer           bonusTargetTimer(15.0f);
     unsigned int    imageSize = m_width * m_height * scoreBlockWidth * scoreBlockHeight * 4;
     std::uint8_t    *pixels = new std::uint8_t[imageSize];
+    bool            isGameOver = false;
 
     getLib(20);
-
-    std::function<void(GUIDisplay*)> release_wrapper(reinterpret_cast<void(*)(GUIDisplay*)>(dlsym(lib_discr, "release_wrapper")));
 
     showOpening(pixels);
 
     timer.reset();
-    timer.setTimeScale(.3f);//TODO: replace by value of mandatory's requiroment
     while (direction_1)
     {
         timer.tick();
+        bonusTargetTimer.tick();
         if (timer.deltaTime() >= timer.getTimeScale())
         {
             checkDirection();
             timer.reset();
-            disp->render(getImage(pixels));
-            periodForBonus++;//TODO: replace this logic by second timer
+            if (getImage(pixels))
+                disp->render(pixels);
+            else
+            {
+                isGameOver = true;
+                break;
+            }
         }
 
-        if (periodForBonus == 30)
+        if (!getDirection(pixels))
+            break;
+
+        if (bonusTargetTimer.deltaTime() >= bonusTargetTimer.getTimeScale())
         {
-            bonusTarget->isVisible = true;
+            bonusTargetTimer.reset();
+            bonusTarget->isVisible = !bonusTarget->isVisible;
             updateTarget(bonusTarget);
         }
-        else if (periodForBonus == 60)
+
+        if (increaseSpeed && !(scoreCount % 3))
         {
-            periodForBonus = 0;
-            bonusTarget->isVisible = false;
+            float timescale = timer.getTimeScale();
+            timer.setTimeScale(timescale > 0.2f ? timescale - 0.1f : timescale);
+            increaseSpeed = false;
         }
-        getDirection(release_wrapper);
+
     }
+
+    if (isGameOver)
+        gameOver(pixels);
+
+    std::function<void(GUIDisplay*)> release_wrapper(reinterpret_cast<void(*)(GUIDisplay*)>(dlsym(lib_discr, "release_wrapper")));
+    release_wrapper(disp);
 
     delete[] pixels;
 }
 
-//TODO:create separeted object for loader or functor or smth else
-//TODO: adjust realese resourses
 void *GameCore::loadLib(std::string libname)
 {
     void *lib_discriptor;
@@ -606,10 +636,6 @@ void *GameCore::loadLib(std::string libname)
 int GameCore::pixToInt(int x, int y, int rowWidth, std::uint8_t *pixels)
 {
     int idx = (y * rowWidth + x) * 4;
-    // return ((pixels[idx + 3] << 24) +
-    //         (pixels[idx + 2] << 16) +
-    //         (pixels[idx + 1] << 8) + (pixels[idx]));
-    //for sfml:
     return ((pixels[idx] << 24) +
             (pixels[idx + 1] << 16) +
             (pixels[idx + 2] << 8) +
