@@ -24,12 +24,10 @@ $(NAME) : exp obj $(OBJ)
 
 all		: $(NAME)
 
-#TODO: need to implement lib checking, exports, install
 exp	:
-	set -e; \
-	. ./define-my-variables.sh
-	@make -C GLFWdl/
+	@. ./define-my-variables.sh
 	@make -C SFMLdl/
+	@make -C GLFWdl/
 	@make -C SDL2dl/
 	@make -C IMGLoader/
 	@make -C AudioWrapper/

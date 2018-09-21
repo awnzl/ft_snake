@@ -12,9 +12,6 @@ $(NAME) :
 
 all		: $(NAME)
 
-$(SDL2):
-    #brew install sdl2
-
 clean	: fclean
 
 fclean	:

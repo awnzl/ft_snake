@@ -51,7 +51,6 @@ int main(int ac, char *av[])
             if(width < 10 || height < 10 || width > 50 || height > 50 || gameMode > 2)
                 throw std::invalid_argument(exceptionMessage);
             GameCore *gc = new GameCore(width, height, gameMode);
-            // timer.setTimeScale(0.2f);//TODO: replace by value of mandatory's requiroment
             gc->run();
             delete gc;
         }

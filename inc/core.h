@@ -118,6 +118,7 @@ class GameCore
 
     GameCore() = delete;
     GameCore(const GameCore &) = delete;
+    GameCore(GameCore &&) = delete;
     GameCore &operator=(const GameCore &) = delete;
     GameCore &operator=(GameCore &&) = delete;
 

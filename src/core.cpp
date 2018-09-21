@@ -557,7 +557,7 @@ void    GameCore::showingLoop(float duration)
 
 void    GameCore::run()
 {
-    Timer           timer(1.0f);
+    Timer           timer(.5f);
     Timer           bonusTargetTimer(15.0f);
     unsigned int    imageSize = m_width * m_height * scoreBlockWidth * scoreBlockHeight * 4;
     std::uint8_t    *pixels = new std::uint8_t[imageSize];
