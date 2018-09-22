@@ -3,8 +3,8 @@
 #include <unistd.h>
 #include "core.h"
 #include "timer.h"
-#include "imgloader.h"
-#include "audiowrapper.h"
+#include "imgloader.h"//TODO: replace by interface
+#include "audiowrapper.h"//TODO: replace by interface
 
 GameCore::GameCore(int w, int h, int mode) :
     gameMode(mode),
@@ -451,7 +451,6 @@ bool    GameCore::checkObstacles(int x, int y, std::vector<Block*> snake)
 
 void    GameCore::getLib(int libNumber)
 {
-    std::cout << "GameCore::getLib: " << libNumber << std::endl;
     currentLib = libNumber;
 
     switch (libNumber)
@@ -472,8 +471,6 @@ void    GameCore::getLib(int libNumber)
     std::function<GUIDisplay*(int, int)> create_wrapper(reinterpret_cast<GUIDisplay*(*)(int, int)>(dlsym(lib_discr, "create_wrapper")));
 
     disp = create_wrapper(m_width, m_height + scoreBlockHeight);
-
-    std::cout << "GameCore::getLib, current lib: " << currentLib << std::endl;
 }
 
 bool    GameCore::getDirection(std::uint8_t *pixels)

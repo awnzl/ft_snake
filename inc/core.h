@@ -4,7 +4,6 @@
 //#include "minilibxwrapper.h"
 #include <array>
 #include <vector>
-#include <string>//TODO: delete this include
 #include <functional>
 #include "guidisplay.h"
 
