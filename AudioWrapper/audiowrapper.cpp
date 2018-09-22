@@ -2,49 +2,48 @@
 
 AudioWrapper::AudioWrapper()
 {
-	// Initialize SDL.
-	SDL_Init(SDL_INIT_EVERYTHING);
-	//Initialize SDL_mixer
-	Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 );
-	// Load sound effects
-	startSound = Mix_LoadWAV("audio/startGame.wav");
-	eat = Mix_LoadWAV("audio/bit.wav");
-	step = Mix_LoadWAV("audio/step.wav");
-	endSound = Mix_LoadMUS("audio/gameOver.wav");
+    alutInit(0, NULL);
+    alGetError();
+	startSound = alutCreateBufferFromFile("audio/startGame.wav");
+	eat = alutCreateBufferFromFile("audio/bit.wav");
+	step = alutCreateBufferFromFile("audio/step.wav");
+	endSound = alutCreateBufferFromFile("audio/gameOver.wav");
+
+    alGenSources(4, sources);
+    alSourcei(sources[0], AL_BUFFER, startSound);
+    alSourcei(sources[1], AL_BUFFER, eat);
+    alSourcei(sources[2], AL_BUFFER, step);
+    alSourcei(sources[3], AL_BUFFER, endSound);
 }
 
 AudioWrapper::~AudioWrapper()
 {
-	// clean up our resources
-	Mix_FreeChunk(startSound);
-	Mix_FreeChunk(eat);
-	Mix_FreeChunk(step);
-	Mix_FreeMusic(endSound);
-
-	// quit SDL_mixer
-	Mix_CloseAudio();
+    alDeleteSources(4, sources);
+    alDeleteSources(1, &startSound);
+    alDeleteBuffers(1, &eat);
+    alDeleteBuffers(1, &step);
+    alDeleteBuffers(1, &endSound);
+    alutExit();
 }
 
 void AudioWrapper::startGame()
 {
-	Mix_PlayChannel(-1, startSound, 0);
+    alSourcePlay(sources[0]);
 }
 
 void AudioWrapper::soundEat()
 {
-	Mix_PlayChannel(-1, eat, 0);
+    alSourcePlay(sources[1]);
 }
 
 void AudioWrapper::soundStep()
 {
-	Mix_PlayChannel(-1, step, 0);
+	alSourcePlay(sources[2]);
 }
 
 void AudioWrapper::endGame()
 {
-	Mix_PlayMusic( endSound, 0);
-
-	while ( Mix_PlayingMusic() ) ;
+	alSourcePlay(sources[3]);
 }
 
 extern "C" AudioWrapper *createAudioWrapper()

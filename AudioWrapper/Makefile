@@ -5,7 +5,7 @@ CC		= clang++
 FLG		= -dynamiclib -flat_namespace -Wall -Werror -Wextra
 
 ATTR	= -std=c++11
-LBS		= -I ~/.brew/include -L ~/.brew/lib -lSDL2_mixer
+LBS		= -I ~/.brew/include -L ~/.brew/lib -lalut
 
 $(NAME) :
 		$(CC) $(FLG) $(LBS) $(ATTR) audiowrapper.cpp -o $(NAME)

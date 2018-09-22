@@ -6,10 +6,10 @@ else
 	brew install SFML;
 fi
 
-if brew ls --versions cimg > /dev/null; then
-	echo "CImg installed";
+if brew ls --versions sdl2 > /dev/null; then
+	echo "SDL2 installed";
 else
-    brew install cimg
+    brew install sdl2
 fi
 
 if brew ls --versions glfw > /dev/null; then
@@ -18,8 +18,8 @@ else
 	brew install glfw;
 fi
 
-if brew ls --versions sdl2_mixer > /dev/null; then
-	echo "sdl2_mixer installed";
+if brew ls --versions freealut > /dev/null; then
+	echo "freealut installed";
 else
-	brew install sdl2_mixer;
+	brew install freealut;
 fi

@@ -540,7 +540,7 @@ void    GameCore::gameOver(std::uint8_t *pixels)
                        (m_height + scoreBlockHeight - 480) / 2,
                        480, 480, endGamePixelMap, pixels);
     disp->render(pixels);
-    showingLoop(1.0f);
+    showingLoop(6.0f);
 }
 
 void    GameCore::showingLoop(float duration)

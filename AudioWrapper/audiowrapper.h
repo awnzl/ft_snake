@@ -2,8 +2,7 @@
 # define __AUDIOWRAPPER_H
 
 #include <iostream>
-#include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL.h>
+#include <AL/alut.h>
 
 class AudioWrapper
 {
@@ -12,10 +11,13 @@ class AudioWrapper
     AudioWrapper &operator=(const AudioWrapper &) = delete;
     AudioWrapper &operator=(AudioWrapper &&) = delete;
 
-    Mix_Chunk *startSound = NULL;
-    Mix_Chunk *eat = NULL;
-    Mix_Chunk *step = NULL;
-    Mix_Music *endSound = NULL;
+    // data into buffer
+    ALuint startSound;
+    ALuint eat;
+    ALuint step;
+    ALuint endSound;
+
+    ALuint sources[4];
 
 public:
     AudioWrapper();
