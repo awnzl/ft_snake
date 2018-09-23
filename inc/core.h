@@ -6,10 +6,9 @@
 #include <vector>
 #include <functional>
 #include "guidisplay.h"
+#include "audiowrapper.h"
 
 #define BLOCK_SIZE 48
-
-class AudioWrapper;
 
 class GameCore
 {

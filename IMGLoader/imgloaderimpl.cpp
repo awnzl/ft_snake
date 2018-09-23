@@ -1,13 +1,13 @@
-#include "imgloader.h"
+#include "imgloaderimpl.h"
 #include <SFML/Graphics.hpp>
 
-void    IMGLoader::printError(std::string err)
+void    IMGLoaderImpl::printError(std::string err)
 {
     std::cerr << "Image load error:\n\t" << err << std::endl;
     exit(1);
 }
 
-uint8_t *IMGLoader::getPixelMap(std::string s)
+uint8_t *IMGLoaderImpl::getPixelMap(std::string s)
 {
     if (s.empty())
         printError("empty asset path");
@@ -27,9 +27,9 @@ uint8_t *IMGLoader::getPixelMap(std::string s)
     return ret;
 }
 
-extern "C" IMGLoader *createImgLoader()
+extern "C" IMGLoaderImpl *createImgLoader()
 {
-    return new IMGLoader();
+    return new IMGLoaderImpl();
 }
 
 extern "C" void releaseImgLoader(IMGLoader *il)

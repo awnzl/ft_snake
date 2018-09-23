@@ -1,6 +1,6 @@
-#include "audiowrapper.h"
+#include "audiowrapperimpl.h"
 
-AudioWrapper::AudioWrapper()
+AudioWrapperImpl::AudioWrapperImpl()
 {
     alutInit(0, NULL);
     alGetError();
@@ -16,7 +16,7 @@ AudioWrapper::AudioWrapper()
     alSourcei(sources[3], AL_BUFFER, endSound);
 }
 
-AudioWrapper::~AudioWrapper()
+AudioWrapperImpl::~AudioWrapperImpl()
 {
     alDeleteSources(4, sources);
     alDeleteSources(1, &startSound);
@@ -26,29 +26,29 @@ AudioWrapper::~AudioWrapper()
     alutExit();
 }
 
-void AudioWrapper::startGame()
+void AudioWrapperImpl::startGame()
 {
     alSourcePlay(sources[0]);
 }
 
-void AudioWrapper::soundEat()
+void AudioWrapperImpl::soundEat()
 {
     alSourcePlay(sources[1]);
 }
 
-void AudioWrapper::soundStep()
+void AudioWrapperImpl::soundStep()
 {
 	alSourcePlay(sources[2]);
 }
 
-void AudioWrapper::endGame()
+void AudioWrapperImpl::endGame()
 {
 	alSourcePlay(sources[3]);
 }
 
 extern "C" AudioWrapper *createAudioWrapper()
 {
-    return new AudioWrapper();
+    return new AudioWrapperImpl();
 }
 
 extern "C" void releaseAudioWrapper(AudioWrapper *ptr)

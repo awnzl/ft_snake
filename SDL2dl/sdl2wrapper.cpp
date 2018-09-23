@@ -56,10 +56,10 @@ int SDL2Wrapper::getEvent()
 
     switch (event->type) {
         case SDL_QUIT:
-            return 0;// TODO: replayce by relese function?
+            return 0;
         case SDL_KEYDOWN:
             switch (event->key.keysym.sym) {
-                case SDLK_ESCAPE://TODO: don't work
+                case SDLK_ESCAPE:
                     return 0;
                 case SDLK_LEFT:
                     lastDirection = 2;

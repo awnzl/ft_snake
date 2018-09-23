@@ -3,8 +3,7 @@
 #include <unistd.h>
 #include "core.h"
 #include "timer.h"
-#include "imgloader.h"//TODO: replace by interface
-#include "audiowrapper.h"//TODO: replace by interface
+#include "imgloader.h"
 
 GameCore::GameCore(int w, int h, int mode) :
     gameMode(mode),
@@ -69,7 +68,6 @@ void    GameCore::initElements()
     std::function<IMGLoader*()> createImgLoader(reinterpret_cast<IMGLoader*(*)()>(dlsym(imageLoaderDiscriptor, "createImgLoader")));
     std::function<void(IMGLoader*)> releaseImgLoader(reinterpret_cast<void(*)(IMGLoader*)>(dlsym(imageLoaderDiscriptor, "releaseImgLoader")));
     IMGLoader *imloader = createImgLoader();
-
     snake_body_pixels_map = imloader->getPixelMap("assets/body_48.png");
     snake_h_north_pixels_map = imloader->getPixelMap("assets/head_north_48.png");
     snake_h_south_pixels_map = imloader->getPixelMap("assets/head_south_48.png");
