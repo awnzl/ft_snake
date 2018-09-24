@@ -616,9 +616,9 @@ void *GameCore::loadLib(std::string libname)
 
     if (!lib_discriptor)
     {
-        std::cout << "*** DINAMYC LIBRARY LOADING ERROR ***\ndescriptor is not present: "
-                  << dlerror() << std::endl;
-        exit(1);
+        std::string mess("*** DINAMYC LIBRARY LOADING ERROR ***\ndescriptor is not present: ");
+        mess.append(dlerror());
+        throw std::invalid_argument(mess);
     }
 
     return lib_discriptor;
