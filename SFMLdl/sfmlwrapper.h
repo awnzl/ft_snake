@@ -15,6 +15,7 @@ class SFMLWrapper : public GUIDisplay
     sf::Texture         *texture;
     sf::Sprite          *sprite;
     sf::Event           *event;
+    bool                firstRun;
 
     SFMLWrapper() = delete;
     SFMLWrapper(SFMLWrapper const &) = delete;

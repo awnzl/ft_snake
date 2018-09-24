@@ -16,7 +16,8 @@ SFMLWrapper::SFMLWrapper(int w, int h) :
     im(new sf::Image()),
     texture(new sf::Texture),
     sprite(new sf::Sprite),
-    event(new sf::Event)
+    event(new sf::Event),
+    firstRun(true)
 {
     lastDirection = -1;
     texture->create(m_width, m_height);
@@ -38,7 +39,9 @@ void SFMLWrapper::render(uint8_t *rawImage)
 int SFMLWrapper::getEvent()
 {
     while (win->pollEvent(*event)) {
-        if (event->type == sf::Event::Closed ||
+        if (firstRun)
+            firstRun = false;
+        else if (event->type == sf::Event::Closed ||
             event->key.code == sf::Keyboard::Escape) {
             win->close();
             return 0;
